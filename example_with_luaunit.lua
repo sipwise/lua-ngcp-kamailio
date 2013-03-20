@@ -99,6 +99,6 @@ end
 ---- Control test output:
 lu = LuaUnit
 -- lu:setOutputType( "NIL" )
--- lu:setOutputType( "TAP" )
+lu:setOutputType( "TAP" )
 lu:setVerbosity( 0 )
 os.exit( lu:run() )
