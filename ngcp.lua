@@ -35,10 +35,10 @@ NGCP_MT = { __index = NGCP }
 
     function NGCP:new()
         local t = {}
-        t.config = NGCPConfig()
+        t.config = NGCPConfig:new()
         t.preference = {
-            domain = NGCPPreference('domain'),
-            peer   = NGCPPreference('peer'),
+            domain = NGCPPreference:new('domain'),
+            peer   = NGCPPreference:new('peer'),
         }
         setmetatable( t, NGCP_MT )
         return t

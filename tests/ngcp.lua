@@ -5,19 +5,18 @@ require 'ngcp'
 TestNGCP = {} --class
 
     function TestNGCP:setUp()
-        self.ngcp = NGCP()
+        self.ngcp = NGCP:new()
     end
 
     function TestNGCP:test_config()
-        assertEquals( self.ngcp.preference.domain.name , 'name' )
+        assertEquals( self.ngcp.preference.domain.name , 'domain' )
         assertEquals( self.ngcp.preference.peer.name , 'peer' )
     end
 -- class TestNGCP
 
 ---- Control test output:
 lu = LuaUnit
--- lu:setOutputType( "NIL" )
 lu:setOutputType( "TAP" )
-lu:setVerbosity( 0 )
+lu:setVerbosity( 1 )
 lu:run()
 --EOF
