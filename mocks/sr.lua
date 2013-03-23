@@ -5,7 +5,8 @@ mc = lemock.controller()
 
 srMock = {
     __class__ = 'srMock',
-    pv = mc:mock()
+    pv = mc:mock(),
+    log = mc:mock()
 }
 srMock_MT = { __index = srMock, __newindex = mc:mock() }
     function srMock:new()

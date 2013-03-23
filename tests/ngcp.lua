@@ -38,12 +38,23 @@ TestNGCP = {} --class
     function TestNGCP:test_prefs_init()
         --print("TestNGCP:test_prefs_init")
         assertTrue(self.ngcp)
+        assertTrue(self.ngcp.prefs)
+        assertTrue(self.ngcp.prefs.peer)
+        assertTrue(self.ngcp.prefs.domain)
     end
 
     function TestNGCP:test_peerpref_clean()
         --print("TestNGCP:test_peerpref_clean")
         assertTrue(self.ngcp.prefs.peer)
+        self.ngcp.prefs.peer.inbound.peer_peer_callee_auth_user = "usertest"
+        self.ngcp.prefs.peer:clean("outbound")
+        assertEquals(self.ngcp.prefs.peer.inbound.peer_peer_callee_auth_user, "usertest")
+        self.ngcp.prefs.peer:clean("inbound")
+        assertEquals(self.ngcp.prefs.peer.inbound.peer_peer_callee_auth_user, "")
+        self.ngcp.prefs.peer.inbound.peer_peer_callee_auth_user = "usertest"
+        assertEquals(self.ngcp.prefs.peer.inbound.peer_peer_callee_auth_user, "usertest")
         self.ngcp.prefs.peer:clean()
+        assertEquals(self.ngcp.prefs.peer.inbound.peer_peer_callee_auth_user, "")
     end
 
     function TestNGCP:test_domainpref_clean()

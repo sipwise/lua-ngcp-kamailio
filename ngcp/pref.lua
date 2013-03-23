@@ -24,17 +24,25 @@ NGCPPrefs_MT = { __index = NGCPPrefs }
         return t
     end
 
+    function NGCPPrefs._cleanvars(t)
+        for k,_ in pairs(t) do
+            t[k] = ""
+        end
+    end
+
     function NGCPPrefs:clean(group)
         --print("NGCPPrefs:clean")
         --print(table.tostring(getmetatable(self)))
         --print(table.tostring(self))
         if group then
             if self[group] then
-                clean_avps(self[group])
+                clean_avp(self[group])
+                NGCPPrefs._cleanvars(self[group])
             end
         else
-            for k,v in ipairs(self.groups) do
-                clean_avps(self[v])
+            for k,v in pairs(self.groups) do
+                clean_avp(self[v])
+                NGCPPrefs._cleanvars(self[v])
             end
         end
     end
