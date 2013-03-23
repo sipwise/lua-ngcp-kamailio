@@ -51,6 +51,23 @@ TestUtils = {} --class
     end
 -- class TestUtils
 
+TestStack = {}
+    function TestStack:test()
+        s = Stack:new()
+        assertEquals(#s._et,0)
+        assertEquals(s:pop(), nil)
+        s:push(1)
+        assertEquals(#s._et,1)
+        assertEquals(s:pop(),1)
+        assertEquals(s:size(),0)
+        s:push(1)
+        s:push({1,2,3})
+        assertEquals(s:size(),2)
+        local l = s:list()
+        assertItemsEquals(l[1],{1,2,3})
+        assertEquals(l[2],1)
+    end
+-- class TestStack
 ---- Control test output:
 lu = LuaUnit
 lu:setOutputType( "TAP" )

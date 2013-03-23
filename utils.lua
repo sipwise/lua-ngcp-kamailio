@@ -119,4 +119,69 @@ function explode(delimiter, text)
     end
     return list
 end
+
+-- Stack Table
+-- Uses a table as stack, use <table>:push(value) and <table>:pop()
+-- Lua 5.1 compatible
+
+-- GLOBAL
+Stack = {
+  __class__ = 'Stack'
+}
+Stack_MT = { __index = Stack }
+
+  -- Create a Table with stack functions
+  function Stack:new()
+    local t = { _et = {} }
+    setmetatable(t, Stack_MT)
+    return t
+  end
+  -- push a value on to the stack
+  function Stack:push(...)
+    if ... then
+      local targs = {...}
+      -- add values
+      for _,v in pairs(targs) do
+        table.insert(self._et, v)
+      end
+    end
+  end
+
+  -- pop a value from the stack
+  function Stack:pop(num)
+    -- get num values from stack
+    local num = num or 1
+
+    -- return table
+    local entries = {}
+
+    -- get values into entries
+    for i = 1, num do
+      -- get last entry
+      if #self._et ~= 0 then
+        table.insert(entries, self._et[#self._et])
+        -- remove last value
+        table.remove(self._et)
+      else
+        break
+      end
+    end
+    -- return unpacked entries
+    return unpack(entries)
+  end
+
+  -- get entries
+  function Stack:size()
+    return #self._et
+  end
+
+  -- list values
+  function Stack:list()
+    local entries = {}
+    for i = #self._et, 1, -1 do
+      table.insert(entries, self._et[i])
+    end
+    return entries
+  end
+-- end class
 --EOF
