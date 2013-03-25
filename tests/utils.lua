@@ -48,6 +48,7 @@ TestUtils = {} --class
 
     function TestUtils:test_explode()
         assertItemsEquals(explode(',',"1,2,3"), {'1','2','3'})
+        assertItemsEquals(explode('=>',"1=>2=>3"), {'1','2','3'})
     end
 
     function TestUtils:test_starts()
