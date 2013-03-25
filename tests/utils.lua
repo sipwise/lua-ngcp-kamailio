@@ -49,6 +49,26 @@ TestUtils = {} --class
     function TestUtils:test_explode()
         assertItemsEquals(explode(',',"1,2,3"), {'1','2','3'})
     end
+
+    function TestUtils:test_starts()
+        assertError(string.stats, nil, "g")
+        assertTrue(string.starts("goga", "g"))
+        assertTrue(string.starts("goga", "go"))
+        assertTrue(string.starts("goga", "gog"))
+        assertTrue(string.starts("goga", "goga"))
+        assertFalse(string.starts("goga", "a"))
+        assertError(string.starts, "goga", nil)
+    end
+
+    function TestUtils:test_ends()
+        assertError(string.ends, nil, "g")
+        assertTrue(string.ends("goga", "a"))
+        assertTrue(string.ends("goga", "ga"))
+        assertTrue(string.ends("goga", "oga"))
+        assertTrue(string.ends("goga", "goga"))
+        assertFalse(string.ends("goga", "f"))
+        assertError(string.ends, "goga", nil)
+    end
 -- class TestUtils
 
 TestStack = {}
