@@ -35,7 +35,7 @@ function clear_peer_in_pref()
 end
 
 -- ROUTE_CLEAR_PEER_OUT_PREF
-function route_clear_peer_out_pref()
+function clear_peer_out_pref()
     local list = {
         peer_peer_caller_auth_user,
         peer_peer_caller_auth_pass,
@@ -252,4 +252,4 @@ function clear_callee_pref()
 
     clean_avps(list)
 end
-#EOF
+--EOF
