@@ -49,7 +49,23 @@ pvMock = {
         end
 
         function t.unset(id)
-            t.vars[id] = nil
+            if string.starts(id, "$xavp(") then
+                local l = explode("=>", id)
+                local s = l[1]
+                if #l == 1 then
+                    -- remove the last ')' char
+                    s = string.sub(l[1],1,string.len(l[1])-1)
+                end
+                for k,_ in pairs(t.vars) do
+                    if string.starts(k,s) then
+                        --print("clean: " .. k)
+                        t.vars[k] = nil
+                    end
+                end
+            else
+                --print("clean: " .. id)
+                t.vars[id] = nil
+            end
         end
 
         function t.is_null(id)

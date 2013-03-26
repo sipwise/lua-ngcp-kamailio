@@ -1,28 +1,44 @@
 #!/usr/bin/env lua5.1
-require 'ngcp.pref'
+require 'ngcp.xavp'
 
 -- class NGCPDomainPrefs
 NGCPDomainPrefs = {
      __class__ = 'NGCPDomainPrefs'
-}
-NGCPDomainPrefs_MT = { __index = NGCPDomainPrefs, __newindex = NGCPPrefs }
+ }
+NGCPDomainPrefs_MT = { __index = NGCPDomainPrefs }
 
-    function NGCPDomainPrefs:new()
-        local t = NGCPDomainPrefs.init()
-        setmetatable( t, NGCPDomainPrefs_MT )
-        return t
+    function NGCPDomainPrefs:new(config)
+        local t = {
+            config = config,
+            db_table = "dom_preferences"
+        }
+        return setmetatable( t, NGCPDomainPrefs_MT )
     end
 
-    function NGCPDomainPrefs.init()
-        local t = NGCPPrefs.init()
-        return t
+    function NGCPDomainPrefs:caller_load(uuid)
+        NGCPDomainPrefs._load(self,0,uuid)
+    end
+
+    function NGCPDomainPrefs:callee_load(uuid)
+        NGCPDomainPrefs._load(self,1,uuid)
+    end
+
+    function NGCPDomainPrefs:_load(level, uuid)
+        local con = assert (self.config:getDBConnection())
+        local query = "SELECT * FROM " .. self.db_table .. " WHERE domain ='" .. uuid .."'"
+        local cur = assert (con:execute(query))
+        local row = cur:fetch({}, "a")
+        if row then
+            self.xavp = NGCPXAvp:new(level,'domain',row)
+        end
+        cur:close()
+        con:close()
     end
 
     function NGCPDomainPrefs:clean(...)
-        --print("NGCPDomainPrefs:clean")
-        --print(table.tostring(getmetatable(self)))
-        --print(table.tostring(self))
-        NGCPPrefs.clean(self, ...)
+        if self.xavp then
+            self.xavp:clean()
+        end
     end
 -- class
 --EOF

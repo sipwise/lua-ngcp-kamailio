@@ -15,13 +15,13 @@ TestNGCPAvp = {} --class
     end
 
     function TestNGCPAvp:test_avp_id()
-        assertEquals(self.avp.id, "$(avp(s:testid))")
+        assertEquals(self.avp.id, "$avp(s:testid)")
     end
 
     function TestNGCPAvp:test_avp_get()
-        sr.pv.sets("$(avp(s:testid))", "value")
+        sr.pv.sets("$avp(s:testid)", "value")
         assertEquals(self.avp(), "value")
-        sr.pv.sets("$(avp(s:testid))", "1")
+        sr.pv.sets("$avp(s:testid)", "1")
         assertItemsEquals(self.avp(),{"1","value"})
     end
 

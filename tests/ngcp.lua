@@ -1,29 +1,24 @@
 #!/usr/bin/env lua5.1
 require('luaunit')
-require 'ngcp.ngcp'
 require 'mocks.sr'
 require 'utils'
 
 sr = srMock:new()
 
-TestNGCPPrefs = {} --class
+local mc = lemock.controller()
+local mysql = mc:mock()
+local env   = mc:mock()
+local con   = mc:mock()
+local cur   = mc:mock()
 
-    function TestNGCPPrefs:setUp()
-        self.prefs = NGCPPrefs:new()
-    end
+package.loaded.luasql = nil
+package.preload['luasql.mysql'] = function ()
+    luasql = {}
+    luasql.mysql = mysql
+    return mysql
+end
 
-    function TestNGCPPrefs:test_prefs_init()
-        assertItemsEquals(self.prefs.groups, {"inbound","outbound","common"})
-        assertTrue(self.prefs.inbound)
-        assertTrue(self.prefs.outbound)
-        assertTrue(self.prefs.common)
-    end
-
-    function TestNGCPPrefs:test_pref_clean()
-        --self.prefs:clean()
-        assertError(self.prefs.clean, nil)
-    end
--- class TestNGCPPrefs
+require 'ngcp.ngcp'
 
 TestNGCP = {} --class
 
@@ -40,27 +35,23 @@ TestNGCP = {} --class
         assertTrue(self.ngcp)
         assertTrue(self.ngcp.prefs)
         assertTrue(self.ngcp.prefs.peer)
+        assertTrue(self.ngcp.prefs.user)
         assertTrue(self.ngcp.prefs.domain)
     end
 
     function TestNGCP:test_peerpref_clean()
-        --print("TestNGCP:test_peerpref_clean")
         assertTrue(self.ngcp.prefs.peer)
-        self.ngcp.prefs.peer.inbound.peer_peer_callee_auth_user = "usertest"
-        self.ngcp.prefs.peer:clean("outbound")
-        assertEquals(self.ngcp.prefs.peer.inbound.peer_peer_callee_auth_user, "usertest")
-        self.ngcp.prefs.peer:clean("inbound")
-        assertEquals(self.ngcp.prefs.peer.inbound.peer_peer_callee_auth_user, "")
-        self.ngcp.prefs.peer.inbound.peer_peer_callee_auth_user = "usertest"
-        assertEquals(self.ngcp.prefs.peer.inbound.peer_peer_callee_auth_user, "usertest")
         self.ngcp.prefs.peer:clean()
-        assertEquals(self.ngcp.prefs.peer.inbound.peer_peer_callee_auth_user, "")
+    end
+
+    function TestNGCP:test_userpref_clean()
+        assertTrue(self.ngcp.prefs.user)
+        self.ngcp.prefs.user:clean()
     end
 
     function TestNGCP:test_domainpref_clean()
-        --print("TestNGCP:test_domainpref_clean")
-        assertTrue(self.ngcp.prefs.domain)
-        self.ngcp.prefs.domain:clean()
+        assertTrue(self.ngcp.prefs.peer)
+        self.ngcp.prefs.peer:clean()
     end
 -- class TestNGCP
 
