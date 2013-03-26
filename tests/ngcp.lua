@@ -30,6 +30,18 @@ TestNGCP = {} --class
         assertTrue(self.ngcp.config)
     end
 
+    function TestNGCP:test_connection()
+        assertTrue(self.ngcp.config)
+        local c = self.ngcp.config
+        luasql.mysql() ;mc :returns(env)
+        env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(con)
+
+        mc:replay()
+        c:getDBConnection()
+        mc:verify()
+        assertTrue(self.ngcp.config)
+    end
+
     function TestNGCP:test_prefs_init()
         --print("TestNGCP:test_prefs_init")
         assertTrue(self.ngcp)

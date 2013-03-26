@@ -13,7 +13,7 @@ NGCPConfig_MT = { __index = NGCPConfig }
 
     function NGCPConfig:new()
         local t = {
-            db_host = "localhost",
+            db_host = "127.0.0.1",
             db_port = 3306,
             db_username = "kamailio",
             db_pass = "somepasswd",
@@ -26,7 +26,7 @@ NGCPConfig_MT = { __index = NGCPConfig }
     function NGCPConfig:getDBConnection()
         local env = assert (luasql.mysql())
         return assert (env:connect( self.db_database,
-            self.db_username, self.db_password, self.db_host, self.db_port))
+            self.db_username, self.db_pass, self.db_host, self.db_port))
     end
 -- class
 
