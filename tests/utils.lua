@@ -88,6 +88,14 @@ TestStack = {}
         assertItemsEquals(l[1],{1,2,3})
         assertEquals(l[2],1)
     end
+
+    function TestStack:test_tostring()
+        s = Stack:new()
+        s:push(1)
+        assertEquals(tostring(s), "{1}")
+        s:push(2)
+        assertEquals(tostring(s), "{2,1}")
+    end
 -- class TestStack
 ---- Control test output:
 lu = LuaUnit

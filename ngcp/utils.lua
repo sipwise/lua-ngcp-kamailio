@@ -134,9 +134,14 @@ end
 
 -- GLOBAL
 Stack = {
-  __class__ = 'Stack'
+  __class__ = 'Stack',
 }
-Stack_MT = { __index = Stack }
+Stack_MT = {
+  __index = Stack,
+  __tostring = function(t)
+    return table.tostring(Stack.list(t))
+  end
+}
 
   -- Create a Table with stack functions
   function Stack:new()
