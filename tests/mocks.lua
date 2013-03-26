@@ -63,7 +63,7 @@ TestSRMock = {}
         assertEquals(self.sr.pv.vars["$avp(s:hithere)"], nil)
 
         self.sr.pv.sets("$xavp(g=>t)", "value")
-        assertEquals(self.sr.pv.vars["$xavp(g[0]=>t)"], value)
+        assertEquals(self.sr.pv.vars["$xavp(g[0]=>t)"], "value")
         assertEquals(self.sr.pv.vars["$xavp(g=>t)"], nil)
 
         self.sr.pv.sets("$xavp(g[0]=>v)", "value")
