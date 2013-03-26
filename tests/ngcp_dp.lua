@@ -48,6 +48,8 @@ TestNGCPDomainPrefs = {} --class
 
         assertTrue(self.d.xavp)
         assertEquals(self.d.xavp("sst_enable"),"no")
+        assertEquals(sr.pv.vars["$xavp(domain[0]=>dummy)"],"")
+        assertEquals(sr.pv.vars["$xavp(domain[0]=>sst_enable)"],"no")
         assertFalse(self.d.xavp("error_key"))
     end
 -- class TestNGCPDomainPrefs
