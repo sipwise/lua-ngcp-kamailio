@@ -3,11 +3,17 @@ require ('logging.file')
 require 'lemock'
 require 'ngcp.utils'
 
-mc = lemock.controller()
-
 pvMock = {
     __class__ = 'pvMock',
-    vars = {}
+    vars = {},
+    _logger = logging.file("reports/sr_pv_%s.log", "%Y-%m-%d"),
+    _logger_levels = {
+        dbg  = logging.DEBUG,
+        info = logging.INFO,
+        warn = logging.WARN,
+        err  = logging.ERROR,
+        crit = logging.FATAL
+    }
 }
     function pvMock:new()
         local t = {}
@@ -31,15 +37,25 @@ pvMock = {
                     id = l[1] .. "[0]=>" .. l[2]
                 end
             end
+            if string.ends(id,"[*]") then
+                -- clean var
+                id = string.sub(id,1,-4)
+                t.log("dbg",string.format("sr.pv erase [%s]", id))
+                t.vars[id] = nil
+            end
             if not t.vars[id] then
                 t.vars[id] = value
+                t.log("dbg", string.format("sr.pv added [%s]:%s", id, value))
             elseif type(t.vars[id]) == 'table' then
                 t.vars[id]:push(value)
+                t.log("dbg", string.format("sr.pv push [%s]:%s", id, value))
             else
                 local old = t.vars[id]
                 t.vars[id] = Stack:new()
                 t.vars[id]:push(old, value)
+                t.log("dbg", string.format("sr.pv push [%s]:%s", id, value))
             end
+            t.log("dbg", string.format("sr.pv [%s]:%s", id, tostring(t.vars[id])))
         end
 
         function t.seti(id, value)
@@ -82,6 +98,14 @@ pvMock = {
             end
             return false
         end
+
+        function t.log(level, message)
+                if not t._logger_levels[level] then
+                    error(string.format("level %s unknown", level))
+                end
+                t._logger:log(t._logger_levels[level], message)
+        end
+
         pvMock_MT = { __index = pvMock }
         setmetatable(t, pvMock_MT)
         return t
@@ -101,7 +125,7 @@ srMock = {
         crit = logging.FATAL
     }
 }
-srMock_MT = { __index = srMock, __newindex = mc:mock() }
+srMock_MT = { __index = srMock, __newindex = lemock.controller():mock() }
     function srMock:new()
         --print("srMock:new")
         local t = {}

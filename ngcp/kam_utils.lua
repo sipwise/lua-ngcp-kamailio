@@ -5,7 +5,7 @@ require 'ngcp.utils'
 -- kamailio log for a table
 function table.log(t, msg, level)
     if not level then
-        level = "debug"
+        level = "dbg"
     end
     if msg then
         sr.log(level, msg)
@@ -26,7 +26,7 @@ function sets_avps(list)
     local i, v
 
     for i,v in pairs(list) do
-        -- sr.log("debug","i:" .. i .. " v:" .. v)
+        -- sr.log("dbg","i:" .. i .. " v:" .. v)
         sr.pv.unset('$avp(' .. i ..')[*]')
         sr.pv.sets('$avp(' .. i .. ')', v)
     end

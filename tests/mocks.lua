@@ -4,6 +4,7 @@ require 'mocks.sr'
 
 TestMock = {}
     function TestMock:testMock()
+        mc = lemock.controller()
         m = mc:mock()
         m.pv = mc:mock()
         m.titi( 42 )
@@ -52,7 +53,7 @@ TestSRMock = {}
         for i=#vals,1,-1 do
            assertEquals(l[i],vals[v])
            v = v + 1 
-        end        
+        end
     end
 
     function TestSRMock:test_unset()
@@ -91,6 +92,17 @@ TestSRMock = {}
         assertTrue(self.sr.log)
         self.sr.log("dbg", "Hi dude!")
         assertError(self.sr.log, "debug", "Hi dude!")
+    end
+
+    function TestSRMock:test_set_clean()
+        self.sr.pv.seti("$avp(s:hithere)[*]", 0)
+        assertEquals(self.sr.pv.vars["$avp(s:hithere)"], 0)
+        assertFalse(self.sr.pv.vars["$avp(s:hithere)[*]"])
+        self.sr.pv.seti("$avp(s:hithere)[*]", 1)
+        assertEquals(self.sr.pv.vars["$avp(s:hithere)"], 1)
+        assertFalse(self.sr.pv.vars["$avp(s:hithere)[*]"])
+        self.sr.pv.seti("$avp(s:hithere)", 0)
+        assertEquals(table.tostring(self.sr.pv.get("$avp(s:hithere)")), "{0,1}")
     end
 ---- Control test output:
 lu = LuaUnit
