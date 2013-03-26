@@ -20,7 +20,7 @@ package.preload['luasql.mysql'] = function ()
 end
 
 require 'ngcp.up'
-require 'tests.up_vars'
+require 'tests_v.up_vars'
 
 TestNGCPUserPrefs = {} --class
 

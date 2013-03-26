@@ -9,7 +9,7 @@ NGCPAvp_MT = {
 }
 
     function NGCPAvp:new(id)
-        local t = { id = "$(avp(s:" .. id .. "))" }
+        local t = { id = "$avp(s:" .. id .. ")" }
         NGCPAvp_MT.__call = function(t, value)
             if not value then
                 --print(table.tostring(sr.pv.vars))

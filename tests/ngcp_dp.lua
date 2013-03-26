@@ -20,7 +20,7 @@ package.preload['luasql.mysql'] = function ()
 end
 
 require 'ngcp.dp'
-require 'tests.dp_vars'
+require 'tests_v.dp_vars'
 
 TestNGCPDomainPrefs = {} --class
 

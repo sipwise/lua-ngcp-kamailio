@@ -20,7 +20,7 @@ package.preload['luasql.mysql'] = function ()
 end
 
 require 'ngcp.pp'
-require 'tests.pp_vars'
+require 'tests_v.pp_vars'
 
 TestNGCPPeerPrefs = {} --class
 
