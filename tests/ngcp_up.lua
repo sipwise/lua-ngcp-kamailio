@@ -1,7 +1,7 @@
 #!/usr/bin/env lua5.1
 require('luaunit')
 require 'mocks.sr'
-require 'utils'
+require 'ngcp.utils'
 
 sr = srMock:new()
 

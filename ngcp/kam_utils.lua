@@ -1,6 +1,6 @@
 #!/usr/bin/env lua5.1
 -- Kamailio Lua utils
-require 'utils'
+require 'ngcp.utils'
 
 -- kamailio log for a table
 function table.log(t, msg, level)

@@ -1,5 +1,5 @@
 #!/usr/bin/env lua5.1
-require 'kam_utils'
+require 'ngcp.kam_utils'
 
 -- class NGCPPrefs
 NGCPPrefs = {

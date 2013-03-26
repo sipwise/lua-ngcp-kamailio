@@ -1,6 +1,6 @@
 #!/usr/bin/env lua5.1
 -- Kamailio Lua Config
-require 'kam_utils.lua'
+require 'ngcp.kam_utils.lua'
 
 -- ROUTE_CLEAR_PEER_IN_PREF
 function clear_peer_in_pref()

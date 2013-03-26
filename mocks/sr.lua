@@ -1,6 +1,6 @@
 #!/usr/bin/env lua5.1
 require 'lemock'
-require 'utils'
+require 'ngcp.utils'
 
 mc = lemock.controller()
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env lua5.1
 require('luaunit')
 require 'mocks.sr'
-require 'kam_utils'
+require 'ngcp.kam_utils'
 
 sr = srMock:new()
 
