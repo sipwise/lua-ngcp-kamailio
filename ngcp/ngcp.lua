@@ -25,6 +25,7 @@ NGCPConfig_MT = { __index = NGCPConfig }
 
     function NGCPConfig:getDBConnection()
         local env = assert (luasql.mysql())
+        sr.log("dbg","connecting to mysql")
         return assert (env:connect( self.db_database,
             self.db_username, self.db_pass, self.db_host, self.db_port))
     end

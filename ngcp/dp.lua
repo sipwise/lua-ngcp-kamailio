@@ -29,7 +29,10 @@ NGCPDomainPrefs_MT = { __index = NGCPDomainPrefs }
         local cur = assert (con:execute(query))
         local row = cur:fetch({}, "a")
         if row then
+            sr.log("dbg",string.format("adding xavp %s[%d]", 'domain', level))
             self.xavp = NGCPXAvp:new(level,'domain',row)
+        else
+            sr.log("dbg", string.format("no results for query:%s", query))
         end
         cur:close()
         con:close()
