@@ -46,7 +46,7 @@ NGCPXAvp_MT = {
     function NGCPXAvp._create(level, group, l)
         local i, name
         -- create dummy vars
-        name = string.format("$xavp(%s=>%s)", group, 'dummy')
+        name = string.format("$xavp(%s=>%s)[*]", group, 'dummy')
         sr.pv.sets(name, "")
         for i=1,#l do
             name = string.format("$xavp(%s[%d]=>%s)", group, level, l[i].attribute)
