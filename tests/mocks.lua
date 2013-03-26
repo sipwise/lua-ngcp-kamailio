@@ -86,6 +86,12 @@ TestSRMock = {}
         self.sr.pv.sets("$avp(s:hithere)", "value")
         assertFalse(self.sr.pv.is_null("$avp(s:hithere)"))
     end
+
+    function TestSRMock:test_log()
+        assertTrue(self.sr.log)
+        self.sr.log("dbg", "Hi dude!")
+        assertError(self.sr.log, "debug", "Hi dude!")
+    end
 ---- Control test output:
 lu = LuaUnit
 lu:setOutputType( "TAP" )

@@ -1,4 +1,5 @@
 #!/usr/bin/env lua5.1
+require ('logging.file')
 require 'lemock'
 require 'ngcp.utils'
 
@@ -91,12 +92,25 @@ pvMock = {
 srMock = {
     __class__ = 'srMock',
     pv = pvMock:new(),
-    log = mc:mock()
+    _logger = logging.file("reports/sr_%s.log", "%Y-%m-%d"),
+    _logger_levels = {
+        dbg  = logging.DEBUG,
+        info = logging.INFO,
+        warn = logging.WARN,
+        err  = logging.ERROR,
+        crit = logging.FATAL
+    }
 }
 srMock_MT = { __index = srMock, __newindex = mc:mock() }
     function srMock:new()
         --print("srMock:new")
         local t = {}
+            function t.log(level, message)
+                if not t._logger_levels[level] then
+                    error(string.format("level %s unknown", level))
+                end
+                t._logger:log(t._logger_levels[level], message)
+            end
         setmetatable(t, srMock_MT)
         return t
     end
