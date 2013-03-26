@@ -23,6 +23,13 @@ pvMock = {
         end
 
         function t._addvalue(id, value)
+            if string.starts(id, "$xavp(") then
+                local l = explode("=>", id)
+                -- $xavp(key=>key2) -> $xavp(key[0]=>key2)
+                if not string.ends(l[1],"]") then
+                    id = l[1] .. "[0]=>" .. l[2]
+                end
+            end
             if not t.vars[id] then
                 t.vars[id] = value
             elseif type(t.vars[id]) == 'table' then
