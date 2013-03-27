@@ -28,9 +28,18 @@ NGCPPeerPrefs_MT = { __index = NGCPPeerPrefs }
         local con = self.config:getDBConnection()
         local query = "SELECT * FROM " .. self.db_table .. " WHERE uuid = '" .. uuid .. "'"
         local cur = assert (con:execute(query))
-        local row = cur:fetch({}, "a")
+        local result = {}
+        local row = cur:fetch(result, "a")
         if row then
-            self.xavp = NGCPXAvp:new(level,'peer',row)
+            while row do
+                sr.log("info", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
+                table.insert(result, row)
+                row = cur:fetch({}, "a")
+            end
+            sr.log("dbg",string.format("adding xavp %s[%d]", 'domain', level))
+            self.xavp = NGCPXAvp:new(level,'domain',result)
+        else
+            sr.log("dbg", string.format("no results for query:%s", query))
         end
         cur:close()
         con:close()

@@ -7,6 +7,24 @@ require 'tests_v.pp_vars'
 sr = srMock:new()
 local mc = nil
 
+PPFetch = {
+    __class__ = 'PPFetch',
+    _i = 1
+}
+    function PPFetch:new()
+        t = {}
+        return setmetatable(t, { __index = PPFetch })
+    end
+
+    function PPFetch:val(uuid)
+        self._i = self._i + 1
+        return pp_vars[uuid][self._i-1]
+    end
+
+    function PPFetch:reset()
+        self._i = 1
+    end
+
 TestNGCPPeerPrefs = {} --class
 
     function TestNGCPPeerPrefs:setUp()
@@ -27,6 +45,7 @@ TestNGCPPeerPrefs = {} --class
         require 'ngcp.pp'
 
         self.d = NGCPPeerPrefs:new(self.config)
+        self.pp_vars = PPFetch:new()
     end
 
     function TestNGCPPeerPrefs:tearDown()
@@ -42,7 +61,9 @@ TestNGCPPeerPrefs = {} --class
         assertTrue(self.d.config)
         self.config:getDBConnection() ;mc :returns(self.con)
         self.con:execute("SELECT * FROM peer_preferences WHERE uuid = '2'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(pp_vars["p_2"])
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         self.con:close()
 
@@ -52,16 +73,20 @@ TestNGCPPeerPrefs = {} --class
 
         assertTrue(self.d.xavp)
         assertEquals(self.d.xavp("sst_enable"),"no")
-        assertFalse(self.d.xavp("cc"),"43")
-        assertEquals(self.d.xavp("use_rtpproxy"),"ice_strip_candidates")
-        assertEquals(self.d.xavp("rewrite_caller_in_dpid"),1)
+        assertEquals(sr.pv.vars["$xavp(domain[0]=>dummy)"], "")
+        assertEquals(self.d.xavp("dummy"),"")
+        assertEquals(sr.pv.vars["$xavp(domain[0]=>sst_enable)"],"no")
+        assertEquals(sr.pv.vars["$xavp(domain[0]=>sst_refresh_method)"], "UPDATE_FALLBACK_INVITE")
+        assertIsNil(self.d.xavp("error_key"))
     end
 
     function TestNGCPPeerPrefs:test_callee_load()
         assertTrue(self.d.config)
         self.config:getDBConnection() ;mc :returns(self.con)
         self.con:execute("SELECT * FROM peer_preferences WHERE uuid = '2'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(pp_vars["p_2"])
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         self.con:close()
 
@@ -71,9 +96,11 @@ TestNGCPPeerPrefs = {} --class
 
         assertTrue(self.d.xavp)
         assertEquals(self.d.xavp("sst_enable"),"no")
-        assertFalse(self.d.xavp("cc"),"43")
-        assertEquals(self.d.xavp("use_rtpproxy"),"ice_strip_candidates")
-        assertEquals(self.d.xavp("rewrite_caller_in_dpid"),1)
+        --print(table.tostring(sr.pv.vars))
+        assertFalse(sr.pv.vars["$xavp(domain[1]=>dummy)"])
+        assertEquals(sr.pv.vars["$xavp(domain[1]=>sst_enable)"],"no")
+        assertEquals(sr.pv.vars["$xavp(domain[1]=>sst_refresh_method)"], "UPDATE_FALLBACK_INVITE")
+        assertIsNil(self.d.xavp("error_key"))
     end
 -- class TestNGCPPeerPrefs
 

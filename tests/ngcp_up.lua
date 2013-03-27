@@ -7,6 +7,24 @@ require 'tests_v.up_vars'
 sr = srMock:new()
 local mc = nil
 
+UPFetch = {
+    __class__ = 'UPFetch',
+    _i = 1
+}
+    function UPFetch:new()
+        t = {}
+        return setmetatable(t, { __index = UPFetch })
+    end
+
+    function UPFetch:val(uuid)
+        self._i = self._i + 1
+        return up_vars[uuid][self._i-1]
+    end
+
+    function UPFetch:reset()
+        self._i = 1
+    end
+
 TestNGCPUserPrefs = {} --class
 
     function TestNGCPUserPrefs:setUp()
@@ -27,6 +45,7 @@ TestNGCPUserPrefs = {} --class
         require 'ngcp.up'
 
         self.d = NGCPUserPrefs:new(self.config)
+        self.up_vars = UPFetch:new()
     end
 
     function TestNGCPUserPrefs:tearDown()
@@ -42,7 +61,11 @@ TestNGCPUserPrefs = {} --class
         assertTrue(self.d.config)
         self.config:getDBConnection() ;mc :returns(self.con)
         self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars["ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"])
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         self.con:close()
 
@@ -61,7 +84,11 @@ TestNGCPUserPrefs = {} --class
         assertTrue(self.d.config)
         self.config:getDBConnection() ;mc :returns(self.con)
         self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars["ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"])
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         self.con:close()
 
@@ -74,6 +101,7 @@ TestNGCPUserPrefs = {} --class
         assertEquals(self.d.xavp("cc"),"43")
         assertEquals(self.d.xavp("ac"),"1")
         assertEquals(self.d.xavp("cli"),"4311001")
+        assertIsNil(self.d.xavp("error_key"))
     end
 -- class TestNGCPUserPrefs
 

@@ -30,10 +30,10 @@ NGCPDomainPrefs_MT = { __index = NGCPDomainPrefs }
         local result = {}
         local row = cur:fetch(result, "a")
         if row then
-            sr.log("info", string.format("result:%s", table.tostring(result)))
             while row do
-                row = cur:fetch(result, "a")
-                sr.log("info", string.format("result:%s", table.tostring(result)))
+                sr.log("info", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
+                table.insert(result, row)
+                row = cur:fetch({}, "a")
             end
             sr.log("dbg",string.format("adding xavp %s[%d]", 'domain', level))
             self.xavp = NGCPXAvp:new(level,'domain',result)
