@@ -19,9 +19,9 @@ TestUtils = {} --class
     end
 
     function TestUtils:test_table_deepcopy()
-        assertNotEquals(table.deepcopy(self.simple_hash), self.simple_hash)
+        assertNotIs(table.deepcopy(self.simple_hash), self.simple_hash)
         -- if the parameter is not a table... it has te be the same
-        assertEquals(table.deepcopy("hola"), "hola")
+        assertIs(table.deepcopy("hola"), "hola")
     end
 
     function TestUtils:test_table_contains()
