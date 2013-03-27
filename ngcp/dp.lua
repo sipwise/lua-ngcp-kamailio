@@ -27,10 +27,16 @@ NGCPDomainPrefs_MT = { __index = NGCPDomainPrefs }
         local con = assert (self.config:getDBConnection())
         local query = "SELECT * FROM " .. self.db_table .. " WHERE domain ='" .. uuid .."'"
         local cur = assert (con:execute(query))
-        local row = cur:fetch({}, "a")
+        local result = {}
+        local row = cur:fetch(result, "a")
         if row then
+            sr.log("info", string.format("result:%s", table.tostring(result)))
+            while row do
+                row = cur:fetch(result, "a")
+                sr.log("info", string.format("result:%s", table.tostring(result)))
+            end
             sr.log("dbg",string.format("adding xavp %s[%d]", 'domain', level))
-            self.xavp = NGCPXAvp:new(level,'domain',row)
+            self.xavp = NGCPXAvp:new(level,'domain',result)
         else
             sr.log("dbg", string.format("no results for query:%s", query))
         end

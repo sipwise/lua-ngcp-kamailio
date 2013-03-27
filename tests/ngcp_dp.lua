@@ -7,6 +7,24 @@ require 'tests_v.dp_vars'
 sr = srMock:new()
 local mc = nil
 
+DPFetch = {
+    __class__ = 'DPFetch',
+    _i = 1
+}
+    function DPFetch:new()
+        t = {}
+        return setmetatable(t, { __index = DPFetch })
+    end
+
+    function DPFetch:val(uuid)
+        self._i = self._i + 1
+        return dp_vars[uuid][self._i-1]
+    end
+
+    function DPFetch:reset()
+        self._i = 1
+    end
+
 TestNGCPDomainPrefs = {} --class
 
     function TestNGCPDomainPrefs:setUp()
@@ -27,9 +45,10 @@ TestNGCPDomainPrefs = {} --class
         require 'ngcp.dp'
 
         self.d = NGCPDomainPrefs:new(self.config)
+        self.dp_vars = DPFetch:new()
     end
 
-    function TestNGCPDomainPrefs:rtearDown()
+    function TestNGCPDomainPrefs:tearDown()
         sr.pv.vars = {}
     end
 
@@ -42,7 +61,8 @@ TestNGCPDomainPrefs = {} --class
         assertTrue(self.d.config)
         self.config:getDBConnection() ;mc :returns(self.con)
         self.con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.56'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars["d_192_168_51_56"])
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56")) :times(#dp_vars["d_192_168_51_56"])
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         self.con:close()
 
@@ -62,7 +82,9 @@ TestNGCPDomainPrefs = {} --class
         assertTrue(self.d.config)
         self.config:getDBConnection() ;mc :returns(self.con)
         self.con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.56'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars["d_192_168_51_56"])
+        local i = 1
+        self.cur:fetch({},"a")    ;mc :returns(self.dp_vars:val("d_192_168_51_56")) :times(#dp_vars["d_192_168_51_56"])
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         self.con:close()
 
