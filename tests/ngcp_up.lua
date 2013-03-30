@@ -75,9 +75,11 @@ TestNGCPUserPrefs = {} --class
 
         assertTrue(self.d.xavp)
         assertEquals(self.d.xavp("cli"),"4311001")
+        assertEquals(sr.pv.get("$xavp(user[0]=>cli)"),"4311001")
         assertEquals(self.d.xavp("cc"),"43")
+        assertEquals(sr.pv.get("$xavp(user[0]=>cc)"),"43")
         assertEquals(self.d.xavp("ac"),"1")
-        assertEquals(self.d.xavp("cli"),"4311001")
+        assertEquals(sr.pv.get("$xavp(user[0]=>ac)"),"1")
     end
 
     function TestNGCPUserPrefs:test_callee_load()
@@ -97,11 +99,13 @@ TestNGCPUserPrefs = {} --class
         mc:verify()
 
         assertTrue(self.d.xavp)
+        
         assertEquals(self.d.xavp("cli"),"4311001")
+        assertEquals(sr.pv.get("$xavp(user[1]=>cli)"),"4311001")
         assertEquals(self.d.xavp("cc"),"43")
+        assertEquals(sr.pv.get("$xavp(user[1]=>cc)"),"43")
         assertEquals(self.d.xavp("ac"),"1")
-        assertEquals(self.d.xavp("cli"),"4311001")
-        assertIsNil(self.d.xavp("error_key"))
+        assertEquals(sr.pv.get("$xavp(user[1]=>ac)"),"1")
     end
 -- class TestNGCPUserPrefs
 

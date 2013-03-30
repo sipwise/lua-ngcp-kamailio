@@ -12,32 +12,30 @@ NGCPUserPrefs_MT = { __index = NGCPUserPrefs }
             config = config,
             db_table = "usr_preferences"
         }
-        setmetatable( t, NGCPUserPrefs_MT )
-        return t
+        return setmetatable( t, NGCPUserPrefs_MT )
     end
 
     function NGCPUserPrefs:caller_load(uuid)
-        self:_load(0,uuid)
+        NGCPUserPrefs._load(self,"caller",uuid)
     end
 
     function NGCPUserPrefs:callee_load(uuid)
-        self:_load(1,uuid)
+        NGCPUserPrefs._load(self,"callee",uuid)
     end
 
     function NGCPUserPrefs:_load(level, uuid)
-        local con = self.config:getDBConnection()
+        local con = assert (self.config:getDBConnection())
         local query = "SELECT * FROM " .. self.db_table .. " WHERE uuid ='" .. uuid .. "'"
         local cur = assert (con:execute(query))
         local result = {}
-        local row = cur:fetch(result, "a")
+        local row = cur:fetch({}, "a")
         if row then
             while row do
-                sr.log("info", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
+                --sr.log("info", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
                 table.insert(result, row)
                 row = cur:fetch({}, "a")
             end
-            sr.log("dbg",string.format("adding xavp %s[%d]", 'domain', level))
-            self.xavp = NGCPXAvp:new(level,'domain',result)
+            self.xavp = NGCPXAvp:new(level,'user',result)
         else
             sr.log("dbg", string.format("no results for query:%s", query))
         end
