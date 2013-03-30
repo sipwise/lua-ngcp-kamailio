@@ -73,10 +73,8 @@ TestNGCPDomainPrefs = {} --class
 
         assertTrue(self.d.xavp)
         assertEquals(self.d.xavp("sst_enable"),"no")
-        assertEquals(sr.pv.vars["$xavp(domain[0]=>dummy)"], "")
-        assertEquals(self.d.xavp("dummy"),"")
-        assertEquals(sr.pv.vars["$xavp(domain[0]=>sst_enable)"],"no")
-        assertEquals(sr.pv.vars["$xavp(domain[0]=>sst_refresh_method)"], "UPDATE_FALLBACK_INVITE")
+        assertEquals(sr.pv.get("$xavp(domain[0]=>sst_enable)"),"no")
+        assertEquals(sr.pv.get("$xavp(domain[0]=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
         assertIsNil(self.d.xavp("error_key"))
     end
 
@@ -96,10 +94,8 @@ TestNGCPDomainPrefs = {} --class
 
         assertTrue(self.d.xavp)
         assertEquals(self.d.xavp("sst_enable"),"no")
-        --print(table.tostring(sr.pv.vars))
-        assertFalse(sr.pv.vars["$xavp(domain[1]=>dummy)"])
-        assertEquals(sr.pv.vars["$xavp(domain[1]=>sst_enable)"],"no")
-        assertEquals(sr.pv.vars["$xavp(domain[1]=>sst_refresh_method)"], "UPDATE_FALLBACK_INVITE")
+        assertEquals(sr.pv.get("$xavp(domain[1]=>sst_enable)"),"no")
+        assertEquals(sr.pv.get("$xavp(domain[1]=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
         assertIsNil(self.d.xavp("error_key"))
     end
 -- class TestNGCPDomainPrefs

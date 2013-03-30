@@ -16,11 +16,11 @@ NGCPDomainPrefs_MT = { __index = NGCPDomainPrefs }
     end
 
     function NGCPDomainPrefs:caller_load(uuid)
-        NGCPDomainPrefs._load(self,0,uuid)
+        NGCPDomainPrefs._load(self,"caller",uuid)
     end
 
     function NGCPDomainPrefs:callee_load(uuid)
-        NGCPDomainPrefs._load(self,1,uuid)
+        NGCPDomainPrefs._load(self,"callee",uuid)
     end
 
     function NGCPDomainPrefs:_load(level, uuid)
@@ -28,14 +28,14 @@ NGCPDomainPrefs_MT = { __index = NGCPDomainPrefs }
         local query = "SELECT * FROM " .. self.db_table .. " WHERE domain ='" .. uuid .."'"
         local cur = assert (con:execute(query))
         local result = {}
-        local row = cur:fetch(result, "a")
+        local row = cur:fetch({}, "a")
         if row then
             while row do
-                sr.log("info", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
+                --sr.log("info", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
                 table.insert(result, row)
                 row = cur:fetch({}, "a")
             end
-            sr.log("dbg",string.format("adding xavp %s[%d]", 'domain', level))
+            sr.log("dbg",string.format("adding xavp(%s_%s)", level, 'domain'))
             self.xavp = NGCPXAvp:new(level,'domain',result)
         else
             sr.log("dbg", string.format("no results for query:%s", query))
