@@ -115,12 +115,11 @@ pvMock = {
                     return t.vars[result.private_id]._et[result.real_indx][result.key]
                 end
             elseif result.type == 'avp' then
-                if result.clean then
-                    return t.vars[result.private_id]:list()
-                end
                 if t.vars[result.private_id] then
                     local l = t.vars[result.private_id]:list()
-                    if #l == 1 then
+                    if result.clean then
+                        return l
+                    else
                         return l[1]
                     end
                 end

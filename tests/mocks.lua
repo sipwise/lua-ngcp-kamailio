@@ -80,6 +80,16 @@ TestSRMock = {}
 
     function TestSRMock:test_is_avp_simple2()
         local result
+        result = self.sr.pv._is_avp("$(avp(id))")
+        assertTrue(result)
+        assertEquals(result.type, 'avp')
+        --print(table.tostring(result))
+        assertEquals(result.id, 'id')
+        assertFalse(result.clean)
+    end
+
+    function TestSRMock:test_is_avp_simple3()
+        local result
         result = self.sr.pv._is_avp("$(avp(s:id)[*])")
         assertTrue(result)
         assertEquals(result.type, 'avp')
@@ -125,8 +135,14 @@ TestSRMock = {}
 
     function TestSRMock:test_avp_sets()
         self.sr.pv.sets("$avp(s:hithere)", "value")
-        assertEquals(self.sr.pv.get("$avp(s:hithere)"), "value")
-        assertError(self.sr.pv.sets, "$avp(s:hithere)", 1)
+        assertEquals(self.sr.pv.get("$avp(hithere)"), "value")
+        assertError(self.sr.pv.sets, "$avp(hithere)", 1)
+        self.sr.pv.sets("$(avp(hithere)[*])", "1")
+        assertEquals(self.sr.pv.get("$avp(s:hithere)"), "1")
+        self.sr.pv.sets("$(avp(hithere))", "new_value")
+        assertEquals(self.sr.pv.vars["avp:hithere"]:list(), {"new_value","1"})
+        assertEquals(self.sr.pv.get("$avp(hithere)"), "new_value")
+        assertEquals(self.sr.pv.get("$(avp(hithere))"), "new_value")
     end
 
     function TestSRMock:test_avp_sets_all()
@@ -141,6 +157,10 @@ TestSRMock = {}
         self.sr.pv.seti("$avp(s:hithere)", 0)
         assertEquals(self.sr.pv.get("$avp(s:hithere)"), 0)
         assertError(self.sr.pv.seti, "$avp(s:hithere)", "1")
+        self.sr.pv.seti("$(avp(hithere))", 2)
+        assertEquals(self.sr.pv.vars["avp:hithere"]:list(), {2,0})
+        assertEquals(self.sr.pv.get("$avp(hithere)"), 2)
+        assertEquals(self.sr.pv.get("$(avp(hithere))"), 2)
     end
 
     function TestSRMock:test_xavp_sets()
