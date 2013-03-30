@@ -23,8 +23,10 @@ NGCPAvp_MT = {
                 error("value is not a number or string")
             end
         end
-        setmetatable( t, NGCPAvp_MT )
-        return t
+        function t.all()
+            return sr.pv.get("$(avp(" .. id .. ")[*])")
+        end
+        return setmetatable( t, NGCPAvp_MT )
     end
 
     function NGCPAvp:clean()

@@ -22,37 +22,30 @@ TestNGCPAvp = {} --class
         sr.pv.sets("$avp(s:testid)", "value")
         assertEquals(self.avp(), "value")
         sr.pv.sets("$avp(s:testid)", "1")
-        assertItemsEquals(self.avp(),{"1","value"})
+        assertItemsEquals(self.avp(), "1")
+        assertItemsEquals(self.avp:all(),{"1","value"})
     end
 
     function TestNGCPAvp:test_avp_set()
         local vals = {1,2,3}
+        local okvals = {3,2,1}
+        local i
         for i=1,#vals do
             self.avp(vals[i])
+            assertEquals(self.avp(),vals[i])
         end
-        local l = self.avp()
-        assertTrue(type(l), 'table')
-        --print(table.tostring(l))
-        v = 1
-        for i=#vals,1,-1 do
-           assertEquals(l[i],vals[v])
-           v = v + 1 
-        end        
+        assertEquals(self.avp:all(), okvals)
     end
 
     function TestNGCPAvp:test_avp_set2()
         local vals = {1,2,"3"}
+        local okvals = {"3",2,1}
+        local i
         for i=1,#vals do
             self.avp(vals[i])
+            assertEquals(self.avp(),vals[i])
         end
-        local l = self.avp()
-        assertTrue(type(l), 'table')
-        --print(table.tostring(l))
-        v = 1
-        for i=#vals,1,-1 do
-           assertEquals(l[i],vals[v])
-           v = v + 1 
-        end        
+        assertEquals(self.avp:all(), okvals)
     end
 
     function TestNGCPAvp:test_clean()
