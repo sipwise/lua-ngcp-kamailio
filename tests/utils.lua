@@ -59,6 +59,8 @@ TestUtils = {} --class
         assertTrue(string.starts("goga", "goga"))
         assertFalse(string.starts("goga", "a"))
         assertError(string.starts, "goga", nil)
+        assertTrue(string.starts("$goga", "$"))
+        assertTrue(string.starts("(goga)", "("))
     end
 
     function TestUtils:test_ends()
