@@ -35,7 +35,6 @@ NGCPDomainPrefs_MT = { __index = NGCPDomainPrefs }
                 table.insert(result, row)
                 row = cur:fetch({}, "a")
             end
-            sr.log("dbg",string.format("adding xavp(%s_%s)", level, 'domain'))
             self.xavp = NGCPXAvp:new(level,'domain',result)
         else
             sr.log("dbg", string.format("no results for query:%s", query))

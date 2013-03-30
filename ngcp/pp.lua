@@ -12,16 +12,15 @@ NGCPPeerPrefs_MT = { __index = NGCPPeerPrefs }
             config = config,
             db_table = "peer_preferences"
         }
-        setmetatable( t, NGCPPeerPrefs_MT )
-        return t
+        return setmetatable( t, NGCPPeerPrefs_MT )
     end
 
     function NGCPPeerPrefs:caller_load(uuid)
-        self:_load(0,uuid)
+        NGCPPeerPrefs._load(self,"caller",uuid)
     end
 
     function NGCPPeerPrefs:callee_load(uuid)
-        self:_load(1,uuid)
+        NGCPPeerPrefs._load(self,"callee",uuid)
     end
 
     function NGCPPeerPrefs:_load(level, uuid)
@@ -36,7 +35,6 @@ NGCPPeerPrefs_MT = { __index = NGCPPeerPrefs }
                 table.insert(result, row)
                 row = cur:fetch({}, "a")
             end
-            sr.log("dbg",string.format("adding xavp %s[%d]", 'domain', level))
             self.xavp = NGCPXAvp:new(level,'domain',result)
         else
             sr.log("dbg", string.format("no results for query:%s", query))
