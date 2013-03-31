@@ -17,20 +17,20 @@ vals = {
     },
     {
         id = 2,
-        uuid = "94023caf-dfba-4f33-8bdb-b613ce627613",
-        username = "testuser2",
+        uuid = "ae736f72-21d1-4ea6-a3ea-4d7f56b3887c",
+        username = "testuser1",
         domain = "192.168.51.56",
-        attribute = "account_id",
+        attribute = "whatever",
         type = 1,
         value = 2,
         last_modified = "1900-01-01 00:00:01"
     },
     {
         id = 3,
-        uuid = "94023caf-dfba-4f33-8bdb-b613ce627613",
-        username = "testuser2",
+        uuid = "ae736f72-21d1-4ea6-a3ea-4d7f56b3887c",
+        username = "testuser1",
         domain = "192.168.51.56",
-        attribute = "account_id",
+        attribute = "elsewhere",
         type = 0,
         value = "2",
         last_modified = "1900-01-01 00:00:01"
@@ -73,6 +73,15 @@ TestNGCPXAvp = {} --class
         assertFalse(self.xavp("testid"))
         assertFalse(sr.pv.get("$xavp(peer[0]=>testid)"))
     end
+
+    function TestNGCPXAvp:test_keys()
+        assertItemsEquals(self.xavp.keys, {"account_id","whatever","elsewhere"})
+        self.xavp("testid", 1)
+        assertItemsEquals(self.xavp.keys, {"account_id","whatever","elsewhere","testid"})
+        self.xavp:clean()
+        assertItemsEquals(self.xavp.keys, {"account_id","whatever","elsewhere","testid"})
+    end
+
 -- class TestNGCPXAvp
 
 ---- Control test output:

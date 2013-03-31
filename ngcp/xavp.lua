@@ -16,14 +16,15 @@ NGCPXAvp_MT = {
         end
 
         local t = {
-            group = group
+            group = group,
+            keys = {}
         }
         if level == 'callee' then
             t.level = 1
         else
             t.level = 0
         end
-        NGCPXAvp._create(t.level,group,l)
+        NGCPXAvp._create(t, t.level,group,l)
         NGCPXAvp_MT.__call = function(t, key, value)
             if not key then
                 error("key is empty")
@@ -33,8 +34,10 @@ NGCPXAvp_MT = {
             if not value then
                 return sr.pv.get(id)
             elseif type(value) == "number" then
+                table.add(t.keys, key)
                 sr.pv.seti(id, value)
             elseif type(value) == "string" then
+                table.add(t.keys, key)
                 sr.pv.sets(id, value)
             else
                 error("value is not a number or string")
@@ -56,7 +59,7 @@ NGCPXAvp_MT = {
         elseif vtype == 1 then
             if type(value) == "string" then
                 value = tonumber(value)
-            end 
+            end
             sr.pv.seti(id, value)
         else
             sr.log("err",string.format("can't set value:%s of type:%d", value, vtype))
@@ -74,7 +77,7 @@ NGCPXAvp_MT = {
         end
     end
 
-    function NGCPXAvp._create(level, group, l)
+    function NGCPXAvp:_create(level, group, l)
         local i, name
         -- create dummy vars
         name = string.format("$xavp(%s=>dummy)", group)
@@ -83,6 +86,7 @@ NGCPXAvp_MT = {
         NGCPXAvp._setvalue(name, 0, "caller") -- caller -> [0]
         for i=1,#l do
             name = string.format("$xavp(%s[%d]=>%s)", group, level, l[i].attribute)
+            table.add(self.keys, l[i].attribute)
             NGCPXAvp._setvalue(name, l[i].type, l[i].value)
         end
     end
