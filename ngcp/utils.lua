@@ -31,6 +31,13 @@ function table.contains(table, element)
     return false
 end
 
+-- add if element is not in table
+function table.add(t, element)
+  if not table.contains(t, element) then
+    table.insert(t, element)
+  end
+end
+
 function table.val_to_str ( v )
   if "string" == type( v ) then
     v = string.gsub( v, "\n", "\\n" )

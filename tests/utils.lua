@@ -31,6 +31,16 @@ TestUtils = {} --class
         assertError(table.contains, "hola",1)
     end
 
+    function TestUtils:test_table_add()
+        assertEquals(self.simple_list, {1,2,3})
+        table.add(self.simple_list, 1)
+        assertEquals(self.simple_list, {1,2,3})
+        table.add(self.simple_list, 5)
+        assertEquals(self.simple_list, {1,2,3,5})
+        table.add(self.simple_list, 4)
+        assertEquals(self.simple_list, {1,2,3,5,4})
+    end
+
     function TestUtils:test_table_tostring()
         assertError(table.tostring,nil)
         assertEquals(table.tostring(self.simple_list), "{1,2,3}")
