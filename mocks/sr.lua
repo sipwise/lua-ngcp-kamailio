@@ -24,6 +24,7 @@ pvMock = {
         function t._is_xavp(id)
             local _id, indx, key
             local patterns = {
+                '%$xavp%(([%w_]+)%)$',
                 '%$xavp%(([%w_]+)=>([%w_]+)%)$',
                 '%$xavp%(([%w_^%[]+)%[(%d+)%]=>([%w_]+)%)$'
             }
@@ -108,6 +109,9 @@ pvMock = {
                 end
                 if not t.vars[result.private_id] then
                     return
+                end
+                if not result.key then
+                    return t.vars[result.private_id]
                 end
                 result.real_indx = #t.vars[result.private_id]._et - result.indx
                 if t.vars[result.private_id]._et[result.real_indx] then
@@ -204,6 +208,10 @@ pvMock = {
                     result.indx = 0
                 end
                 if t.vars[result.private_id] then
+                    if not result.key then
+                        t.vars[result.private_id] = nil
+                        return
+                    end
                     result.real_indx = #t.vars[result.private_id]._et - result.indx
                     t.vars[result.private_id]._et[result.real_indx] = nil
                 end

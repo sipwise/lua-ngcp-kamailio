@@ -186,6 +186,11 @@ TestSRMock = {}
         assertError(self.sr.pv.seti, "$xavp(t[6]=>hithere)", "1")
     end
 
+    function TestSRMock:test_xavp_get()
+        self.sr.pv.sets("$xavp(g=>hithere)", "value")
+        assertTrue(self.sr.pv.get, "$xavp(g)")
+    end
+
     function TestSRMock:test_avp_get_simple()
         self.sr.pv.sets("$avp(s:hithere)", "value")
         assertEquals(self.sr.pv.get("$avp(s:hithere)"), "value")
