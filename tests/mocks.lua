@@ -246,10 +246,15 @@ TestSRMock = {}
     end
 
     function TestSRMock:test_unset_xavp()
-        self.sr.pv.sets("$xavp(g=>t)", "value_t")
-        assertEquals(self.sr.pv.get("$xavp(g=>t)"), "value_t")
-        self.sr.pv.unset("$xavp(g=>t)")
-        assertEquals(self.sr.pv.get("$xavp(g=>t)"), nil)
+        self.sr.pv.sets("$xavp(g=>t)", "value")
+        assertEquals(self.sr.pv.get("$xavp(g[0]=>t)"), "value")
+        self.sr.pv.sets("$xavp(g=>t)", "value1")
+        assertEquals(self.sr.pv.get("$xavp(g[0]=>t)"), "value1")
+        self.sr.pv.unset("$xavp(g[0]=>t)")
+        assertEquals(self.sr.pv.get("$xavp(g[0]=>t)"), nil)
+        assertEquals(self.sr.pv.get("$xavp(g[1]=>t)"), "value")
+        self.sr.pv.unset("$xavp(g[1])")
+        assertFalse(self.sr.pv.get("$xavp(g[1])"))
         self.sr.pv.unset("$xavp(g)")
         assertEquals(self.sr.pv.get("$xavp(g)"), nil)
     end

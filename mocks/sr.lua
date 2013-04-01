@@ -25,6 +25,7 @@ pvMock = {
             local _id, indx, key
             local patterns = {
                 '%$xavp%(([%w_]+)%)$',
+                '%$xavp%(([%w_^%[]+)%[(%d+)%]%)$',
                 '%$xavp%(([%w_]+)=>([%w_]+)%)$',
                 '%$xavp%(([%w_^%[]+)%[(%d+)%]=>([%w_]+)%)$'
             }
@@ -213,7 +214,7 @@ pvMock = {
                         return
                     end
                     result.real_indx = #t.vars[result.private_id]._et - result.indx
-                    t.vars[result.private_id]._et[result.real_indx] = nil
+                    t.vars[result.private_id]._et[result.real_indx] = false
                 end
             elseif result.type == 'avp' then
                 t.vars[result.private_id] = nil
