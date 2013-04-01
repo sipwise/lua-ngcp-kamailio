@@ -8,23 +8,7 @@ NGCPXAvp_MT = {
     __index = NGCPXAvp
 }
     function NGCPXAvp:new(level,group,l)
-        if level ~= 'caller' and level ~= 'callee' then
-            error("unknown level. It has to be [caller|callee]")
-        end
-        if not l or #l == 0 then
-            error("list empty")
-        end
-
-        local t = {
-            group = group,
-            keys = {}
-        }
-        if level == 'callee' then
-            t.level = 1
-        else
-            t.level = 0
-        end
-        NGCPXAvp._create(t, t.level,group,l)
+        local t = NGCPXAvp.init(level,group,l)
         NGCPXAvp_MT.__call = function(t, key, value)
             if not key then
                 error("key is empty")
@@ -44,6 +28,28 @@ NGCPXAvp_MT = {
             end
         end
         setmetatable( t, NGCPXAvp_MT )
+        return t
+    end
+
+    function NGCPXAvp.init(level,group,l)
+        if level ~= 'caller' and level ~= 'callee' then
+            error("unknown level. It has to be [caller|callee]")
+        end
+        if not l then
+            error("list empty")
+        end
+
+        local t = {
+            group = group,
+            keys = {}
+        }
+        if level == 'callee' then
+            t.level = 1
+        else
+            t.level = 0
+        end
+        NGCPXAvp._create(t, t.level,group,l)
+
         return t
     end
 
@@ -92,10 +98,7 @@ NGCPXAvp_MT = {
     end
 
     function NGCPXAvp:clean()
-        --print("NGCPXAvp:clean")
-        --print(table.tostring(getmetatable(self)))
-        --print(table.tostring(self))
-        sr.pv.unset(string.format("$xavp(%s)", self.group))
+        sr.pv.unset(string.format("$xavp(%s[%d])", self.group, self.level))
     end
 -- class
 --EOF
