@@ -43,10 +43,8 @@ NGCPPeerPrefs_MT = { __index = NGCPPeerPrefs }
         con:close()
     end
 
-    function NGCPPeerPrefs:clean(...)
-        if self.xavp then
-            self.xavp:clean()
-        end
+    function NGCPPeerPrefs:clean()
+        sr.pv.unset("$xavp(peer)")
     end
 -- class
 --EOF

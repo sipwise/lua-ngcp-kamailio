@@ -50,15 +50,38 @@ NGCP_MT = { __index = NGCP }
         t.prefs = {
             domain = NGCPDomainPrefs:new(t.config),
             user   = NGCPUserPrefs:new(t.config),
-            peer   = NGCPPeerPrefs:new(t.config)
+            peer   = NGCPPeerPrefs:new(t.config),
+            real   = NGCPPeerPrefs:new(),
         }
         return t
     end
 
-    function NGCP:caller_load(uuid)
+    function NGCP:caller_load(uuid, domain, peer)
+        local keys = {
+            domain = self.prefs.domain:caller_load(domain),
+            user   = self.prefs.user:caller_load(uuid),
+            peer   = self.prefs.peer:caller_load(peer)
+        }
+        local unique_keys = table.deepcopy(keys.domain)
+        local _,v
+        for _,v in pairs(keys.user) do
+            table.add(unique_keys, v)
+        end
+        self.prefs.real:caller_load(unique_keys)
     end
 
-    function NGCP:callee_load(uuid)
+    function NGCP:callee_load(uuid, domain, peer)
+        local keys = {
+            domain = self.prefs.domain:callee_load(domain),
+            user   = self.prefs.user:callee_load(uuid),
+            peer   = self.prefs.peer:caller_load(peer)
+        }
+        local unique_keys = table.deepcopy(keys.domain)
+        local _,v
+        for _,v in pairs(keys.user) do
+            table.add(unique_keys, v)
+        end
+        self.prefs.real:callee_load(unique_keys)
     end
 -- class
 --EOF

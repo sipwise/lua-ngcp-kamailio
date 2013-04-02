@@ -49,22 +49,9 @@ TestNGCP = {} --class
         assertTrue(self.ngcp.prefs.peer)
         assertTrue(self.ngcp.prefs.user)
         assertTrue(self.ngcp.prefs.domain)
+        assertTrue(self.ngcp.prefs.real)
     end
 
-    function TestNGCP:test_peerpref_clean()
-        assertTrue(self.ngcp.prefs.peer)
-        self.ngcp.prefs.peer:clean()
-    end
-
-    function TestNGCP:test_userpref_clean()
-        assertTrue(self.ngcp.prefs.user)
-        self.ngcp.prefs.user:clean()
-    end
-
-    function TestNGCP:test_domainpref_clean()
-        assertTrue(self.ngcp.prefs.peer)
-        self.ngcp.prefs.peer:clean()
-    end
 -- class TestNGCP
 
 ---- Control test output:
