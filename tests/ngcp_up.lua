@@ -70,16 +70,14 @@ TestNGCPUserPrefs = {} --class
         self.con:close()
 
         mc:replay()
-        self.d:caller_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c")
+        local keys = self.d:caller_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c")
         mc:verify()
 
-        assertTrue(self.d.xavp)
-        assertEquals(self.d.xavp("cli"),"4311001")
+        assertEquals(sr.pv.get("$xavp(user[0]=>account_id)"),2)
         assertEquals(sr.pv.get("$xavp(user[0]=>cli)"),"4311001")
-        assertEquals(self.d.xavp("cc"),"43")
         assertEquals(sr.pv.get("$xavp(user[0]=>cc)"),"43")
-        assertEquals(self.d.xavp("ac"),"1")
         assertEquals(sr.pv.get("$xavp(user[0]=>ac)"),"1")
+        assertItemsEquals(keys, {"account_id", "cli", "cc", "ac"})
     end
 
     function TestNGCPUserPrefs:test_callee_load()
@@ -95,17 +93,14 @@ TestNGCPUserPrefs = {} --class
         self.con:close()
 
         mc:replay()
-        self.d:callee_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c")
+        local keys = self.d:callee_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c")
         mc:verify()
 
-        assertTrue(self.d.xavp)
-        
-        assertEquals(self.d.xavp("cli"),"4311001")
+        assertEquals(sr.pv.get("$xavp(user[1]=>account_id)"),2)
         assertEquals(sr.pv.get("$xavp(user[1]=>cli)"),"4311001")
-        assertEquals(self.d.xavp("cc"),"43")
         assertEquals(sr.pv.get("$xavp(user[1]=>cc)"),"43")
-        assertEquals(self.d.xavp("ac"),"1")
         assertEquals(sr.pv.get("$xavp(user[1]=>ac)"),"1")
+        assertItemsEquals(keys, {"account_id", "cli", "cc", "ac"})
     end
 -- class TestNGCPUserPrefs
 

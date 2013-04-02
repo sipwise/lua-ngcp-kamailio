@@ -16,37 +16,40 @@ NGCPUserPrefs_MT = { __index = NGCPUserPrefs }
     end
 
     function NGCPUserPrefs:caller_load(uuid)
-        NGCPUserPrefs._load(self,"caller",uuid)
+        return NGCPUserPrefs._load(self,"caller",uuid)
     end
 
     function NGCPUserPrefs:callee_load(uuid)
-        NGCPUserPrefs._load(self,"callee",uuid)
+        return NGCPUserPrefs._load(self,"callee",uuid)
     end
 
     function NGCPUserPrefs:_load(level, uuid)
         local con = assert (self.config:getDBConnection())
         local query = "SELECT * FROM " .. self.db_table .. " WHERE uuid ='" .. uuid .. "'"
         local cur = assert (con:execute(query))
+        local keys = {}
         local result = {}
         local row = cur:fetch({}, "a")
+        local xavp
+
         if row then
             while row do
                 --sr.log("info", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
                 table.insert(result, row)
+                table.insert(keys, row.attribute)
                 row = cur:fetch({}, "a")
             end
-            self.xavp = NGCPXAvp:new(level,'user',result)
+            xavp = NGCPXAvp:new(level,'user',result)
         else
             sr.log("dbg", string.format("no results for query:%s", query))
         end
         cur:close()
         con:close()
+        return keys
     end
 
     function NGCPUserPrefs:clean(...)
-        if self.xavp then
-            self.xavp:clean()
-        end
+        sr.pv.unset("$xavp(user)")
     end
 -- class
 --EOF

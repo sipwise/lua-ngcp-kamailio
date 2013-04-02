@@ -68,14 +68,12 @@ TestNGCPDomainPrefs = {} --class
         self.con:close()
 
         mc:replay()
-        self.d:caller_load("192.168.51.56")
+        local keys = self.d:caller_load("192.168.51.56")
         mc:verify()
 
-        assertTrue(self.d.xavp)
-        assertEquals(self.d.xavp("sst_enable"),"no")
         assertEquals(sr.pv.get("$xavp(domain[0]=>sst_enable)"),"no")
         assertEquals(sr.pv.get("$xavp(domain[0]=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
-        assertIsNil(self.d.xavp("error_key"))
+        assertItemsEquals(keys, {"sst_enable", "sst_refresh_method"})
     end
 
     function TestNGCPDomainPrefs:test_callee_load()
@@ -89,14 +87,12 @@ TestNGCPDomainPrefs = {} --class
         self.con:close()
 
         mc:replay()
-        self.d:callee_load("192.168.51.56")
+        local keys = self.d:callee_load("192.168.51.56")
         mc:verify()
 
-        assertTrue(self.d.xavp)
-        assertEquals(self.d.xavp("sst_enable"),"no")
         assertEquals(sr.pv.get("$xavp(domain[1]=>sst_enable)"),"no")
         assertEquals(sr.pv.get("$xavp(domain[1]=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
-        assertIsNil(self.d.xavp("error_key"))
+        assertItemsEquals(keys, {"sst_enable", "sst_refresh_method"})
     end
 -- class TestNGCPDomainPrefs
 
