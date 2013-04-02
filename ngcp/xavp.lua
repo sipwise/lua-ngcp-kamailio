@@ -84,12 +84,15 @@ NGCPXAvp_MT = {
     end
 
     function NGCPXAvp:_create(level, group, l)
-        local i, name
-        -- create dummy vars
-        name = string.format("$xavp(%s=>dummy)", group)
-        NGCPXAvp._setvalue(name, 0, "callee") -- callee -> [1]
-        name = string.format("$xavp(%s=>dummy)", group)
-        NGCPXAvp._setvalue(name, 0, "caller") -- caller -> [0]
+        local i
+        local name = string.format("$xavp(%s[1]=>dummy)", group)
+        if not sr.pv.get(name) then
+            -- create dummy vars
+            name = string.format("$xavp(%s=>dummy)", group)
+            NGCPXAvp._setvalue(name, 0, "callee") -- callee -> [1]
+            name = string.format("$xavp(%s=>dummy)", group)
+            NGCPXAvp._setvalue(name, 0, "caller") -- caller -> [0]
+        end
         for i=1,#l do
             name = string.format("$xavp(%s[%d]=>%s)", group, level, l[i].attribute)
             table.add(self.keys, l[i].attribute)
