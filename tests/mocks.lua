@@ -272,9 +272,34 @@ TestSRMock = {}
         assertEquals(self.sr.pv.get("$xavp(g[0]=>t)"), "value")
         self.sr.pv.sets("$xavp(g=>t)", "value1")
         assertEquals(self.sr.pv.get("$xavp(g[0]=>t)"), "value1")
+        assertEquals(self.sr.pv.get("$xavp(g[1]=>t)"), "value")
+        -- 
         self.sr.pv.unset("$xavp(g[0]=>t)")
         assertEquals(self.sr.pv.get("$xavp(g[0]=>t)"), nil)
         assertEquals(self.sr.pv.get("$xavp(g[1]=>t)"), "value")
+        assertTrue(self.sr.pv.get("$xavp(g[0])"))
+        --
+        self.sr.pv.unset("$xavp(g[1])")
+        assertFalse(self.sr.pv.get("$xavp(g[1])"))
+        self.sr.pv.unset("$xavp(g)")
+        assertEquals(self.sr.pv.get("$xavp(g)"), nil)
+    end
+
+    function TestSRMock:test_unset_xavp1()
+        self.sr.pv.sets("$xavp(g=>t)", "value")
+        assertEquals(self.sr.pv.get("$xavp(g[0]=>t)"), "value")
+        self.sr.pv.sets("$xavp(g=>t)", "value1")
+        assertEquals(self.sr.pv.get("$xavp(g[0]=>t)"), "value1")
+        assertEquals(self.sr.pv.get("$xavp(g[1]=>t)"), "value")
+        self.sr.pv.sets("$xavp(g[1]=>z)", "value_z")
+        assertEquals(self.sr.pv.get("$xavp(g[1]=>z)"), "value_z")
+        -- 
+        self.sr.pv.unset("$xavp(g[0])")
+        assertEquals(self.sr.pv.get("$xavp(g[0]=>t)"), nil)
+        assertEquals(self.sr.pv.get("$xavp(g[1]=>t)"), "value")
+        assertEquals(self.sr.pv.get("$xavp(g[1]=>z)"), "value_z")
+        assertFalse(self.sr.pv.get("$xavp(g[0])"))
+        --
         self.sr.pv.unset("$xavp(g[1])")
         assertFalse(self.sr.pv.get("$xavp(g[1])"))
         self.sr.pv.unset("$xavp(g)")

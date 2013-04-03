@@ -105,18 +105,22 @@ pvMock = {
             if result.type == 'var' then
                 return t.vars[result.private_id]
             elseif result.type == 'xavp' then
-                if not result.indx then
-                    result.indx = 0
-                end
                 if not t.vars[result.private_id] then
                     return
                 end
                 if not result.key then
-                    return t.vars[result.private_id]
+                    if not result.indx then
+                        return t.vars[result.private_id]
+                    else
+                        result.real_indx = #t.vars[result.private_id]._et - result.indx
+                        return t.vars[result.private_id]._et[result.real_indx]
+                    end                    
+                end
+                if not result.indx then
+                    result.indx = 0
                 end
                 result.real_indx = #t.vars[result.private_id]._et - result.indx
                 if t.vars[result.private_id]._et[result.real_indx] then
-                    --print(string.format("t.vars[%s]._et[%d]:%s", result.private_id, result.real_indx, table.tostring(t.vars[result.private_id]._et[result.indx+1])))
                     return t.vars[result.private_id]._et[result.real_indx][result.key]
                 end
             elseif result.type == 'avp' then
@@ -207,16 +211,26 @@ pvMock = {
         function t.unset(id)
             local result = t._is(id)
             if result.type == 'xavp' then
-                if not result.indx then
-                    result.indx = 0
-                end
                 if t.vars[result.private_id] then
                     if not result.key then
-                        t.vars[result.private_id] = nil
-                        return
+                        if not result.indx then
+                            -- xavp(g) -> clean all
+                            t.vars[result.private_id] = nil
+                            return
+                        else
+                            -- xavp(g[0])
+                            result.real_indx = #t.vars[result.private_id]._et - result.indx
+                            t.vars[result.private_id]._et[result.real_indx] = false
+                            return
+                        end
+                    else
+                        if not result.indx then
+                            result.indx = 0
+                        end
                     end
+                    -- xavp(g[1]=>k)
                     result.real_indx = #t.vars[result.private_id]._et - result.indx
-                    t.vars[result.private_id]._et[result.real_indx] = false
+                    t.vars[result.private_id]._et[result.real_indx][result.key] = nil
                 end
             elseif result.type == 'avp' then
                 t.vars[result.private_id] = nil
@@ -265,7 +279,6 @@ srMock = {
 }
 srMock_MT = { __index = srMock, __newindex = lemock.controller():mock() }
     function srMock:new()
-        --print("srMock:new")
         local t = {}
             function t.log(level, message)
                 if not t._logger_levels[level] then
