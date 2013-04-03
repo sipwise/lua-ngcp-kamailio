@@ -60,7 +60,7 @@ NGCPXAvp_MT = {
     		vtype = tonumber(vtype)
     	end
         if vtype == 0 then
-            sr.log("info",string.format("sr.pv.sets->%s:%s", id, value))
+            sr.log("dbg",string.format("sr.pv.sets->%s:%s", id, value))
             sr.pv.sets(id, value)
         elseif vtype == 1 then
             if type(value) == "string" then
@@ -76,7 +76,7 @@ NGCPXAvp_MT = {
                 if type(check) == 'table' then
                     check = table.tostring(check)
                 end
-                sr.log("info", string.format("%s:%s", id, check))
+                --sr.log("info", string.format("%s:%s", id, check))
 	        else
                 sr.log("err", string.format("%s:nil", id))
             end
