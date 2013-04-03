@@ -31,7 +31,7 @@ pvMock = {
             }
             for _,v in pairs(patterns) do
                 for _id, indx, key in string.gmatch(id, v) do
-                    if not key then
+                    if not key and tonumber(indx) == nil then
                         key = indx
                         indx = nil
                     else
@@ -163,8 +163,10 @@ pvMock = {
                     t.vars[result.private_id]:push(temp)
                 else
                     result.real_indx = #t.vars[result.private_id]._et - result.indx
-                    if not t.vars[result.private_id]._et[result.real_indx] then
-                        error(string.format("xavp(%s[%d] does not exist", result.id, result.indx))
+                    if t.vars[result.private_id]._et[result.real_indx] == nil then
+                        error(string.format("xavp(%s[%d]) does not exist", result.id, result.indx))
+                    elseif t.vars[result.private_id]._et[result.real_indx] == false then
+                        t.vars[result.private_id]._et[result.real_indx] = {}
                     end
                     t.vars[result.private_id]._et[result.real_indx][result.key] = value
                 end
@@ -221,6 +223,7 @@ pvMock = {
             elseif result.type == 'var' then
                 t.vars[result.private_id] = nil
             end
+            t.log("dbg", string.format("sr.pv vars:%s", table.tostring(t.vars)))
         end
 
         function t.is_null(id)

@@ -58,6 +58,28 @@ TestSRMock = {}
         assertFalse(result.clean)
     end
 
+    function TestSRMock:test_is_xavp_simple_nokey()
+        local result
+        result = self.sr.pv._is_xavp("$xavp(id1[8])")
+        assertTrue(result)
+        assertEquals(result.type, 'xavp')
+        assertEquals(result.id, 'id1')
+        assertFalse(result.key)
+        assertEquals(result.indx, 8)
+        assertFalse(result.clean)
+    end
+
+    function TestSRMock:test_is_xavp_simple_nokey_noindx()
+        local result
+        result = self.sr.pv._is_xavp("$xavp(id1)")
+        assertTrue(result)
+        assertEquals(result.type, 'xavp')
+        assertEquals(result.id, 'id1')
+        assertFalse(result.key)
+        assertFalse(result.indx)
+        assertFalse(result.clean)
+    end
+
     function TestSRMock:test_is_avp_simple()
         local result
         result = self.sr.pv._is_avp("$avp(id2_f)")
