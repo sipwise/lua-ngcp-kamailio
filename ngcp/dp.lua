@@ -39,10 +39,10 @@ NGCPDomainPrefs_MT = { __index = NGCPDomainPrefs }
                 table.insert(keys, row.attribute)
                 row = cur:fetch({}, "a")
             end
-            xavp = NGCPXAvp:new(level,'domain',result)
         else
             sr.log("dbg", string.format("no results for query:%s", query))
         end
+        xavp = NGCPXAvp:new(level,'domain',result)
         cur:close()
         con:close()
         return keys

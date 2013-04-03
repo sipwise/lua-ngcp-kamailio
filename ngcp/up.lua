@@ -39,10 +39,10 @@ NGCPUserPrefs_MT = { __index = NGCPUserPrefs }
                 table.insert(keys, row.attribute)
                 row = cur:fetch({}, "a")
             end
-            xavp = NGCPXAvp:new(level,'user',result)
         else
             sr.log("dbg", string.format("no results for query:%s", query))
         end
+        xavp = NGCPXAvp:new(level,'user',result)
         cur:close()
         con:close()
         return keys
