@@ -48,8 +48,17 @@ NGCPDomainPrefs_MT = { __index = NGCPDomainPrefs }
         return keys
     end
 
-    function NGCPDomainPrefs:clean()
-        sr.pv.unset("$xavp(domain)")
+    function NGCPDomainPrefs:clean(vtype)
+        local xavp
+        if not vtype then
+            sr.pv.unset("$xavp(domain)")
+        elseif vtype == 'callee' then
+            xavp = NGCPXAvp:new('callee','domain',{})
+            xavp:clean()
+        elseif vtype == 'caller' then
+            xavp = NGCPXAvp:new('caller','domain',{})
+            xavp:clean()
+        end
     end
 -- class
 --EOF
