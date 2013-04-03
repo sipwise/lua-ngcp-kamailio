@@ -83,5 +83,12 @@ NGCP_MT = { __index = NGCP }
         end
         self.prefs.real:callee_load(unique_keys)
     end
+
+    function NGCP:clean(vtype)
+        local _,v
+        for _,v in pairs(self.prefs) do
+            v:clean(vtype)
+        end
+    end
 -- class
 --EOF

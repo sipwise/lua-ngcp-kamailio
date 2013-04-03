@@ -52,6 +52,63 @@ TestNGCP = {} --class
         assertTrue(self.ngcp.prefs.real)
     end
 
+    function TestNGCP:test_clean()
+        local xavp = NGCPXAvp:new('callee','user',{})
+        xavp("testid",1)
+        xavp("foo","foo")
+        assertEquals(sr.pv.get("$xavp(user[1]=>testid)"),1)
+        assertEquals(sr.pv.get("$xavp(user[1]=>foo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(user[0]=>dummy)"),"caller")
+        self.ngcp:clean()
+        assertFalse(sr.pv.get("$xavp(user[0]=>dummy)"))
+        assertFalse(sr.pv.get("$xavp(user[1]=>dummy)"))
+        assertFalse(sr.pv.get("$xavp(user)"))
+    end
+
+    function TestNGCP:test_callee_clean()
+        local callee_xavp = NGCPXAvp:new('callee','domain',{})
+        callee_xavp("testid",1)
+        callee_xavp("foo","foo")
+        local caller_xavp = NGCPXAvp:new('caller','domain',{})
+        caller_xavp("other",1)
+        caller_xavp("otherfoo","foo")
+        assertEquals(sr.pv.get("$xavp(domain[1]=>testid)"),1)
+        assertEquals(sr.pv.get("$xavp(domain[1]=>foo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(domain[0]=>dummy)"),"caller")
+        assertEquals(sr.pv.get("$xavp(domain[0]=>other)"),1)
+        assertEquals(sr.pv.get("$xavp(domain[0]=>otherfoo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(domain[1]=>dummy)"),"callee")
+        self.ngcp:clean('callee')
+        assertEquals(sr.pv.get("$xavp(domain[0]=>dummy)"),'caller')
+        assertFalse(sr.pv.get("$xavp(domain[1]=>testid)"))
+        assertFalse(sr.pv.get("$xavp(domain[1]=>foo)"))
+        assertEquals(sr.pv.get("$xavp(domain[0]=>other)"),1)
+        assertEquals(sr.pv.get("$xavp(domain[0]=>otherfoo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(domain[1]=>dummy)"),"callee")
+    end
+
+    function TestNGCP:test_caller_clean()
+        local callee_xavp = NGCPXAvp:new('callee','peer',{})
+        callee_xavp("testid",1)
+        callee_xavp("foo","foo")
+        local caller_xavp = NGCPXAvp:new('caller','peer',{})
+        caller_xavp("other",1)
+        caller_xavp("otherfoo","foo")
+        assertEquals(sr.pv.get("$xavp(peer[1]=>testid)"),1)
+        assertEquals(sr.pv.get("$xavp(peer[1]=>foo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(peer[0]=>dummy)"),"caller")
+        assertEquals(sr.pv.get("$xavp(peer[0]=>other)"),1)
+        assertEquals(sr.pv.get("$xavp(peer[0]=>otherfoo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(peer[1]=>dummy)"),"callee")
+        self.ngcp:clean('caller')
+        assertEquals(sr.pv.get("$xavp(peer[0]=>dummy)"),'caller')
+        assertFalse(sr.pv.get("$xavp(peer[0]=>other)"))
+        assertFalse(sr.pv.get("$xavp(peer[0]=>otherfoo)"))
+        assertEquals(sr.pv.get("$xavp(peer[1]=>testid)"),1)
+        assertEquals(sr.pv.get("$xavp(peer[1]=>foo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(peer[1]=>dummy)"),"callee")
+    end
+
 -- class TestNGCP
 
 ---- Control test output:
