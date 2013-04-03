@@ -69,9 +69,13 @@ TestNGCPXAvp = {} --class
     function TestNGCPXAvp:test_clean()
         self.xavp("testid", 1)
         assertEquals(sr.pv.get("$xavp(peer[0]=>testid)"),1)
+        assertEquals(sr.pv.get("$xavp(peer[0]=>dummy)"),"caller")
+        assertEquals(sr.pv.get("$xavp(peer[1]=>dummy)"),"callee")
         self.xavp:clean()
         assertFalse(self.xavp("testid"))
         assertFalse(sr.pv.get("$xavp(peer[0]=>testid)"))
+        assertEquals(sr.pv.get("$xavp(peer[0]=>dummy)"),"caller")
+        assertEquals(sr.pv.get("$xavp(peer[1]=>dummy)"),"callee")
     end
 
     function TestNGCPXAvp:test_keys()

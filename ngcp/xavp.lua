@@ -85,13 +85,23 @@ NGCPXAvp_MT = {
 
     function NGCPXAvp:_create(level, group, l)
         local i
-        local name = string.format("$xavp(%s[1]=>dummy)", group)
-        if not sr.pv.get(name) then
-            -- create dummy vars
-            name = string.format("$xavp(%s=>dummy)", group)
-            NGCPXAvp._setvalue(name, 0, "callee") -- callee -> [1]
-            name = string.format("$xavp(%s=>dummy)", group)
-            NGCPXAvp._setvalue(name, 0, "caller") -- caller -> [0]
+        local name_callee = string.format("$xavp(%s[1]=>dummy)", group)
+        local name_caller = string.format("$xavp(%s[0]=>dummy)", group)
+        local name = string.format("$xavp(%s=>dummy)", group)
+        if not sr.pv.get(name_callee) then
+            if not sr.pv.get(name_caller) then
+                -- create dummy vars
+                NGCPXAvp._setvalue(name, 0, "callee") -- callee -> [0]
+                NGCPXAvp._setvalue(name, 0, "caller") -- caller -> [0]; calle -> [1]
+            else
+                -- caller [0] ok
+                NGCPXAvp._setvalue(name_callee, 0, "callee")
+            end
+        else
+            if not sr.pv.get(name_caller) then
+                -- callee [1] ok
+                NGCPXAvp._setvalue(name_caller, 0, "caller")
+            end
         end
         for i=1,#l do
             name = string.format("$xavp(%s[%d]=>%s)", group, level, l[i].attribute)
@@ -101,7 +111,9 @@ NGCPXAvp_MT = {
     end
 
     function NGCPXAvp:clean()
+        local levels = {"caller", "callee"}
         sr.pv.unset(string.format("$xavp(%s[%d])", self.group, self.level))
+        sr.pv.sets(string.format("$xavp(%s[%d]=>dummy)", self.group, self.level), levels[self.level+1])
     end
 -- class
 --EOF
