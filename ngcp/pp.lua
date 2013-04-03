@@ -35,7 +35,7 @@ NGCPPeerPrefs_MT = { __index = NGCPPeerPrefs }
                 table.insert(result, row)
                 row = cur:fetch({}, "a")
             end
-            self.xavp = NGCPXAvp:new(level,'domain',result)
+            self.xavp = NGCPXAvp:new(level,'peer',result)
         else
             sr.log("dbg", string.format("no results for query:%s", query))
         end
