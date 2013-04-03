@@ -48,8 +48,17 @@ NGCPUserPrefs_MT = { __index = NGCPUserPrefs }
         return keys
     end
 
-    function NGCPUserPrefs:clean(...)
-        sr.pv.unset("$xavp(user)")
+    function NGCPUserPrefs:clean(vtype)
+        local xavp
+        if not vtype then
+            sr.pv.unset("$xavp(user)")
+        elseif vtype == 'callee' then
+            xavp = NGCPXAvp:new('callee','user',{})
+            xavp:clean()
+        elseif vtype == 'caller' then
+            xavp = NGCPXAvp:new('caller','user',{})
+            xavp:clean()
+        end
     end
 -- class
 --EOF

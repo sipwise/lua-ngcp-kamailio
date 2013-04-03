@@ -43,8 +43,17 @@ NGCPPeerPrefs_MT = { __index = NGCPPeerPrefs }
         con:close()
     end
 
-    function NGCPPeerPrefs:clean()
-        sr.pv.unset("$xavp(peer)")
+    function NGCPPeerPrefs:clean(vtype)
+        local xavp
+        if not vtype then
+            sr.pv.unset("$xavp(peer)")
+        elseif vtype == 'callee' then
+            xavp = NGCPXAvp:new('callee','peer',{})
+            xavp:clean()
+        elseif vtype == 'caller' then
+            xavp = NGCPXAvp:new('caller','peer',{})
+            xavp:clean()
+        end
     end
 -- class
 --EOF
