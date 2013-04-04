@@ -19,12 +19,16 @@ NGCPPeerPrefs_MT = { __index = NGCPPeerPrefs }
     function NGCPPeerPrefs:caller_load(uuid)
         if uuid then
             return self:_load("caller",uuid)
+        else
+            return {}
         end
     end
 
     function NGCPPeerPrefs:callee_load(uuid)
         if uuid then
             return self:_load("callee",uuid)
+        else
+            return {}
         end
     end
 
