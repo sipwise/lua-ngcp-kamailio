@@ -1,4 +1,5 @@
 #!/usr/bin/env lua5.1
+require 'ngcp.utils'
 require 'ngcp.xavp'
 
 -- class NGCPRealPrefs
@@ -45,7 +46,16 @@ NGCPRealPrefs_MT = { __index = NGCPRealPrefs }
     end
 
     function NGCPRealPrefs:clean()
-        sr.pv.unset("$xavp(real)")
+        local xavp
+        if not vtype then
+            sr.pv.unset("$xavp(real)")
+        elseif vtype == 'callee' then
+            xavp = NGCPXAvp:new('callee','real',{})
+            xavp:clean()
+        elseif vtype == 'caller' then
+            xavp = NGCPXAvp:new('caller','real',{})
+            xavp:clean()
+        end
     end
 -- class
 --EOF
