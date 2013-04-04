@@ -68,6 +68,7 @@ NGCP_MT = { __index = NGCP }
             table.add(unique_keys, v)
         end
         self.prefs.real:caller_load(unique_keys)
+        return {real = unique_keys, peer = keys.peer}
     end
 
     function NGCP:callee_load(uuid, domain, peer)
@@ -82,6 +83,7 @@ NGCP_MT = { __index = NGCP }
             table.add(unique_keys, v)
         end
         self.prefs.real:callee_load(unique_keys)
+        return {real = unique_keys, peer = keys.peer}
     end
 
     function NGCP:clean(vtype)

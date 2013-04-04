@@ -3,6 +3,8 @@
 require 'ngcp.ngcp'
 
 ngcp = NGCP:new()
+loaded_keys = {}
+
 -- set config
 ngcp.config.db_user = "[% kamailio.proxy.dbrwuser %]"
 ngcp.config.db_pass = "[% kamailio.proxy.dbrwpw %]"
@@ -13,23 +15,34 @@ function ngcp_test()
     print = function(msg)
         sr.log("info", msg)
     end
-    require('tests.ngcp_xavp')
-    require('tests.ngcp_dp')
-    require('tests.ngcp_up')
-    require('tests.ngcp_pp')
-    require('tests.ngcp_rp')
-    require('tests.ngcp')
+    require('tests.test_kamailio')
 end
 
 function ngcp_clean(vtype)
     ngcp:clean(vtype)
 end
 
+function print_loaded_prefs(vtype)
+    local _,v
+    local xavp = NGCPRealPrefs:xavp(vtype)
+    for _,v in pairs(loaded_keys[vtype].real) do
+        sr.log("info", string.format("real key:%s value:%s\n", v, xavp(v)))
+    end
+    xavp = NGCPPeerPrefs:xavp(vtype)
+    for _,v in pairs(loaded_keys[vtype].peer) do
+        sr.log("info", string.format("peer key:%s value:%s\n", v, xavp(v)))
+    end
+end
+
 function ngcp_load_caller(uuid, domain, peer)
-    ngcp:caller_load(uuid, domain,peer)
+    loaded_keys["caller"] = ngcp:caller_load(uuid, domain, peer)
+    local keys = loaded_keys["caller"]
+    sr.log("info", string.format("real: %s peer: %s", table.tostring(keys.real), table.tostring(keys.peer)))
 end
 
 function ngcp_load_callee(uuid, domain, peer)
-    ngcp:caller_load(uuid, domain,peer)
+    loaded_keys["callee"] = ngcp:caller_load(uuid, domain, peer)
+    local keys = loaded_keys["callee"]
+    sr.log("info", string.format("real: %s peer: %s", table.tostring(keys.real), table.tostring(keys.peer)))
 end
 --EOF
