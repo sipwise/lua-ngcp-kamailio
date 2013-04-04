@@ -1,10 +1,15 @@
 #!/usr/bin/env lua5.1
 require('luaunit')
-require 'mocks.sr'
 require 'ngcp.utils'
 require 'tests_v.up_vars'
+require('lemock')
 
-sr = srMock:new()
+if not sr then
+    require 'mocks.sr'
+    sr = srMock:new()
+else
+    argv = {}
+end
 local mc = nil
 
 UPFetch = {
@@ -49,7 +54,15 @@ TestNGCPUserPrefs = {} --class
     end
 
     function TestNGCPUserPrefs:tearDown()
-        sr.pv.vars = {}
+        sr.pv.unset("$xavp(caller_dom_prefs)")
+        sr.pv.unset("$xavp(callee_dom_prefs)")
+        sr.pv.unset("$xavp(caller_peer_prefs)")
+        sr.pv.unset("$xavp(callee_peer_prefs)")
+        sr.pv.unset("$xavp(caller_usr_prefs)")
+        sr.pv.unset("$xavp(callee_usr_prefs)")
+        sr.pv.unset("$xavp(caller_real_prefs)")
+        sr.pv.unset("$xavp(callee_real_prefs)")
+        sr.log("info", "---cleaned---")
     end
 
     function TestNGCPUserPrefs:test_init()
@@ -73,10 +86,10 @@ TestNGCPUserPrefs = {} --class
         local keys = self.d:caller_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c")
         mc:verify()
 
-        assertEquals(sr.pv.get("$xavp(user[0]=>account_id)"),2)
-        assertEquals(sr.pv.get("$xavp(user[0]=>cli)"),"4311001")
-        assertEquals(sr.pv.get("$xavp(user[0]=>cc)"),"43")
-        assertEquals(sr.pv.get("$xavp(user[0]=>ac)"),"1")
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>account_id)"),2)
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>cli)"),"4311001")
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>cc)"),"43")
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>ac)"),"1")
         assertItemsEquals(keys, {"account_id", "cli", "cc", "ac"})
     end
 
@@ -96,74 +109,67 @@ TestNGCPUserPrefs = {} --class
         local keys = self.d:callee_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c")
         mc:verify()
 
-        assertEquals(sr.pv.get("$xavp(user[1]=>account_id)"),2)
-        assertEquals(sr.pv.get("$xavp(user[1]=>cli)"),"4311001")
-        assertEquals(sr.pv.get("$xavp(user[1]=>cc)"),"43")
-        assertEquals(sr.pv.get("$xavp(user[1]=>ac)"),"1")
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>account_id)"),2)
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>cli)"),"4311001")
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>cc)"),"43")
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>ac)"),"1")
         assertItemsEquals(keys, {"account_id", "cli", "cc", "ac"})
     end
     
     function TestNGCPUserPrefs:test_clean()
-        local xavp = NGCPXAvp:new('callee','user',{})
+        local xavp = NGCPUserPrefs:xavp('callee')
         xavp("testid",1)
         xavp("foo","foo")
-        assertEquals(sr.pv.get("$xavp(user[1]=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(user[1]=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(user[0]=>dummy)"),"caller")
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>testid)"),1)
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>foo)"),"foo")
+        assertFalse(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
         self.d:clean()
-        assertFalse(sr.pv.get("$xavp(user[0]=>dummy)"))
-        assertFalse(sr.pv.get("$xavp(user[1]=>dummy)"))
-        assertFalse(sr.pv.get("$xavp(user)"))
+        assertFalse(sr.pv.get("$xavp(caller_usr_prefs)"))
+        assertFalse(sr.pv.get("$xavp(callee_usr_prefs)"))
     end
 
     function TestNGCPUserPrefs:test_callee_clean()
-        local callee_xavp = NGCPXAvp:new('callee','user',{})
+        local callee_xavp = NGCPUserPrefs:xavp('callee')
         callee_xavp("testid",1)
         callee_xavp("foo","foo")
-        local caller_xavp = NGCPXAvp:new('caller','user',{})
+        local caller_xavp = NGCPUserPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(sr.pv.get("$xavp(user[1]=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(user[1]=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(user[0]=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(user[0]=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(user[0]=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(user[1]=>dummy)"),"callee")
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>testid)"),1)
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>foo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>other)"),1)
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>otherfoo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
         self.d:clean('callee')
-        assertEquals(sr.pv.get("$xavp(user[0]=>dummy)"),'caller')
-        assertFalse(sr.pv.get("$xavp(user[1]=>testid)"))
-        assertFalse(sr.pv.get("$xavp(user[1]=>foo)"))
-        assertEquals(sr.pv.get("$xavp(user[0]=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(user[0]=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(user[1]=>dummy)"),"callee")
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"),'caller')
+        assertFalse(sr.pv.get("$xavp(callee_usr_prefs=>testid)"))
+        assertFalse(sr.pv.get("$xavp(callee_usr_prefs=>foo)"))
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>other)"),1)
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>otherfoo)"),"foo")
+        assertFalse(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"))
     end
 
     function TestNGCPUserPrefs:test_caller_clean()
-        local callee_xavp = NGCPXAvp:new('callee','user',{})
+        local callee_xavp = NGCPUserPrefs:xavp('callee')
         callee_xavp("testid",1)
         callee_xavp("foo","foo")
-        local caller_xavp = NGCPXAvp:new('caller','user',{})
+        local caller_xavp = NGCPUserPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(sr.pv.get("$xavp(user[1]=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(user[1]=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(user[0]=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(user[0]=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(user[0]=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(user[1]=>dummy)"),"callee")
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>testid)"),1)
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>foo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>other)"),1)
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>otherfoo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
         self.d:clean('caller')
-        assertEquals(sr.pv.get("$xavp(user[0]=>dummy)"),'caller')
-        assertFalse(sr.pv.get("$xavp(user[0]=>other)"))
-        assertFalse(sr.pv.get("$xavp(user[0]=>otherfoo)"))
-        assertEquals(sr.pv.get("$xavp(user[1]=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(user[1]=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(user[1]=>dummy)"),"callee")
+        assertFalse(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"))
+        assertFalse(sr.pv.get("$xavp(caller_usr_prefs=>other)"))
+        assertFalse(sr.pv.get("$xavp(caller_usr_prefs=>otherfoo)"))
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>testid)"),1)
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>foo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
     end
 -- class TestNGCPUserPrefs
-
----- Control test output:
-lu = LuaUnit
-lu:setOutputType( "TAP" )
-lu:setVerbosity( 1 )
-lu:run()
 --EOF

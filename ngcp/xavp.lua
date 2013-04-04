@@ -1,4 +1,5 @@
 #!/usr/bin/env lua5.1
+require 'ngcp.utils'
 
 -- class NGCPXAvp
 NGCPXAvp = {
@@ -13,15 +14,17 @@ NGCPXAvp_MT = {
             if not key then
                 error("key is empty")
             end
-            local id = string.format("$xavp(%s[%d]=>%s)", t.group, t.level, key)
+            local id = string.format("$xavp(%s[0]=>%s)", t.name, key)
             --print(string.format("id:%s", id))
             if not value then
                 return sr.pv.get(id)
             elseif type(value) == "number" then
                 table.add(t.keys, key)
+                sr.log("info", string.format("seti: [%s]:%d", id, value))
                 sr.pv.seti(id, value)
             elseif type(value) == "string" then
                 table.add(t.keys, key)
+                sr.log("info", string.format("sets: [%s]:%s", id, value))
                 sr.pv.sets(id, value)
             else
                 error("value is not a number or string")
@@ -36,20 +39,16 @@ NGCPXAvp_MT = {
             error("unknown level. It has to be [caller|callee]")
         end
         if not l then
-            error("list empty")
+            l = {}
         end
 
         local t = {
             group = group,
+            level = level,
+            name = level .. '_' .. group,
             keys = {}
         }
-        if level == 'callee' then
-            t.level = 1
-        else
-            t.level = 0
-        end
-        NGCPXAvp._create(t, t.level,group,l)
-
+        NGCPXAvp._create(t, l)
         return t
     end
 
@@ -61,6 +60,9 @@ NGCPXAvp_MT = {
     	end
         if vtype == 0 then
             sr.log("dbg",string.format("sr.pv.sets->%s:%s", id, value))
+            if type(value) == 'number' then
+                value = tostring(value)
+            end
             sr.pv.sets(id, value)
         elseif vtype == 1 then
             if type(value) == "string" then
@@ -76,44 +78,28 @@ NGCPXAvp_MT = {
                 if type(check) == 'table' then
                     check = table.tostring(check)
                 end
-                --sr.log("info", string.format("%s:%s", id, check))
 	        else
+                --error(string.format("%s:nil", id))
                 sr.log("err", string.format("%s:nil", id))
             end
         end
     end
 
-    function NGCPXAvp:_create(level, group, l)
+    function NGCPXAvp:_create(l)
         local i
-        local name_callee = string.format("$xavp(%s[1]=>dummy)", group)
-        local name_caller = string.format("$xavp(%s[0]=>dummy)", group)
-        local name = string.format("$xavp(%s=>dummy)", group)
-        if not sr.pv.get(name_callee) then
-            if not sr.pv.get(name_caller) then
-                -- create dummy vars
-                NGCPXAvp._setvalue(name, 0, "callee") -- callee -> [0]
-                NGCPXAvp._setvalue(name, 0, "caller") -- caller -> [0]; calle -> [1]
-            else
-                -- caller [0] ok
-                NGCPXAvp._setvalue(name_callee, 0, "callee")
-            end
-        else
-            if not sr.pv.get(name_caller) then
-                -- callee [1] ok
-                NGCPXAvp._setvalue(name_caller, 0, "caller")
-            end
+        local name = string.format("$xavp(%s=>dummy)", self.name)
+        if not sr.pv.get(name) then
+            NGCPXAvp._setvalue(name, 0, self.level)
         end
         for i=1,#l do
-            name = string.format("$xavp(%s[%d]=>%s)", group, level, l[i].attribute)
+            name = string.format("$xavp(%s[0]=>%s)", self.name, l[i].attribute)
             table.add(self.keys, l[i].attribute)
             NGCPXAvp._setvalue(name, l[i].type, l[i].value)
         end
     end
 
     function NGCPXAvp:clean()
-        local levels = {"caller", "callee"}
-        sr.pv.unset(string.format("$xavp(%s[%d])", self.group, self.level))
-        sr.pv.sets(string.format("$xavp(%s[%d]=>dummy)", self.group, self.level), levels[self.level+1])
+        sr.pv.unset(string.format("$xavp(%s)", self.name))
     end
 -- class
 --EOF

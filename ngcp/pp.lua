@@ -1,4 +1,5 @@
 #!/usr/bin/env lua5.1
+require 'ngcp.utils'
 require 'ngcp.xavp'
 
 -- class NGCPPeerPrefs
@@ -16,43 +17,50 @@ NGCPPeerPrefs_MT = { __index = NGCPPeerPrefs }
     end
 
     function NGCPPeerPrefs:caller_load(uuid)
-        NGCPPeerPrefs._load(self,"caller",uuid)
+        return self:_load("caller",uuid)
     end
 
     function NGCPPeerPrefs:callee_load(uuid)
-        NGCPPeerPrefs._load(self,"callee",uuid)
+        return self:_load("callee",uuid)
     end
 
     function NGCPPeerPrefs:_load(level, uuid)
-        local con = self.config:getDBConnection()
+        local con = assert (self.config:getDBConnection())
         local query = "SELECT * FROM " .. self.db_table .. " WHERE uuid = '" .. uuid .. "'"
         local cur = assert (con:execute(query))
+        local keys = {}
         local result = {}
-        local row = cur:fetch(result, "a")
+        local row = cur:fetch({}, "a")
+
         if row then
             while row do
-                sr.log("info", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
+                --sr.log("info", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
                 table.insert(result, row)
+                table.add(keys, row.attribute)
                 row = cur:fetch({}, "a")
             end
         else
             sr.log("dbg", string.format("no results for query:%s", query))
         end
-        self.xavp = NGCPXAvp:new(level,'peer',result)
+        self:xavp(level, result)
         cur:close()
         con:close()
+        return keys
+    end
+
+    function NGCPPeerPrefs:xavp(level, l)
+        if level ~= 'caller' and level ~= 'callee' then
+            error(string.format("unknown level:%s. It has to be [caller|callee]", tostring(level)))
+        end
+        return NGCPXAvp:new(level,'peer_prefs', l)
     end
 
     function NGCPPeerPrefs:clean(vtype)
-        local xavp
         if not vtype then
-            sr.pv.unset("$xavp(peer)")
-        elseif vtype == 'callee' then
-            xavp = NGCPXAvp:new('callee','peer',{})
-            xavp:clean()
-        elseif vtype == 'caller' then
-            xavp = NGCPXAvp:new('caller','peer',{})
-            xavp:clean()
+            NGCPPeerPrefs:xavp('callee'):clean()
+            NGCPPeerPrefs:xavp('caller'):clean()
+        else
+            NGCPPeerPrefs:xavp(vtype):clean()
         end
     end
 -- class

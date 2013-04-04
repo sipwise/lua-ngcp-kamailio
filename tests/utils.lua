@@ -1,6 +1,5 @@
 #!/usr/bin/env lua5.1
 require('luaunit')
-require 'mocks.sr'
 require 'ngcp.utils'
 
 TestUtils = {} --class
@@ -109,9 +108,4 @@ TestStack = {}
         assertEquals(tostring(s), "{2,1}")
     end
 -- class TestStack
----- Control test output:
-lu = LuaUnit
-lu:setOutputType( "TAP" )
-lu:setVerbosity( 1 )
-lu:run()
 --EOF

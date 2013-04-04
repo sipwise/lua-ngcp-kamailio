@@ -1,4 +1,5 @@
 #!/usr/bin/env lua5.1
+require 'ngcp.utils'
 require 'ngcp.xavp'
 
 -- class NGCPUserPrefs
@@ -30,34 +31,36 @@ NGCPUserPrefs_MT = { __index = NGCPUserPrefs }
         local keys = {}
         local result = {}
         local row = cur:fetch({}, "a")
-        local xavp
 
         if row then
             while row do
                 --sr.log("info", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
                 table.insert(result, row)
-                table.insert(keys, row.attribute)
+                table.add(keys, row.attribute)
                 row = cur:fetch({}, "a")
             end
         else
             sr.log("dbg", string.format("no results for query:%s", query))
         end
-        xavp = NGCPXAvp:new(level,'user',result)
+        NGCPUserPrefs:xavp(level,result)
         cur:close()
         con:close()
         return keys
     end
 
+    function NGCPUserPrefs:xavp(level, l)
+        if level ~= 'caller' and level ~= 'callee' then
+            error(string.format("unknown level:%s. It has to be [caller|callee]", tostring(level)))
+        end
+        return NGCPXAvp:new(level,'usr_prefs', l)
+    end
+
     function NGCPUserPrefs:clean(vtype)
-        local xavp
         if not vtype then
-            sr.pv.unset("$xavp(user)")
-        elseif vtype == 'callee' then
-            xavp = NGCPXAvp:new('callee','user',{})
-            xavp:clean()
-        elseif vtype == 'caller' then
-            xavp = NGCPXAvp:new('caller','user',{})
-            xavp:clean()
+            NGCPUserPrefs:xavp('callee'):clean()
+            NGCPUserPrefs:xavp('caller'):clean()
+        else
+            NGCPUserPrefs:xavp(vtype):clean()
         end
     end
 -- class

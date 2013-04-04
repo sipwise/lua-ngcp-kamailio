@@ -1,9 +1,14 @@
 #!/usr/bin/env lua5.1
 require('luaunit')
-require 'mocks.sr'
 require 'ngcp.xavp'
 
-sr = srMock:new()
+if not sr then
+    require 'mocks.sr'
+    sr = srMock:new()
+else
+    argv = {}
+end
+
 vals = {
     {
         id = 1,
@@ -37,60 +42,73 @@ vals = {
     }
 }
 TestNGCPXAvp = {} --class
-    function TestNGCPXAvp:setUp()
-        self.xavp = NGCPXAvp:new("caller", "peer", vals)
-    end
-
-    function TestNGCPXAvp:tearDown()
-        sr.pv.vars = {}
+    function TestNGCPXAvp:test_create()
+        local xavp = NGCPXAvp:new("caller", "peer", {})
+        assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"),"caller")
+        xavp = NGCPXAvp:new("callee", "peer", {})
+        assertEquals(sr.pv.get("$xavp(callee_peer=>dummy)"),"callee")
     end
 
     function TestNGCPXAvp:test_xavp_id()
-        assertEquals(self.xavp.level, 0)
-        assertEquals(self.xavp.group, "peer")
+        local xavp = NGCPXAvp:new("caller", "peer", vals)
+        assertEquals(xavp.level, "caller")
+        assertEquals(xavp.group, "peer")
+        assertEquals(xavp.name, "caller_peer")
+        assertItemsEquals(xavp.keys, {"account_id","whatever","elsewhere"})
     end
 
     function TestNGCPXAvp:test_xavp_get()
-        sr.pv.sets("$xavp(peer[0]=>testid)", "value")
-        assertEquals(self.xavp("testid"), "value")
-        sr.pv.sets("$xavp(peer[0]=>testid)", "1")
-        assertItemsEquals(self.xavp("testid"), "1")
+        xavp = NGCPXAvp:new("caller", "peer", vals)
+        sr.pv.sets("$xavp(caller_peer=>testid)", "value")
+        assertEquals(xavp("testid"), "value")
+        sr.pv.sets("$xavp(caller_peer=>testid)", "1")
+        assertItemsEquals(xavp("testid"), "1")
     end
 
     function TestNGCPXAvp:test_xavp_set()
+        local xavp = NGCPXAvp:new("caller", "peer", vals)
         local vals = {1,"2",3,nil}
         for i=1,#vals do
-            self.xavp("testid",vals[i])
-            assertEquals(self.xavp("testid"), vals[i])
-            assertEquals(sr.pv.get("$xavp(peer[0]=>testid)"),vals[i])
+            xavp("testid",vals[i])
+            assertEquals(xavp("testid"), vals[i])
+            assertEquals(sr.pv.get("$xavp(caller_peer=>testid)"),vals[i])
         end
     end
 
     function TestNGCPXAvp:test_clean()
-        self.xavp("testid", 1)
-        assertEquals(sr.pv.get("$xavp(peer[0]=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(peer[0]=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(peer[1]=>dummy)"),"callee")
-        self.xavp:clean()
-        assertFalse(self.xavp("testid"))
-        assertFalse(sr.pv.get("$xavp(peer[0]=>testid)"))
-        assertEquals(sr.pv.get("$xavp(peer[0]=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(peer[1]=>dummy)"),"callee")
+        xavp = NGCPXAvp:new("caller", "peer", vals)
+        xavp("testid", 1)
+        assertEquals(sr.pv.get("$xavp(caller_peer=>testid)"),1)
+        assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"),"caller")
+        xavp:clean()
+        assertFalse(xavp("testid"))
+        assertFalse(sr.pv.get("$xavp(caller_peer=>testid)"))
+        assertFalse(sr.pv.get("$xavp(caller_peer)"))
     end
 
+    function TestNGCPXAvp:test_clean_all()
+        local xavp_caller = NGCPXAvp:new("caller", "peer", {})
+        assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"),"caller")
+        local xavp_callee = NGCPXAvp:new("callee", "peer", {})
+        assertEquals(sr.pv.get("$xavp(callee_peer=>dummy)"),"callee")
+
+        xavp_caller:clean()
+        assertFalse(sr.pv.get("$xavp(caller_peer=>dummy)"))
+        assertEquals(sr.pv.get("$xavp(callee_peer=>dummy)"),"callee")
+        
+        xavp_callee:clean()
+        assertFalse(sr.pv.get("$xavp(callee_peer=>dummy)"))
+        assertFalse(sr.pv.get("$xavp(caller_peer=>dummy)"))
+    end
+
+
     function TestNGCPXAvp:test_keys()
-        assertItemsEquals(self.xavp.keys, {"account_id","whatever","elsewhere"})
-        self.xavp("testid", 1)
-        assertItemsEquals(self.xavp.keys, {"account_id","whatever","elsewhere","testid"})
-        self.xavp:clean()
-        assertItemsEquals(self.xavp.keys, {"account_id","whatever","elsewhere","testid"})
+        local xavp = NGCPXAvp:new("caller", "peer", vals)
+        xavp("testid", 1)
+        assertItemsEquals(xavp.keys, {"account_id","whatever","elsewhere","testid"})
+        xavp:clean()
+        assertItemsEquals(xavp.keys, {"account_id","whatever","elsewhere","testid"})
     end
 
 -- class TestNGCPXAvp
-
----- Control test output:
-lu = LuaUnit
-lu:setOutputType( "TAP" )
-lu:setVerbosity( 1 )
-lu:run()
 --EOF

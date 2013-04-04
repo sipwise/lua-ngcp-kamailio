@@ -54,10 +54,4 @@ TestNGCPAvp = {} --class
         assertFalse(self.avp())
     end
 -- class TestNGCPAvp
-
----- Control test output:
-lu = LuaUnit
-lu:setOutputType( "TAP" )
-lu:setVerbosity( 1 )
-lu:run()
 --EOF

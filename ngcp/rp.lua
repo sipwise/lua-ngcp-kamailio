@@ -24,19 +24,21 @@ NGCPRealPrefs_MT = { __index = NGCPRealPrefs }
     function NGCPRealPrefs:_load(level, keys)
         local _,v
         local xavp = {
-            real   = NGCPXAvp:new(level,'real', {}),
-            domain = NGCPXAvp:new(level,'domain', {}),
-            user   = NGCPXAvp:new(level,'user', {}),
+            real = NGCPRealPrefs:xavp(level),
+            dom  = NGCPDomainPrefs:xavp(level),
+            usr  = NGCPUserPrefs:xavp(level)
         }
         local real_keys = {}
         local value
         for _,v in pairs(keys) do
-            value = xavp.user(v)
+            value = xavp.usr(v)
             if not value then
-                value = xavp.domain(v)
+                value = xavp.dom(v)
+                --sr.log("info", string.format("key:%s value:%s from domain", v, value))
             end
             if value then
                 table.add(real_keys, v)
+                --sr.log("info", string.format("key:%s value:%s", v, value))
                 xavp.real(v, value)
             else
                 sr.log("err", string.format("key:%s not in user or domain", v))
@@ -45,16 +47,19 @@ NGCPRealPrefs_MT = { __index = NGCPRealPrefs }
         return real_keys
     end
 
-    function NGCPRealPrefs:clean()
-        local xavp
+    function NGCPRealPrefs:xavp(level, l)
+        if level ~= 'caller' and level ~= 'callee' then
+            error(string.format("unknown level:%s. It has to be [caller|callee]", tostring(level)))
+        end
+        return NGCPXAvp:new(level,'real_prefs', l)
+    end
+
+    function NGCPRealPrefs:clean(vtype)
         if not vtype then
-            sr.pv.unset("$xavp(real)")
-        elseif vtype == 'callee' then
-            xavp = NGCPXAvp:new('callee','real',{})
-            xavp:clean()
-        elseif vtype == 'caller' then
-            xavp = NGCPXAvp:new('caller','real',{})
-            xavp:clean()
+            NGCPRealPrefs:xavp('callee'):clean()
+            NGCPRealPrefs:xavp('caller'):clean()
+        else
+            NGCPRealPrefs:xavp(vtype):clean()
         end
     end
 -- class

@@ -330,9 +330,4 @@ TestSRMock = {}
         assertEquals(self.sr.pv.get("$avp(s:hithere)"), 1)
         assertEquals(self.sr.pv.get("$(avp(s:hithere)[*])"), {1})
     end
----- Control test output:
-lu = LuaUnit
-lu:setOutputType( "TAP" )
-lu:setVerbosity( 1 )
-lu:run()
 --EOF

@@ -1,10 +1,15 @@
 #!/usr/bin/env lua5.1
 require('luaunit')
-require 'mocks.sr'
 require 'ngcp.utils'
 require 'tests_v.dp_vars'
+require('lemock')
 
-sr = srMock:new()
+if not sr then
+    require 'mocks.sr'
+    sr = srMock:new()
+else
+    argv = {}
+end
 local mc = nil
 
 DPFetch = {
@@ -49,7 +54,15 @@ TestNGCPDomainPrefs = {} --class
     end
 
     function TestNGCPDomainPrefs:tearDown()
-        sr.pv.vars = {}
+        sr.pv.unset("$xavp(caller_dom_prefs)")
+        sr.pv.unset("$xavp(callee_dom_prefs)")
+        sr.pv.unset("$xavp(caller_peer_prefs)")
+        sr.pv.unset("$xavp(callee_peer_prefs)")
+        sr.pv.unset("$xavp(caller_usr_prefs)")
+        sr.pv.unset("$xavp(callee_usr_prefs)")
+        sr.pv.unset("$xavp(caller_real_prefs)")
+        sr.pv.unset("$xavp(callee_real_prefs)")
+        sr.log("info", "---cleaned---")
     end
 
     function TestNGCPDomainPrefs:test_init()
@@ -71,8 +84,8 @@ TestNGCPDomainPrefs = {} --class
         local keys = self.d:caller_load("192.168.51.56")
         mc:verify()
 
-        assertEquals(sr.pv.get("$xavp(domain[0]=>sst_enable)"),"no")
-        assertEquals(sr.pv.get("$xavp(domain[0]=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>sst_enable)"),"no")
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
         assertItemsEquals(keys, {"sst_enable", "sst_refresh_method"})
     end
 
@@ -90,72 +103,66 @@ TestNGCPDomainPrefs = {} --class
         local keys = self.d:callee_load("192.168.51.56")
         mc:verify()
 
-        assertEquals(sr.pv.get("$xavp(domain[1]=>sst_enable)"),"no")
-        assertEquals(sr.pv.get("$xavp(domain[1]=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>sst_enable)"),"no")
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
         assertItemsEquals(keys, {"sst_enable", "sst_refresh_method"})
     end
 
     function TestNGCPDomainPrefs:test_clean()
-        local xavp = NGCPXAvp:new('callee','domain',{})
+        local xavp = NGCPDomainPrefs:xavp('callee')
         xavp("testid",1)
         xavp("foo","foo")
-        assertEquals(sr.pv.get("$xavp(domain[1]=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(domain[1]=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(domain[0]=>dummy)"),"caller")
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>testid)"),1)
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>foo)"),"foo")
+        assertFalse(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"))
         self.d:clean()
-        assertFalse(sr.pv.get("$xavp(domain[0]=>dummy)"))
-        assertFalse(sr.pv.get("$xavp(domain[1]=>dummy)"))
+        assertFalse(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"))
+        assertFalse(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"))
         assertFalse(sr.pv.get("$xavp(domain)"))
     end
 
     function TestNGCPDomainPrefs:test_callee_clean()
-        local callee_xavp = NGCPXAvp:new('callee','domain',{})
+        local callee_xavp = NGCPDomainPrefs:xavp('callee')
         callee_xavp("testid",1)
         callee_xavp("foo","foo")
-        local caller_xavp = NGCPXAvp:new('caller','domain',{})
+        local caller_xavp = NGCPDomainPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(sr.pv.get("$xavp(domain[1]=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(domain[1]=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(domain[0]=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(domain[0]=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(domain[0]=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(domain[1]=>dummy)"),"callee")
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>testid)"),1)
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>foo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>other)"),1)
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>otherfoo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
         self.d:clean('callee')
-        assertEquals(sr.pv.get("$xavp(domain[0]=>dummy)"),'caller')
-        assertFalse(sr.pv.get("$xavp(domain[1]=>testid)"))
-        assertFalse(sr.pv.get("$xavp(domain[1]=>foo)"))
-        assertEquals(sr.pv.get("$xavp(domain[0]=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(domain[0]=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(domain[1]=>dummy)"),"callee")
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"),'caller')
+        assertFalse(sr.pv.get("$xavp(callee_dom_prefs=>testid)"))
+        assertFalse(sr.pv.get("$xavp(callee_dom_prefs=>foo)"))
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>other)"),1)
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>otherfoo)"),"foo")
+        assertFalse(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"))
     end
 
     function TestNGCPDomainPrefs:test_caller_clean()
-        local callee_xavp = NGCPXAvp:new('callee','domain',{})
+        local callee_xavp = NGCPDomainPrefs:xavp('callee')
         callee_xavp("testid",1)
         callee_xavp("foo","foo")
-        local caller_xavp = NGCPXAvp:new('caller','domain',{})
+        local caller_xavp = NGCPDomainPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(sr.pv.get("$xavp(domain[1]=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(domain[1]=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(domain[0]=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(domain[0]=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(domain[0]=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(domain[1]=>dummy)"),"callee")
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>testid)"),1)
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>foo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>other)"),1)
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>otherfoo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
         self.d:clean('caller')
-        assertEquals(sr.pv.get("$xavp(domain[0]=>dummy)"),'caller')
-        assertFalse(sr.pv.get("$xavp(domain[0]=>other)"))
-        assertFalse(sr.pv.get("$xavp(domain[0]=>otherfoo)"))
-        assertEquals(sr.pv.get("$xavp(domain[1]=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(domain[1]=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(domain[1]=>dummy)"),"callee")
+        assertFalse(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"))
+        assertFalse(sr.pv.get("$xavp(caller_dom_prefs=>other)"))
+        assertFalse(sr.pv.get("$xavp(caller_dom_prefs=>otherfoo)"))
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>testid)"),1)
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>foo)"),"foo")
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
     end
 -- class TestNGCPDomainPrefs
-
----- Control test output:
-lu = LuaUnit
-lu:setOutputType( "TAP" )
-lu:setVerbosity( 1 )
-lu:run()
 --EOF
