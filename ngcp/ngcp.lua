@@ -2,6 +2,7 @@
 require 'ngcp.pp'
 require 'ngcp.dp'
 require 'ngcp.up'
+require 'ngcp.rp'
 -- load drivers
 require "luasql.mysql"
 
@@ -51,7 +52,7 @@ NGCP_MT = { __index = NGCP }
             dom  = NGCPDomainPrefs:new(t.config),
             usr  = NGCPUserPrefs:new(t.config),
             peer = NGCPPeerPrefs:new(t.config),
-            real = NGCPPeerPrefs:new(),
+            real = NGCPRealPrefs:new(),
         }
         return t
     end
