@@ -70,6 +70,16 @@ TestNGCPPeerPrefs = {} --class
         assertEquals(self.d.db_table, "peer_preferences")
     end
 
+    function TestNGCPPeerPrefs:test_caller_load_empty()
+        assertTrue(self.d.config)
+        assertEquals(self.d.caller_load(), nil)
+    end
+
+    function TestNGCPPeerPrefs:test_callee_load_empty()
+        assertTrue(self.d.config)
+        assertEquals(self.d.callee_load(), nil)
+    end
+
     function TestNGCPPeerPrefs:test_caller_load()
         assertTrue(self.d.config)
         self.config:getDBConnection() ;mc :returns(self.con)

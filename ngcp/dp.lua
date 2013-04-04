@@ -17,10 +17,16 @@ NGCPDomainPrefs_MT = { __index = NGCPDomainPrefs }
     end
 
     function NGCPDomainPrefs:caller_load(uuid)
+        if not uuid then
+            error("uuid is empty")
+        end
         return NGCPDomainPrefs._load(self,"caller",uuid)
     end
 
     function NGCPDomainPrefs:callee_load(uuid)
+        if not uuid then
+            error("uuid is empty")
+        end
         return NGCPDomainPrefs._load(self,"callee",uuid)
     end
 

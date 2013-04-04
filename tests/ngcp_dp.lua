@@ -70,6 +70,16 @@ TestNGCPDomainPrefs = {} --class
         assertEquals(self.d.db_table, "dom_preferences")
     end
 
+    function TestNGCPDomainPrefs:test_caller_load_empty()
+        assertTrue(self.d.config)
+        assertError(self.d.caller_load, nil)
+    end
+
+    function TestNGCPDomainPrefs:test_callee_load_empty()
+        assertTrue(self.d.config)
+        assertError(self.d.callee_load, nil)
+    end
+
     function TestNGCPDomainPrefs:test_caller_load()
         assertTrue(self.d.config)
         self.config:getDBConnection() ;mc :returns(self.con)

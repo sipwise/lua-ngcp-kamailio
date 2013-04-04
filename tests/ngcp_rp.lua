@@ -57,6 +57,14 @@ TestNGCPRealPrefs = {} --class
        sr.log("info", "---cleaned---")
     end
 
+    function TestNGCPRealPrefs:test_caller_load_empty()
+        assertError(self.real.caller_load, nil)
+    end
+
+    function TestNGCPRealPrefs:test_callee_load_empty()
+        assertError(self.real.callee_load, nil)
+    end
+
     function TestNGCPRealPrefs:test_caller_load()
         local keys = {"uno"}
         local xavp = {

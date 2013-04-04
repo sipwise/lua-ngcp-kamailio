@@ -65,6 +65,16 @@ TestNGCPUserPrefs = {} --class
         sr.log("info", "---cleaned---")
     end
 
+    function TestNGCPUserPrefs:test_caller_load_empty()
+        assertTrue(self.d.config)
+        assertError(self.d.caller_load, nil)
+    end
+
+    function TestNGCPUserPrefs:test_callee_load_empty()
+        assertTrue(self.d.config)
+        assertError(self.d.callee_load, nil)
+    end
+
     function TestNGCPUserPrefs:test_init()
         --print("TestNGCPUserPrefs:test_init")
         assertEquals(self.d.db_table, "usr_preferences")
