@@ -87,10 +87,18 @@ NGCP_MT = { __index = NGCP }
         return {real = unique_keys, peer = keys.peer}
     end
 
-    function NGCP:clean(vtype)
+    function NGCP:clean(vtype, group)
         local _,v
-        for _,v in pairs(self.prefs) do
-            v:clean(vtype)
+        if not group then
+            for _,v in pairs(self.prefs) do
+                v:clean(vtype)
+            end
+        else
+            if self.prefs[group] then
+                self.prefs[group]:clean(vtype)
+            else
+                error(string.format("unknown group:%s", group))
+            end
         end
     end
 -- class

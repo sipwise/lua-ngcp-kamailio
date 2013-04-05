@@ -85,6 +85,30 @@ TestNGCP = {} --class
         assertFalse(sr.pv.get("$xavp(user)"))
     end
 
+    function TestNGCP:test_clean_caller_groups()
+        local groups = {"peer", "usr", "dom", "real"}
+        local _,v
+
+        for _,v in pairs(groups) do
+            assertEquals(sr.pv.get(string.format("$xavp(caller_%s_prefs=>dummy)", v), "caller"))
+            self.ngcp:clean("caller", v)
+            assertFalse(sr.pv.get(string.format("$xavp(caller_%s_prefs=>dummy)", v)))
+        end
+        assertError(self.ngcp.clean, self.ngcp, "caller", "whatever")
+    end
+
+    function TestNGCP:test_clean_callee_groups()
+        local groups = {"peer", "usr", "dom", "real"}
+        local _,v
+
+        for _,v in pairs(groups) do
+            assertEquals(sr.pv.get(string.format("$xavp(callee_%s_prefs=>dummy)", v), "callee"))
+            self.ngcp:clean("callee", v)
+            assertFalse(sr.pv.get(string.format("$xavp(callee_%s_prefs=>dummy)", v)))
+        end
+        assertError(self.ngcp.clean, self.ngcp, "callee", "whatever")
+    end
+
     function TestNGCP:test_callee_clean()
         local callee_xavp = NGCPDomainPrefs:xavp('callee')
         assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
