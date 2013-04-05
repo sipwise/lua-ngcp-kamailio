@@ -18,14 +18,14 @@ NGCPUserPrefs_MT = { __index = NGCPUserPrefs }
 
     function NGCPUserPrefs:caller_load(uuid)
         if not uuid then
-            error("uuid is empty")
+            return {}
         end
         return NGCPUserPrefs._load(self,"caller",uuid)
     end
 
     function NGCPUserPrefs:callee_load(uuid)
         if not uuid then
-            error("uuid is empty")
+            return {}
         end
         return NGCPUserPrefs._load(self,"callee",uuid)
     end

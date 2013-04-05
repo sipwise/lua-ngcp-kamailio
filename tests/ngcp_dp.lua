@@ -72,12 +72,12 @@ TestNGCPDomainPrefs = {} --class
 
     function TestNGCPDomainPrefs:test_caller_load_empty()
         assertTrue(self.d.config)
-        assertError(self.d.caller_load, nil)
+        assertEquals(self.d:caller_load(), {})
     end
 
     function TestNGCPDomainPrefs:test_callee_load_empty()
         assertTrue(self.d.config)
-        assertError(self.d.callee_load, nil)
+        assertEquals(self.d:callee_load(), {})
     end
 
     function TestNGCPDomainPrefs:test_caller_load()
