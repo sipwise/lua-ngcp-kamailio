@@ -19,7 +19,15 @@ function ngcp_test()
 end
 
 function ngcp_clean(vtype)
+    if #loaded_keys > 0 then
+        sr.log('loaded_keys has values\n')
+    end
     ngcp:clean(vtype)
+    local keys = loaded_keys["caller"]
+    sr.log("info", string.format("caller-> real: %s peer: %s", table.tostring(keys.real), table.tostring(keys.peer)))
+    keys = loaded_keys["callee"]
+    sr.log("info", string.format("callee-> real: %s peer: %s", table.tostring(keys.real), table.tostring(keys.peer)))
+    loaded_keys = {}
 end
 
 function print_loaded_prefs(vtype)
@@ -32,6 +40,14 @@ function print_loaded_prefs(vtype)
     for _,v in pairs(loaded_keys[vtype].peer) do
         sr.log("info", string.format("peer key:%s value:%s\n", v, xavp(v)))
     end
+end
+
+function ngcp_load_caller_peer(peer)
+    ngcp_load_caller(nil, nil, peer)
+end
+
+function ngcp_load_callee_peer(peer)
+    ngcp_load_callee(nil, nil, peer)
 end
 
 function ngcp_load_caller(uuid, domain, peer)
