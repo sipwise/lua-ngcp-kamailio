@@ -64,6 +64,14 @@ TestNGCP = {} --class
         assertTrue(self.ngcp.prefs.real)
     end
 
+    function TestNGCP:test_load_caller()
+        assertEquals(self.ngcp:caller_load(), {real={}, peer={}})
+    end
+
+    function TestNGCP:test_load_callee()
+        assertEquals(self.ngcp:callee_load(), {real={}, peer={}})
+    end
+
     function TestNGCP:test_clean()
         local xavp = NGCPXAvp:new('callee','usr_prefs')
         xavp("testid",1)
