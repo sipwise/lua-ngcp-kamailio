@@ -644,7 +644,6 @@ route[ROUTE_LOAD_CALLER_PREF]
 	avp_copy("$avp(s:sst_refresh_method)", "$avp(s:caller_dom_sst_refresh_method)/d");
 
 	avp_copy("$avp(s:sound_set)", "$avp(s:caller_dom_sound_set)/d");
-	avp_copy("$avp(s:reject_emergency)", "$avp(s:caller_dom_reject_emergency)/d");
 	avp_copy("$avp(s:ip_header)", "$avp(s:caller_dom_ip_header)/d");
 	avp_copy("$avp(s:ncos_id)", "$avp(s:caller_dom_ncos_id)/d");
 	avp_copy("$avp(s:adm_ncos_id)", "$avp(s:caller_dom_adm_ncos_id)/d");
@@ -679,16 +678,7 @@ route[ROUTE_LOAD_CALLER_PREF]
 	{
 		$(avp(s:acc_caller_domain)[*]) = $(avp(s:caller_domain_netprov)[*]);
 	}
-	avp_copy("$avp(s:cc)", "$avp(s:caller_cc)/d");
-	avp_copy("$avp(s:ac)", "$avp(s:caller_ac)/d");
-	avp_copy("$avp(s:emergency_cli)", "$avp(s:caller_emergency_cli)/d");
-	avp_copy("$avp(s:emergency_prefix)", "$avp(s:caller_emergency_prefix)/d");
-	avp_copy("$avp(s:emergency_suffix)", "$avp(s:caller_emergency_suffix)/d");
-	avp_copy("$avp(s:reject_emergency)", "$avp(s:caller_reject_emergency)/d");
-	if($avp(s:caller_reject_emergency) == $null && $avp(s:caller_dom_reject_emergency) == 1)
-	{
-		$avp(s:caller_reject_emergency) = $avp(s:caller_dom_reject_emergency);
-	}
+	
 
 	avp_copy("$avp(s:svc_ac)", "$avp(s:caller_svc_ac)/d");
 	if($avp(s:caller_clir) != 1)
@@ -2272,7 +2262,7 @@ route[ROUTE_EMERGENCY]
 {
 	xlog("L_INFO", "Emergency call detected - [% logreq -%]\n");
 
-	if($avp(s:caller_reject_emergency) == 1) 
+	if($xavp(caller_real_prefs=>reject_emergency) == 1) 
 	{
 		$var(announce_handle) = "emergency_unsupported";
 		$var(announce_set) = $avp(s:caller_sound_set);
@@ -3449,7 +3439,7 @@ route[ROUTE_NCOS]
 		$(avp(s:ncos_local_ac)[*]) = $null;
 		$(avp(s:ncos_mode)[*]) = $null;
 		$(avp(s:ncos_result)[*]) = $null;
-		$(avp(s:tmp)[*]) = $avp(s:caller_cc) + $avp(s:caller_ac) + "*";
+		$(avp(s:tmp)[*]) = $xavp(caller_real_prefs=>cc) + $xavp(caller_real_prefs=>ac) + "*";
 
 		avp_db_query("select nl.local_ac, nl.mode, convert(if(nl.mode = 'whitelist', max('$(avp(s:callee_cli){s.escape.common})' regexp(nlp.pattern)), min('$(avp(s:callee_cli){s.escape.common})' not regexp(nlp.pattern))), char(255)) as result from billing.ncos_levels nl left join billing.ncos_pattern_list nlp on nlp.ncos_level_id = nl.id where nl.id = $avp(s:tmp_ncos_id) group by nl.local_ac","$avp(s:ncos_local_ac);$avp(s:ncos_mode);$avp(s:ncos_result)");
 
