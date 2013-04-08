@@ -434,13 +434,13 @@ route[ROUTE_LOAD_PEER_IN_PREF]
 	avp_copy("$avp(s:peer_auth_pass)", "$avp(s:peer_peer_callee_auth_pass)/d");
 	avp_copy("$avp(s:peer_auth_realm)", "$avp(s:peer_peer_callee_auth_realm)/d");
 
-        avp_copy("$avp(s:use_rtpproxy)", "$avp(s:caller_use_rtpproxy)/d");
+    avp_copy("$avp(s:use_rtpproxy)", "$avp(s:caller_use_rtpproxy)/d");
 
-        avp_copy("$avp(s:force_outbound_calls_to_peer)", "$avp(s:caller_force_outbound_calls_to_peer)/d");
+    avp_copy("$avp(s:force_outbound_calls_to_peer)", "$avp(s:caller_force_outbound_calls_to_peer)/d");
 
-        avp_copy("$avp(s:find_subscriber_by_uuid)", "$avp(s:peer_caller_find_subscriber_by_uuid)/d");
+    avp_copy("$avp(s:find_subscriber_by_uuid)", "$avp(s:peer_caller_find_subscriber_by_uuid)/d");
 
-        avp_copy("$avp(s:inbound_upn)", "$avp(s:caller_inbound_upn)/d");
+    avp_copy("$avp(s:inbound_upn)", "$avp(s:caller_inbound_upn)/d");
 	if($avp(s:caller_inbound_upn) == $null)
 	{
 		$(avp(s:caller_inbound_upn)[*]) = "from_user";
@@ -631,8 +631,6 @@ route[ROUTE_LOAD_CALLER_PREF]
 
 	avp_copy("$avp(s:force_outbound_calls_to_peer)", "$avp(s:caller_dom_force_outbound_calls_to_peer)/d");
 
-	avp_copy("$avp(s:use_rtpproxy)", "$avp(s:caller_dom_use_rtpproxy)/d");
-
 	avp_copy("$avp(s:concurrent_max)", "$avp(s:caller_dom_concurrent_max)/d");
         avp_copy("$avp(s:concurrent_max_out)", "$avp(s:caller_dom_concurrent_max_out)/d");
 	avp_copy("$avp(s:concurrent_max_per_account)", "$avp(s:caller_dom_concurrent_max_per_account)/d");
@@ -787,30 +785,25 @@ route[ROUTE_LOAD_CALLER_PREF]
 		$avp(s:caller_force_outbound_calls_to_peer) = 1;
 	}
 
-	avp_copy("$avp(s:use_rtpproxy)", "$avp(s:caller_use_rtpproxy)/d");
-	if($avp(s:caller_use_rtpproxy) == $null && $avp(s:caller_dom_use_rtpproxy) != $null)
-	{
-		$avp(s:caller_use_rtpproxy) = $avp(s:caller_dom_use_rtpproxy);
-	}
 	if($avp(s:first_caller_use_rtpproxy) == $null) 
 	{
-		$(avp(s:first_caller_use_rtpproxy)[*]) = $avp(s:caller_use_rtpproxy);
+		$(avp(s:first_caller_use_rtpproxy)[*]) = $xavp(caller_real_prefs=>use_rtpproxy);
 	}
 
-        if($avp(s:rewrite_caller_in_dpid) == $null) #any null of the 4 rewrite preferences means all null
-        {
-                xlog("L_INFO", "Load dialplan IDs for domain '$var(pref_domain)' - [% logreq -%]\n");
-                xlog("L_INFO", "Fetched dialplan IDs caller_in='$avp(s:caller_dp_dom_caller_in)', callee_in='$avp(s:caller_dp_dom_callee_in)' - [% logreq -%]\n");
-        }
-        else
-        {
-                xlog("L_INFO", "Load dialplan IDs for user '$avp(s:caller_uuid)' - [% logreq -%]\n");
-		avp_copy("$avp(s:rewrite_caller_in_dpid)", "$avp(s:caller_dp_dom_caller_in)/d");
-	        avp_copy("$avp(s:rewrite_callee_in_dpid)", "$avp(s:caller_dp_dom_callee_in)/d");
-        	avp_delete("$avp(s:rewrite_caller_out_dpid)/g");
-        	avp_delete("$avp(s:rewrite_callee_out_dpid)/g");
-                xlog("L_INFO", "Fetched dialplan IDs caller_in='$avp(s:caller_dp_dom_caller_in)', callee_in='$avp(s:caller_dp_dom_callee_in)' - [% logreq -%]\n");
-        }
+    if($avp(s:rewrite_caller_in_dpid) == $null) #any null of the 4 rewrite preferences means all null
+    {
+            xlog("L_INFO", "Load dialplan IDs for domain '$var(pref_domain)' - [% logreq -%]\n");
+            xlog("L_INFO", "Fetched dialplan IDs caller_in='$avp(s:caller_dp_dom_caller_in)', callee_in='$avp(s:caller_dp_dom_callee_in)' - [% logreq -%]\n");
+    }
+    else
+    {
+            xlog("L_INFO", "Load dialplan IDs for user '$avp(s:caller_uuid)' - [% logreq -%]\n");
+	avp_copy("$avp(s:rewrite_caller_in_dpid)", "$avp(s:caller_dp_dom_caller_in)/d");
+        avp_copy("$avp(s:rewrite_callee_in_dpid)", "$avp(s:caller_dp_dom_callee_in)/d");
+    	avp_delete("$avp(s:rewrite_caller_out_dpid)/g");
+    	avp_delete("$avp(s:rewrite_callee_out_dpid)/g");
+            xlog("L_INFO", "Fetched dialplan IDs caller_in='$avp(s:caller_dp_dom_caller_in)', callee_in='$avp(s:caller_dp_dom_callee_in)' - [% logreq -%]\n");
+    }
 	
 	avp_copy("$avp(s:ip_header)", "$avp(s:caller_ip_header)/d");
 	if($avp(s:caller_ip_header) == $null && $avp(s:caller_dom_ip_header) != $null) 
