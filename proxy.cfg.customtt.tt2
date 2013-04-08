@@ -452,6 +452,40 @@ route[ROUTE_CLEAR_PEER_IN_PREF]
 		sl_send_reply("500", "Internal Error");
 		exit;
 	}
+	$(avp(s:peer_peer_callee_auth_user)[*]) = $null;
+	$(avp(s:peer_peer_callee_auth_pass)[*]) = $null;
+	$(avp(s:peer_peer_callee_auth_realm)[*]) = $null;
+
+        $(avp(s:caller_use_rtpproxy)[*]) = $null;
+	$(avp(s:peer_caller_ipv46_for_rtpproxy)[*]) = $null;
+
+	$(avp(s:caller_force_outbound_calls_to_peer)[*]) = $null;
+
+	$(avp(s:peer_caller_find_subscriber_by_uuid)[*]) = $null;
+
+        $(avp(s:pstn_dp_caller_in_id)[*]) = $null;
+        $(avp(s:pstn_dp_callee_in_id)[*]) = $null;
+        $(avp(s:pstn_dp_caller_out_id)[*]) = $null;
+        $(avp(s:pstn_dp_callee_out_id)[*]) = $null;
+
+	$(avp(s:rewrite_caller_in_dpid)[*]) = $null;
+	$(avp(s:rewrite_caller_out_dpid)[*]) = $null;
+	$(avp(s:rewrite_callee_in_dpid)[*]) = $null;
+	$(avp(s:rewrite_callee_out_dpid)[*]) = $null;
+
+	$(avp(s:caller_peer_concurrent_max)[*]) = $null;
+	$(avp(s:peer_caller_sst_enable)[*]) = $null;
+	$(avp(s:peer_caller_sst_expires)[*]) = $null;
+	$(avp(s:peer_caller_sst_min_timer)[*]) = $null;
+	$(avp(s:peer_caller_sst_max_timer)[*]) = $null;
+	$(avp(s:peer_caller_sst_refresh_method)[*]) = $null;
+
+	$(avp(s:caller_inbound_upn)[*]) = $null;
+	$(avp(s:caller_inbound_npn)[*]) = $null;
+	$(avp(s:caller_inbound_uprn)[*]) = $null;
+
+	$(avp(s:caller_ip_header)[*]) = $null;
+	$(avp(s:caller_ip_val)[*]) = $null;
 }
 
 ########################################################################
@@ -472,14 +506,11 @@ route[ROUTE_LOAD_PEER_IN_PREF]
 	avp_copy("$avp(s:peer_auth_pass)", "$avp(s:peer_peer_callee_auth_pass)/d");
 	avp_copy("$avp(s:peer_auth_realm)", "$avp(s:peer_peer_callee_auth_realm)/d");
 
-    avp_copy("$avp(s:use_rtpproxy)", "$avp(s:caller_use_rtpproxy)/d");
+        avp_copy("$avp(s:use_rtpproxy)", "$avp(s:caller_use_rtpproxy)/d");
 
-    /** XAVP WHY???
-    if we are loading caller_peer_prefs 
-    avp_copy("$avp(s:force_outbound_calls_to_peer)", "$avp(s:caller_force_outbound_calls_to_peer)/d");
-    **/
+        avp_copy("$avp(s:force_outbound_calls_to_peer)", "$avp(s:caller_force_outbound_calls_to_peer)/d");
 
-    avp_copy("$avp(s:find_subscriber_by_uuid)", "$avp(s:peer_caller_find_subscriber_by_uuid)/d");
+        avp_copy("$avp(s:find_subscriber_by_uuid)", "$avp(s:peer_caller_find_subscriber_by_uuid)/d");
 
         avp_copy("$avp(s:inbound_upn)", "$avp(s:caller_inbound_upn)/d");
 	if($avp(s:caller_inbound_upn) == $null)
@@ -587,10 +618,16 @@ route[ROUTE_LOAD_PEER_IN_PREF]
 route[ROUTE_CLEAR_CALLEE_DOMAIN_PREF]
 {
 	xlog("L_INFO", "[LUA] Clean domain preferences for caller' - [% logreq -%]\n");
-	if (!lua_run("ngcp_clean", "callee", "dom")) {
+	if (!lua_run("ngcp_clean", "caller", "dom")) {
 		sl_send_reply("500", "Internal Error");
 		exit;
 	}
+	$(avp(s:callee_dom_unauth_in)[*]) = $null;
+
+	#manwe repeated in load_callee_prefs Should we move all the dom prefs here?
+        #$(avp(s:callee_dom_use_rtpproxy)[*]) = $null;
+
+	#$(avp(s:callee_dom_concurrent_max)[*]) = $null;
 }
 
 ########################################################################
@@ -598,8 +635,8 @@ route[ROUTE_CLEAR_CALLEE_DOMAIN_PREF]
 ########################################################################
 route[ROUTE_LOAD_CALLEE_DOMAIN_PREF]
 {
-	xlog("L_INFO", "[LUA] Load domain preferences for callee' - [% logreq -%]\n");
-	if (!lua_run("ngcp_load_callee", , "$ru")) {
+	xlog("L_INFO", "[LUA] Clean domain preferences for callee' - [% logreq -%]\n");
+	if (!lua_run("ngcp_clean", "callee", "dom")) {
 		sl_send_reply("500", "Internal Error");
 		exit;
 	}
@@ -619,6 +656,109 @@ route[ROUTE_CLEAR_CALLER_PREF]
 		sl_send_reply("500", "Internal Error");
 		exit;
 	}
+
+	xlog("L_INFO", "Clear caller preferences - [% logreq -%]\n");
+	$(avp(s:caller_account_id)[*]) = $null;
+	$(avp(s:caller_lock)[*]) = $null;
+	$(avp(s:caller_cli_netprov)[*]) = $null;
+	$(avp(s:caller_allowed_clis)[*]) = $null;
+	$(avp(s:caller_user_cli)[*]) = $null;
+	$(avp(s:caller_cc)[*]) = $null;
+	$(avp(s:caller_ac)[*]) = $null;
+	$(avp(s:caller_emergency_cli)[*]) = $null;
+	$(avp(s:caller_emergency_prefix)[*]) = $null;
+	$(avp(s:caller_emergency_suffix)[*]) = $null;
+	$(avp(s:caller_block_out_mode)[*]) = $null;
+	$(avp(s:caller_block_out_list)[*]) = $null;
+        $(avp(s:caller_adm_block_out_mode)[*]) = $null;
+        $(avp(s:caller_adm_block_out_list)[*]) = $null;
+	$(avp(s:caller_dp_dom_caller_in)[*]) = $null;
+	$(avp(s:caller_dp_dom_callee_in)[*]) = $null;
+	$(avp(s:caller_dp_dom_caller_out)[*]) = $null;
+	$(avp(s:caller_dp_dom_callee_out)[*]) = $null;
+	
+	$(avp(s:allowed_ips_grp)[*]) = $null;
+	$(avp(s:man_allowed_ips_grp)[*]) = $null;
+	$(avp(s:ignore_allowed_ips)[*]) = $null;
+
+	$(avp(s:caller_ncos_id)[*]) = $null;
+	$(avp(s:caller_adm_ncos_id)[*]) = $null;
+	$(avp(s:caller_dom_ncos_id)[*]) = $null;
+	$(avp(s:caller_dom_adm_ncos_id)[*]) = $null;
+	$(avp(s:caller_block_override)[*]) = $null;
+	$(avp(s:caller_adm_block_override)[*]) = $null;
+
+	$(avp(s:caller_peer_auth_user)[*]) = $null;
+	$(avp(s:caller_peer_auth_pass)[*]) = $null;
+	$(avp(s:caller_peer_auth_realm)[*]) = $null;
+
+	$(avp(s:caller_ext_subscriber_id)[*]) = $null;
+	$(avp(s:caller_ext_contract_id)[*]) = $null;
+	$(avp(s:caller_prepaid)[*]) = $null;
+
+	$(avp(s:caller_ipv46_for_rtpproxy)[*]) = $null;
+	$(avp(s:caller_dom_ipv46_for_rtpproxy)[*]) = $null;
+
+	$(avp(s:caller_dom_use_rtpproxy)[*]) = $null;
+	$(avp(s:caller_use_rtpproxy)[*]) = $null;
+
+	$(avp(s:caller_force_outbound_calls_to_peer)[*]) = $null;
+	$(avp(s:caller_dom_force_outbound_calls_to_peer)[*]) = $null;
+
+	$(avp(s:caller_dom_concurrent_max)[*]) = $null;
+        $(avp(s:caller_concurrent_max)[*]) = $null;
+        $(avp(s:caller_dom_concurrent_max_out)[*]) = $null;
+        $(avp(s:caller_concurrent_max_out)[*]) = $null;
+	$(avp(s:caller_dom_concurrent_max_per_account)[*]) = $null;
+        $(avp(s:caller_concurrent_max_per_account)[*]) = $null;
+        $(avp(s:caller_dom_concurrent_max_out_per_account)[*]) = $null;
+        $(avp(s:caller_concurrent_max_out_per_account)[*]) = $null;
+
+	$(avp(s:caller_dom_sst_enable)[*]) = $null;
+	$(avp(s:caller_dom_sst_expires)[*]) = $null;
+	$(avp(s:caller_dom_sst_min_timer)[*]) = $null;
+	$(avp(s:caller_dom_sst_max_timer)[*]) = $null;
+	$(avp(s:caller_dom_sst_refresh_method)[*]) = $null;
+	$(avp(s:caller_sst_enable)[*]) = $null;
+	$(avp(s:caller_sst_expires)[*]) = $null;
+	$(avp(s:caller_sst_min_timer)[*]) = $null;
+	$(avp(s:caller_sst_max_timer)[*]) = $null;
+	$(avp(s:caller_sst_refresh_method)[*]) = $null;
+
+	$(avp(s:caller_reject_emergency)[*]) = $null;
+	$(avp(s:caller_dom_reject_emergency)[*]) = $null;
+
+	$(avp(s:caller_sound_set)[*]) = $null;
+	$(avp(s:caller_dom_sound_set)[*]) = $null;
+
+	$(avp(s:caller_inbound_upn)[*]) = $null;
+	$(avp(s:caller_dom_inbound_upn)[*]) = $null;
+	$(avp(s:caller_inbound_uprn)[*]) = $null;
+	$(avp(s:caller_dom_inbound_uprn)[*]) = $null;
+
+	$(avp(s:caller_dom_extension_in_npn)[*]) = $null;
+	$(avp(s:caller_extension_in_npn)[*]) = $null;
+
+	$(avp(s:caller_allow_out_foreign_domain)[*]) = $null;
+	$(avp(s:caller_dom_allow_out_foreign_domain)[*]) = $null;
+
+	# Clear caller loaded preferences
+	$(avp(s:lock)[*]) = $null;
+	$(avp(s:cfu)[*]) = $null;
+	$(avp(s:cfb)[*]) = $null;
+	$(avp(s:cfna)[*]) = $null;
+	$(avp(s:cft)[*]) = $null;
+	$(avp(s:cc)[*]) = $null;
+	$(avp(s:ac)[*]) = $null;
+	$(avp(s:emerg_ac)[*]) = $null;
+	$(avp(s:ringtimeout)[*]) = $null;
+	$(avp(s:rewrite_caller_in_dpid)[*]) = $null;
+	$(avp(s:rewrite_caller_out_dpid)[*]) = $null;
+	$(avp(s:rewrite_callee_in_dpid)[*]) = $null;
+	$(avp(s:rewrite_callee_out_dpid)[*]) = $null;
+
+	$(avp(s:caller_ip_header)[*]) = $null;
+	$(avp(s:caller_ip_val)[*]) = $null;
 }
 
 ########################################################################
@@ -627,10 +767,109 @@ route[ROUTE_CLEAR_CALLER_PREF]
 route[ROUTE_CLEAR_CALLEE_PREF]
 {
 	xlog("L_INFO", "[LUA] Clear callee preferences - [% logreq -%]\n");
-	if (!lua_run("ngcp_clean", "callee", "usr")) {
+	if (!lua_run("ngcp_clean", "callee")) {
 		sl_send_reply("500", "Internal Error");
 		exit;
 	}
+
+	xlog("L_INFO", "Clear callee preferences - [% logreq -%]\n");
+	$(avp(s:callee_account_id)[*]) = $null;
+	$(avp(s:callee_lock)[*]) = $null;
+	$(avp(s:callee_fr_inv_timer)[*]) = $null;
+	$(avp(s:callee_cfu)[*]) = $null;
+	$(avp(s:callee_cfb)[*]) = $null;
+	$(avp(s:callee_cfna)[*]) = $null;
+	$(avp(s:callee_cft)[*]) = $null;
+	$(avp(s:callee_cc)[*]) = $null;
+	$(avp(s:callee_ac)[*]) = $null;
+	$(avp(s:callee_ringtimeout)[*]) = $null;
+	$(avp(s:callee_block_in_mode)[*]) = $null;
+	$(avp(s:callee_block_in_list)[*]) = $null;
+	$(avp(s:callee_block_in_clir)[*]) = $null;
+	$(avp(s:callee_adm_block_in_mode)[*]) = $null;
+        $(avp(s:callee_adm_block_in_list)[*]) = $null;
+        $(avp(s:callee_adm_block_in_clir)[*]) = $null;
+	#$(avp(s:callee_base_user)[*]) = $null;
+	$(avp(s:callee_dp_dom_caller_out)[*]) = $null;
+	$(avp(s:callee_dp_dom_callee_out)[*]) = $null;
+	$(avp(s:callee_dp_dom_caller_in)[*]) = $null;
+	$(avp(s:callee_dp_dom_callee_in)[*]) = $null;
+
+	$(avp(s:callee_ipv46_for_rtpproxy)[*]) = $null;
+	$(avp(s:callee_dom_ipv46_for_rtpproxy)[*]) = $null;
+
+	$(avp(s:callee_ext_subscriber_id)[*]) = $null;
+	$(avp(s:callee_ext_contract_id)[*]) = $null;
+
+        $(avp(s:callee_dom_use_rtpproxy)[*]) = $null;
+        $(avp(s:callee_use_rtpproxy)[*]) = $null;
+
+	$(avp(s:callee_peer_auth_user)[*]) = $null;
+	$(avp(s:callee_peer_auth_pass)[*]) = $null;
+	$(avp(s:callee_peer_auth_realm)[*]) = $null;
+
+        $(avp(s:callee_dom_concurrent_max)[*]) = $null;
+        $(avp(s:callee_concurrent_max)[*]) = $null;
+        $(avp(s:callee_dom_concurrent_max_out)[*]) = $null;
+        $(avp(s:callee_concurrent_max_out)[*]) = $null;
+        $(avp(s:callee_dom_concurrent_max_per_account)[*]) = $null;
+        $(avp(s:callee_concurrent_max_per_account)[*]) = $null;
+        $(avp(s:callee_dom_concurrent_max_out_per_account)[*]) = $null;
+        $(avp(s:callee_concurrent_max_out_per_account)[*]) = $null;
+
+        $(avp(s:callee_dom_force_inbound_calls_to_peer)[*]) = $null;
+        $(avp(s:callee_force_inbound_calls_to_peer)[*]) = $null;
+        $(avp(s:callee_e164_to_ruri)[*]) = $null;
+
+        $(avp(s:callee_dom_sst_enable)[*]) = $null;
+        $(avp(s:callee_dom_sst_expires)[*]) = $null;
+        $(avp(s:callee_dom_sst_min_timer)[*]) = $null;
+        $(avp(s:callee_dom_sst_max_timer)[*]) = $null;
+        $(avp(s:callee_dom_sst_refresh_method)[*]) = $null;
+        $(avp(s:callee_sst_enable)[*]) = $null;
+        $(avp(s:callee_sst_expires)[*]) = $null;
+        $(avp(s:callee_sst_min_timer)[*]) = $null;
+        $(avp(s:callee_sst_max_timer)[*]) = $null;
+        $(avp(s:callee_sst_refresh_method)[*]) = $null;
+
+	$(avp(s:callee_sound_set)[*]) = $null;
+	$(avp(s:callee_dom_sound_set)[*]) = $null;
+	$(avp(s:callee_dom_mobile_push_enable)[*]) = $null;
+	$(avp(s:callee_mobile_push_enable)[*]) = $null;
+	$(avp(s:callee_prepaid)[*]) = $null;
+	
+        # Clear callee loaded preferences
+        $(avp(s:block_in_mode)[*]) = $null;
+        $(avp(s:block_in_list)[*]) = $null;
+        $(avp(s:block_in_clir)[*]) = $null;
+        $(avp(s:adm_block_in_mode)[*]) = $null;
+        $(avp(s:adm_block_in_list)[*]) = $null;
+        $(avp(s:adm_block_in_clir)[*]) = $null;
+
+	$(avp(s:lock)[*]) = $null;
+	$(avp(s:cfu)[*]) = $null;
+	$(avp(s:cfb)[*]) = $null;
+	$(avp(s:cfna)[*]) = $null;
+	$(avp(s:cft)[*]) = $null;
+	$(avp(s:cc)[*]) = $null;
+	$(avp(s:ac)[*]) = $null;
+	$(avp(s:ringtimeout)[*]) = $null;
+	$(avp(s:rewrite_caller_in_dpid)[*]) = $null;
+	$(avp(s:rewrite_caller_out_dpid)[*]) = $null;
+	$(avp(s:rewrite_callee_in_dpid)[*]) = $null;
+	$(avp(s:rewrite_callee_out_dpid)[*]) = $null;
+
+	$(avp(s:callee_outbound_from_display)[*]) = $null;
+	$(avp(s:callee_dom_outbound_from_display)[*]) = $null;
+	$(avp(s:callee_outbound_from_user)[*]) = $null;
+	$(avp(s:callee_dom_outbound_from_user)[*]) = $null;
+	$(avp(s:callee_outbound_pai_user)[*]) = $null;
+	$(avp(s:callee_dom_outbound_pai_user)[*]) = $null;
+	$(avp(s:callee_outbound_ppi_user)[*]) = $null;
+	$(avp(s:callee_dom_outbound_ppi_user)[*]) = $null;
+	$(avp(s:callee_outbound_diversion)[*]) = $null;
+	$(avp(s:callee_dom_outbound_diversion)[*]) = $null;
+
 	t_reset_fr();
 }
 
@@ -669,6 +908,8 @@ route[ROUTE_LOAD_CALLER_PREF]
 	
 	# load domain specific avps
 	avp_db_load("$var(pref_domain)/domain", "*/dom_preferences");
+
+	avp_copy("$avp(s:force_outbound_calls_to_peer)", "$avp(s:caller_dom_force_outbound_calls_to_peer)/d");
 
 	avp_copy("$avp(s:use_rtpproxy)", "$avp(s:caller_dom_use_rtpproxy)/d");
 
@@ -819,10 +1060,11 @@ route[ROUTE_LOAD_CALLER_PREF]
 			$avp(s:initial_caller_ipv46_for_rtpproxy) = $avp(s:caller_dom_ipv46_for_rtpproxy);
 		}
 	}
-	/** XAVP **/
-	if($xavp(caller_real_prefs=>force_outbound_calls_to_peer) == $null)
+
+	avp_copy("$avp(s:force_outbound_calls_to_peer)", "$avp(s:caller_force_outbound_calls_to_peer)/d");
+	if($avp(s:caller_force_outbound_calls_to_peer) == $null && $avp(s:caller_dom_force_outbound_calls_to_peer) == 1)
 	{
-		$avp(s:caller_real_prefs[0]=>force_outbound_calls_to_peer) = 1;
+		$avp(s:caller_force_outbound_calls_to_peer) = 1;
 	}
 
 	avp_copy("$avp(s:use_rtpproxy)", "$avp(s:caller_use_rtpproxy)/d");
@@ -2211,10 +2453,10 @@ route[ROUTE_FIND_CALLER]
 		$(avp(s:caller_clir)[*]) = $hdr(P-Caller-CLIR);
 
 		$(avp(s:tmp)[*]) = $hdr(P-Caller-PeerInfo);
-		$(xavp(caller_real_prefs[0]=>force_outbound_calls_to_peer)[*]) = $avp(s:tmp);
-		if(!avp_subst("$xavp(caller_real_prefs=>force_outbound_calls_to_peer)", "/^([0-1]).*$/\1/"))
+		$(avp(s:caller_force_outbound_calls_to_peer)[*]) = $avp(s:tmp);
+		if(!avp_subst("$avp(s:caller_force_outbound_calls_to_peer)", "/^([0-1]).*$/\1/"))
 		{
-			$(xavp(caller_real_prefs[0]=>force_outbound_calls_to_peer)[*]) = $null;
+			$(avp(s:caller_force_outbound_calls_to_peer)[*]) = $null;
 		}
 		$(avp(s:caller_peer_auth_user)[*]) = $avp(s:tmp);
 		if(!avp_subst("$avp(s:caller_peer_auth_user)", "/^[0-1](;([^;]+);.*)?$/\2/"))
@@ -2854,7 +3096,7 @@ route[ROUTE_FIND_CALLEE]
 		# check block-out-list
 		route(ROUTE_BLOCK_OUT);
 
-		if($xavp(caller_real_prefs=>force_outbound_calls_to_peer) == 1)
+		if($avp(s:caller_force_outbound_calls_to_peer) == 1)
 		{
 			if ($var(local_endpoint) == 0 && $avp(s:from_faxserver) == 0 && $avp(s:from_voicebox) == 0) 
 			{
@@ -3086,7 +3328,7 @@ route[ROUTE_INVITE_TO_EXT]
 	route(ROUTE_LOOKUP_ENUM);
         #!endif
 	route(ROUTE_SET_RUSER);
-	if($avp(s:from_pstn) != 1 || $var(forward) == 1 || $var(cf_loop) == 1 || $xavp(caller_real_prefs=>force_outbound_calls_to_peer) == 1)
+	if($avp(s:from_pstn) != 1 || $var(forward) == 1 || $var(cf_loop) == 1 || $avp(s:caller_force_outbound_calls_to_peer) == 1)
 	{
 		route(ROUTE_PSTN);
 	}
@@ -5353,7 +5595,7 @@ branch_route[BRANCH_ROUTE_SBC]
 			append_hf("P-First-V46-RTP: $avp(s:initial_caller_ipv46_for_rtpproxy)\r\n");
 			append_hf("P-First-RTP: $avp(s:first_caller_use_rtpproxy)\r\n");
 			append_hf("P-Caller-CLIR: $avp(s:caller_clir)\r\n");
-			if($xavp(caller_real_prefs=>force_outbound_calls_to_peer) == 1)
+			if($avp(s:caller_force_outbound_calls_to_peer) == 1)
 			{
 				$var(tmppinfo) = "1";
 			}
