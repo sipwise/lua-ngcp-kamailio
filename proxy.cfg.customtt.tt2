@@ -972,7 +972,6 @@ route[ROUTE_LOAD_CALLEE_PREF]
 
 	# load domain specific avps
 	avp_db_load("$ru/domain", "*/dom_preferences");
-	avp_copy("$avp(s:cc)", "$avp(s:callee_cc)/d");
 	
 	avp_copy("$avp(s:force_inbound_calls_to_peer)", "$avp(s:callee_dom_force_inbound_calls_to_peer)/d");
 
@@ -1005,8 +1004,7 @@ route[ROUTE_LOAD_CALLEE_PREF]
 	{
 		$(avp(s:callee_account_id)[*]) = 0;
 	}
-	avp_copy("$avp(s:cc)", "$avp(s:callee_cc)/d");
-	avp_copy("$avp(s:ac)", "$avp(s:callee_ac)/d");
+
 	avp_copy("$avp(s:cfu)", "$avp(s:callee_cfu)/gd");
 	avp_copy("$avp(s:cfna)", "$avp(s:callee_cfna)/gd");
 	avp_copy("$avp(s:cfb)", "$avp(s:callee_cfb)/gd");
