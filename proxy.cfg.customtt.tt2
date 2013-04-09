@@ -346,9 +346,6 @@ route[ROUTE_LOAD_PEER_OUT_PREF]
 	}
 	xlog("L_INFO", "Load peer preferences for peer host '$avp(s:lcr_flags)' - [% logreq -%]\n");
 	avp_db_load("$avp(s:lcr_flags)", "*/peer_preferences");
-	avp_copy("$avp(s:peer_auth_user)", "$avp(s:peer_peer_caller_auth_user)/d");
-	avp_copy("$avp(s:peer_auth_pass)", "$avp(s:peer_peer_caller_auth_pass)/d");
-	avp_copy("$avp(s:peer_auth_realm)", "$avp(s:peer_peer_caller_auth_realm)/d");
 
 	avp_copy("$avp(s:use_rtpproxy)", "$avp(s:callee_use_rtpproxy)/d");
 	avp_copy("$avp(s:ipv46_for_rtpproxy)", "$avp(s:peer_callee_ipv46_for_rtpproxy)/d");
@@ -4102,7 +4099,7 @@ route[ROUTE_SET_CLI_CALLER]
 	$var(out_from_display) = $var(ccli_user);
 	if($var(to_pstn) == 1 && isbflagset(FLB_PEERAUTH))
 	{
-		$var(caller_uri) = "sip:" + $avp(s:peer_peer_caller_auth_user) + "@" + $avp(s:peer_peer_caller_auth_realm);
+		$var(caller_uri) = "sip:" + $xavp(caller_peer_prefs=>peer_caller_auth_user) + "@" + $xavp(caller_peer_prefs=>peer_caller_auth_realm);
 	}
 	else
 	{
@@ -5113,10 +5110,10 @@ branch_route[BRANCH_ROUTE_SBC]
                         	xlog("L_INFO", "Overruling peer auth realm by caller value '$avp(s:caller_peer_auth_realm)' - [% logreq -%]\n");
                         	$(avp(s:peer_peer_caller_auth_realm)[*]) = $avp(s:caller_peer_auth_realm);
                 	}
-                	if($avp(s:peer_peer_caller_auth_user) != $null && $avp(s:peer_peer_caller_auth_pass) != $null && $avp(s:peer_peer_caller_auth_realm) != $null)
+                	if($xavp(caller_peer_prefs=>peer_caller_auth_user) != $null && $xavp(caller_peer_prefs=>peer_caller_auth_pass) != $null && $xavp(caller_peer_prefs=>peer_caller_auth_realm) != $null)
                 	{
-                        	xlog("L_INFO", "Adding peer authentication header P-App-Param with 'u=$avp(s:peer_peer_caller_auth_user);d=$avp(s:peer_peer_caller_auth_realm);p=$avp(s:peer_peer_caller_auth_pass)' - [% logreq -%]\n");
-                        	$avp(s:app_server_params) = $avp(s:app_server_params) + ";u=" + $avp(s:peer_peer_caller_auth_user) + ";d=" + $avp(s:peer_peer_caller_auth_realm) + ";p=" + $avp(s:peer_peer_caller_auth_pass);
+                        	xlog("L_INFO", "Adding peer authentication header P-App-Param with 'u=$xavp(caller_peer_prefs=>peer_caller_auth_user);d=$xavp(caller_peer_prefs=>peer_caller_auth_realm);p=$xavp(caller_peer_prefs=>peer_caller_auth_pass)' - [% logreq -%]\n");
+                        	$avp(s:app_server_params) = $avp(s:app_server_params) + ";u=" + $xavp(caller_peer_prefs=>peer_caller_auth_user) + ";d=" + $xavp(caller_peer_prefs=>peer_caller_auth_realm) + ";p=" + $xavp(caller_peer_prefs=>peer_caller_auth_pass);
                         	setbflag(FLB_PEERAUTH);
                 	}
         	}
@@ -5272,10 +5269,10 @@ branch_route[BRANCH_ROUTE_SBC]
 		}
 		append_hf("P-App-Name: sbc\r\n");
 
-		if($avp(s:peer_peer_caller_auth_realm) != $null)
+		if($xavp(caller_peer_prefs=>peer_caller_auth_realm) != $null)
 		{
-			xlog("L_INFO", "Setting R-URI using peer auth realm '$rU@$avp(s:peer_peer_caller_auth_realm)' - [% logreq -%]\n");
-			$ru = "sip:" + $rU + "@" + $avp(s:peer_peer_caller_auth_realm);
+			xlog("L_INFO", "Setting R-URI using peer auth realm '$rU@$xavp(caller_peer_prefs=>peer_caller_auth_realm)' - [% logreq -%]\n");
+			$ru = "sip:" + $rU + "@" + $xavp(caller_peer_prefs=>peer_caller_auth_realm);
 		}
 
 		if($var(to_pstn) == 1 || $avp(s:to_faxserver) == 1)
