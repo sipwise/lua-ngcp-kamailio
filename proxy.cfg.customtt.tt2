@@ -680,7 +680,6 @@ route[ROUTE_LOAD_CALLER_PREF]
 	avp_copy("$avp(s:lock)", "$avp(s:caller_lock)/d");
 	avp_copy("$avp(s:block_out_override_pin)", "$avp(s:caller_block_override)/d");
 	avp_copy("$avp(s:allowed_clis)", "$avp(s:caller_allowed_clis)/gd");
-	avp_copy("$avp(s:user_cli)", "$avp(s:caller_user_cli)/gd");
 
 	avp_copy("$avp(s:block_out_mode)", "$avp(s:caller_block_out_mode)/d");
 	avp_copy("$avp(s:block_out_list)", "$avp(s:caller_block_out_list)/gd");
@@ -2017,10 +2016,10 @@ route[ROUTE_CHECK_CLI_ALLOWED]
 	{
 		xlog("L_INFO", "$var(ccli_desc) '$var(userprov_cli)' accepted - [% logreq -%]\n");
 	}
-	else if($avp(s:caller_user_cli) != $null)
+	else if($xavp(caller_real_prefs=>user_cli) != $null)
 	{
-		xlog("L_INFO", "$var(ccli_desc) '$var(userprov_cli)' rejected, using provisioned user-provided CLI '$avp(s:caller_user_cli)' - [% logreq -%]\n");
-		$var(userprov_cli) = $avp(s:caller_user_cli);
+		xlog("L_INFO", "$var(ccli_desc) '$var(userprov_cli)' rejected, using provisioned user-provided CLI '$xavp(caller_real_prefs=>user_cli)' - [% logreq -%]\n");
+		$var(userprov_cli) = $xavp(caller_real_prefs=>user_cli);
 		$var(userprov_domain) = $avp(s:caller_domain_netprov);
 	}
 	else
