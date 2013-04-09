@@ -432,8 +432,6 @@ route[ROUTE_LOAD_PEER_IN_PREF]
 
     avp_copy("$avp(s:force_outbound_calls_to_peer)", "$avp(s:caller_force_outbound_calls_to_peer)/d");
 
-    avp_copy("$avp(s:find_subscriber_by_uuid)", "$avp(s:peer_caller_find_subscriber_by_uuid)/d");
-
     avp_copy("$avp(s:inbound_upn)", "$avp(s:caller_inbound_upn)/d");
 	if($avp(s:caller_inbound_upn) == $null)
 	{
@@ -2614,7 +2612,7 @@ route[ROUTE_FIND_CALLEE]
 			xlog("L_INFO", "Callee was aliased with base '$avp(s:callee_base_user)' - [% logreq -%]\n");
 		}
 	}
-	else if ($avp(s:peer_caller_find_subscriber_by_uuid) == 1)
+	else if ($xavp(caller_peer_prefs=>find_subscriber_by_uuid) == 1)
 	{
                 avp_delete("$avp(s:has_extension)/g");
                 avp_delete("$avp(s:callee_user)/g");
@@ -2911,7 +2909,7 @@ route[ROUTE_SET_RUSER]
 		$rU = $avp(s:acc_callee_user_in);
 		xlog("L_INFO", "Local user online, using full extensioned alias as user - [% logreq -%]\n");
 	}
-	else if($avp(s:callee_e164_to_ruri) == 1 && !isflagset(FLAG_IN_FALLBACK) && $avp(s:peer_caller_find_subscriber_by_uuid) != 1)
+	else if($avp(s:callee_e164_to_ruri) == 1 && !isflagset(FLAG_IN_FALLBACK) && $xavp(caller_peer_prefs=>find_subscriber_by_uuid) != 1)
 	{
 		# send the dialed alias; on 404 send real user
 		$rU = $avp(s:callee_base_user); 
