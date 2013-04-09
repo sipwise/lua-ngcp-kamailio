@@ -1016,10 +1016,9 @@ route[ROUTE_LOAD_CALLEE_PREF]
 	avp_copy("$avp(s:e164_to_ruri)", "$avp(s:callee_e164_to_ruri)/d");
 	avp_copy("$avp(s:force_inbound_calls_to_peer)", "$avp(s:callee_force_inbound_calls_to_peer)/d");
 	
-	avp_copy("$avp(s:block_in_mode)", "$avp(s:callee_block_in_mode)/d");
 	avp_copy("$avp(s:block_in_list)", "$avp(s:callee_block_in_list)/gd");
 	avp_copy("$avp(s:block_in_clir)", "$avp(s:callee_block_in_clir)/d");
-        avp_copy("$avp(s:adm_block_in_list)", "$avp(s:callee_adm_block_in_list)/gd");
+	avp_copy("$avp(s:adm_block_in_list)", "$avp(s:callee_adm_block_in_list)/gd");
 	
 	avp_copy("$avp(s:ext_subscriber_id)", "$avp(s:callee_ext_subscriber_id)/d");
 	avp_copy("$avp(s:ext_contract_id)", "$avp(s:callee_ext_contract_id)/d");
@@ -3351,7 +3350,7 @@ route[ROUTE_BLOCK_IN]
                 }
         }
 
-	if($avp(s:callee_block_in_mode) == 1)
+	if($xavp(callee_real_prefs=>block_in_mode) == 1)
 	{
 		xlog("L_INFO", "Callee block mode is 'closed' - [% logreq -%]\n");
 		if($avp(s:caller_clir) == 1 && $avp(s:callee_block_in_clir) == 0)
