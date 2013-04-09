@@ -685,8 +685,7 @@ route[ROUTE_LOAD_CALLER_PREF]
 
 	avp_copy("$avp(s:block_out_mode)", "$avp(s:caller_block_out_mode)/d");
 	avp_copy("$avp(s:block_out_list)", "$avp(s:caller_block_out_list)/gd");
-	avp_copy("$avp(s:adm_block_out_mode)", "$avp(s:caller_adm_block_out_mode)/d");
-        avp_copy("$avp(s:adm_block_out_list)", "$avp(s:caller_adm_block_out_list)/gd");
+    avp_copy("$avp(s:adm_block_out_list)", "$avp(s:caller_adm_block_out_list)/gd");
 	avp_copy("$avp(s:ncos_id)", "$avp(s:caller_ncos_id)/d");
 	if($avp(s:caller_ncos_id) == $null && $avp(s:caller_dom_ncos_id) != $null)
 	{
@@ -1021,7 +1020,6 @@ route[ROUTE_LOAD_CALLEE_PREF]
 	avp_copy("$avp(s:block_in_mode)", "$avp(s:callee_block_in_mode)/d");
 	avp_copy("$avp(s:block_in_list)", "$avp(s:callee_block_in_list)/gd");
 	avp_copy("$avp(s:block_in_clir)", "$avp(s:callee_block_in_clir)/d");
-        avp_copy("$avp(s:adm_block_in_mode)", "$avp(s:callee_adm_block_in_mode)/d");
         avp_copy("$avp(s:adm_block_in_list)", "$avp(s:callee_adm_block_in_list)/gd");
 	
 	avp_copy("$avp(s:ext_subscriber_id)", "$avp(s:callee_ext_subscriber_id)/d");
@@ -3206,7 +3204,7 @@ route[ROUTE_BLOCK_OUT]
 	}
 
 	xlog("L_INFO", "Checking URI '$var(blockuri)' and CLI '$avp(s:callee_cli)' against block out lists - [% logreq -%]\n");
-        if($avp(s:caller_adm_block_out_mode) == 1)
+        if($xavp(caller_real_prefs=>adm_block_out_mode) == 1)
         {
                 xlog("L_INFO", "Admin caller block mode is 'closed' - [% logreq -%]\n");
                 if(!avp_check("$var(blockuri)", "fm/$avp(s:caller_adm_block_out_list)/g") &&
@@ -3297,7 +3295,7 @@ route[ROUTE_BLOCK_IN]
 	$(avp(s:announce_code)[*]) = 403;
 
 	xlog("L_INFO", "Checking UPN '$avp(s:caller_cli_userprov)' and NPN '$avp(s:caller_cli_netprov)' against block in lists - [% logreq -%]\n");
-        if($avp(s:callee_adm_block_in_mode) == 1)
+        if($xavp(callee_real_prefs=>adm_block_in_mode) == 1)
         {
                 xlog("L_INFO", "Admin callee block mode is 'closed' - [% logreq -%]\n");
                 if($avp(s:caller_clir) == 1 && $xavp(callee_real_prefs=>adm_block_in_clir) == 0)
