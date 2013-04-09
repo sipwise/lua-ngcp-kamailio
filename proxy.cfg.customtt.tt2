@@ -700,7 +700,6 @@ route[ROUTE_LOAD_CALLER_PREF]
 
 	avp_copy("$avp(s:ext_subscriber_id)", "$avp(s:caller_ext_subscriber_id)/d");
 	avp_copy("$avp(s:ext_contract_id)", "$avp(s:caller_ext_contract_id)/d");
-	avp_copy("$avp(s:prepaid)", "$avp(s:caller_prepaid)/d");
 
         avp_copy("$avp(s:inbound_upn)", "$avp(s:caller_inbound_upn)/d");
 	if($avp(s:caller_inbound_upn) == $null && $avp(s:caller_dom_inbound_upn) != $null)
@@ -1157,7 +1156,7 @@ route[ROUTE_LOAD_CALLEE_PREF]
 	{
 		$(avp(s:callee_mobile_push_enable)[*]) = 1;
 	}
-	avp_copy("$avp(s:prepaid)", "$avp(s:callee_prepaid)/d");
+
 	if(is_method("INVITE"))
 	{			
 		# dialog mark for local callee
