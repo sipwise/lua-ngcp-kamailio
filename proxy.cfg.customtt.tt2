@@ -552,10 +552,6 @@ route[ROUTE_LOAD_CALLEE_DOMAIN_PREF]
 		sl_send_reply("500", "Internal Error");
 		exit;
 	}
-	# we only load this specific dom-pref here because
-	# we need it for authentication.
-	avp_db_load("$ru/domain", "$avp(s:unauth_inbound_calls)/dom_preferences");
-	avp_copy("$avp(s:unauth_inbound_calls)", "$avp(s:callee_dom_unauth_in)/d");
 }
 
 ########################################################################

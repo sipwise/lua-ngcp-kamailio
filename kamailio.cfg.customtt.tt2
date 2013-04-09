@@ -641,7 +641,7 @@ route[ROUTE_AUTH]
 					xlog("L_INFO", "Authentication failed, unknown error (rc=$retcode) - [% logreq -%]\n");
 					break;
 			}	
-			if(is_method("INVITE|BYE") && $avp(s:callee_dom_unauth_in) == 1 && $fd != $rd)
+			if(is_method("INVITE|BYE") && $xavp(callee_dom_prefs=>unauth_inbound_calls) == 1 && $fd != $rd)
 			{
 				xlog("L_INFO", "Allow unauthenticated request from domain '$fd' to local domain '$rd' - [% logreq -%]\n");
 				$avp(s:caller_uuid) = "0";
