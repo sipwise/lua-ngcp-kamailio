@@ -1712,9 +1712,9 @@ route[ROUTE_INVITE]
 
 	# IP authorization
 	if(
-	   ($avp(s:ignore_allowed_ips) == $null && 
-	   $avp(s:allowed_ips_grp) == $null &&
-	   $avp(s:man_allowed_ips_grp) == $null) || 
+	   ($xavp(caller_real_prefs=>ignore_allowed_ips) == $null && 
+	   $xavp(caller_real_prefs=>allowed_ips_grp) == $null &&
+	   $xavp(caller_real_prefs=>man_allowed_ips_grp) == $null) || 
 	   $avp(s:from_pstn) == 1 ||
 	   $avp(s:from_faxserver) == 1 ||
 	   $avp(s:from_voicebox) == 1 ||
@@ -1723,23 +1723,23 @@ route[ROUTE_INVITE]
 	{
 		xlog("L_INFO", "IP authorization for caller not provisioned, allow call - [% logreq -%]\n");
 	}
-	else if($avp(s:ignore_allowed_ips) == 1)
+	else if($xavp(caller_real_prefs=>ignore_allowed_ips) == 1)
 	{
 		xlog("L_INFO", "IP authorization for caller disabled, allow call - [% logreq -%]\n");
 	}
 	else
 	{
 		$(avp(s:ipauth_id)[*]) = 0;
-		if($avp(s:allowed_ips_grp) == $null)
+		if($xavp(caller_real_prefs=>allowed_ips_grp) == $null)
 		{
-			$(avp(s:allowed_ips_grp)[*]) = 0;
+			$xavp(caller_real_prefs[0]=>allowed_ips_grp) = 0;
 		}
-		if($avp(s:man_allowed_ips_grp) == $null)
+		if($xavp(caller_real_prefs=>man_allowed_ips_grp) == $null)
 		{
-			$(avp(s:man_allowed_ips_grp)[*]) = 0;
+			$xavp(caller_real_prefs[0]=>man_allowed_ips_grp) = 0;
 		}
 
-		avp_db_query("SELECT id FROM address WHERE ip_addr = INET_NTOA(INET_ATON('$(avp(s:ip){s.escape.common})') & (0xFFFFFFFF << 32 - mask & 0xFFFFFFFF)) and grp in ($avp(s:allowed_ips_grp), $avp(s:man_allowed_ips_grp))", "$avp(s:ipauth_id)");
+		avp_db_query("SELECT id FROM address WHERE ip_addr = INET_NTOA(INET_ATON('$(avp(s:ip){s.escape.common})') & (0xFFFFFFFF << 32 - mask & 0xFFFFFFFF)) and grp in ($xavp(caller_real_prefs=>allowed_ips_grp), $xavp(caller_real_prefs=>man_allowed_ips_grp))", "$avp(s:ipauth_id)");
 
 		if($avp(s:ipauth_id) == 0)
 		{
