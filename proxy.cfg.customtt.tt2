@@ -1008,7 +1008,6 @@ route[ROUTE_LOAD_CALLEE_PREF]
 	avp_copy("$avp(s:cfna)", "$avp(s:callee_cfna)/gd");
 	avp_copy("$avp(s:cfb)", "$avp(s:callee_cfb)/gd");
 	avp_copy("$avp(s:cft)", "$avp(s:callee_cft)/gd");
-	avp_copy("$avp(s:ringtimeout)", "$avp(s:callee_ringtimeout)/d");
 	avp_copy("$avp(s:lock)", "$avp(s:callee_lock)/d");
 	avp_copy("$avp(s:e164_to_ruri)", "$avp(s:callee_e164_to_ruri)/d");
 	avp_copy("$avp(s:force_inbound_calls_to_peer)", "$avp(s:callee_force_inbound_calls_to_peer)/d");
@@ -1276,16 +1275,16 @@ route[ROUTE_LOAD_CALLEE_PREF]
 
 		if($avp(s:callee_cft) != $null)
 		{
-			if($avp(s:callee_ringtimeout) != $null)
+			if($xavp(callee_real_prefs=>ringtimeout) != $null)
 			{
-				xlog("L_INFO", "Setting ring timeout to $avp(s:callee_ringtimeout) secs - [% logreq -%]\n");
+				xlog("L_INFO", "Setting ring timeout to $xavp(callee_real_prefs=>ringtimeout) secs - [% logreq -%]\n");
 			}
 			else
 			{
-				$(avp(s:callee_ringtimeout)[*]) = 180;
-				xlog("L_INFO", "Setting default ring timeout to $avp(s:callee_ringtimeout) secs - [% logreq -%]\n");
+				$xavp(callee_real_prefs=>ringtimeout) = 180;
+				xlog("L_INFO", "Setting default ring timeout to $xavp(callee_real_prefs=>ringtimeout) secs - [% logreq -%]\n");
 			}
-			$(avp(s:callee_fr_inv_timer)[*]) = $avp(s:callee_ringtimeout) * 1000;
+			$(avp(s:callee_fr_inv_timer)[*]) = $xavp(callee_real_prefs=>ringtimeout) * 1000;
 			t_set_fr("$avp(s:callee_fr_inv_timer)");
 		}
 		
