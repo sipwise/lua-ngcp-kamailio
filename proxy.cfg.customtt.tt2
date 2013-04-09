@@ -679,7 +679,6 @@ route[ROUTE_LOAD_CALLER_PREF]
 	}
 	avp_copy("$avp(s:lock)", "$avp(s:caller_lock)/d");
 	avp_copy("$avp(s:block_out_override_pin)", "$avp(s:caller_block_override)/d");
-	avp_copy("$avp(s:adm_block_out_override_pin)", "$avp(s:caller_adm_block_override)/d");
 	avp_copy("$avp(s:allowed_clis)", "$avp(s:caller_allowed_clis)/gd");
 	avp_copy("$avp(s:user_cli)", "$avp(s:caller_user_cli)/gd");
 
@@ -846,19 +845,19 @@ route[ROUTE_LOAD_CALLER_PREF]
 				xlog("L_INFO", "Block override PIN '$var(pin)' does not match '$avp(s:caller_block_override)', rejected - [% logreq -%]\n");
 			}
 		}
-		if($avp(s:caller_adm_block_override) != $null)
+		if($xavp(caller_real_prefs=>adm_block_out_override_pin) != $null)
 		{
-			$var(adm_ov_len) = $(avp(s:caller_adm_block_override){s.len});
+			$var(adm_ov_len) = $(xavp(caller_real_prefs=>adm_block_out_override_pin){s.len});
 			$var(pin) = $(rU{s.substr, 0, $var(adm_ov_len)});
-			if($avp(s:caller_adm_block_override) == $var(pin))
+			if($xavp(caller_real_prefs=>adm_block_out_override_pin) == $var(pin))
 			{
-				xlog("L_INFO", "Administrative Block override PIN '$avp(s:caller_adm_block_override)' accepted - [% logreq -%]\n");
+				xlog("L_INFO", "Administrative Block override PIN '$xavp(caller_real_prefs=>adm_block_out_override_pin)' accepted - [% logreq -%]\n");
 				$var(adm_block_override) = 1;
 				$var(block_override) = 1;
 			}
 			else
 			{
-				xlog("L_INFO", "Administrative Block override PIN '$var(pin)' does not match '$avp(s:caller_adm_block_override)', rejected - [% logreq -%]\n");
+				xlog("L_INFO", "Administrative Block override PIN '$var(pin)' does not match '$xavp(caller_real_prefs=>adm_block_out_override_pin)', rejected - [% logreq -%]\n");
 			}
 
 		}
