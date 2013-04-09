@@ -1018,11 +1018,6 @@ route[ROUTE_LOAD_CALLEE_PREF]
 	avp_copy("$avp(s:ext_subscriber_id)", "$avp(s:callee_ext_subscriber_id)/d");
 	avp_copy("$avp(s:ext_contract_id)", "$avp(s:callee_ext_contract_id)/d");
 
-	avp_copy("$avp(s:peer_auth_user)", "$avp(s:callee_peer_auth_user)/d");
-	avp_copy("$avp(s:peer_auth_pass)", "$avp(s:callee_peer_auth_pass)/d");
-	avp_copy("$avp(s:peer_auth_realm)", "$avp(s:callee_peer_auth_realm)/d");
-
-	
 	avp_copy("$avp(s:sound_set)", "$avp(s:callee_sound_set)/d");
 	if($avp(s:callee_sound_set) == $null && $avp(s:callee_dom_sound_set) != $null) 
 	{
@@ -5105,20 +5100,20 @@ branch_route[BRANCH_ROUTE_SBC]
         	# Auth credentials for callee (b2bua leg-a caller)
         	if($avp(s:from_pstn) == 1)
         	{
-                	if($avp(s:callee_peer_auth_user) != $null)
+                	if($xavp(callee_peer_prefs=>peer_auth_user) != $null)
                 	{
-                        	xlog("L_INFO", "Overruling peer auth user by callee value '$avp(s:callee_peer_auth_user)' - [% logreq -%]\n");
-                        	$(avp(s:peer_peer_callee_auth_user)[*]) = $avp(s:callee_peer_auth_user);
+                        	xlog("L_INFO", "Overruling peer auth user by callee value '$xavp(callee_peer_prefs=>peer_auth_user)' - [% logreq -%]\n");
+                        	$(avp(s:peer_peer_callee_auth_user)[*]) = $xavp(callee_peer_prefs=>peer_auth_user);
                 	}
-                	if($avp(s:callee_peer_auth_pass) != $null)
+                	if($xavp(callee_peer_prefs=>peer_auth_pass) != $null)
                 	{
-                        	xlog("L_INFO", "Overruling peer auth pass by callee value '$avp(s:callee_peer_auth_pass)' - [% logreq -%]\n");
-                        	$(avp(s:peer_peer_callee_auth_pass)[*]) = $avp(s:callee_peer_auth_pass);
+                        	xlog("L_INFO", "Overruling peer auth pass by callee value '$xavp(callee_peer_prefs=>peer_auth_pass)' - [% logreq -%]\n");
+                        	$(avp(s:peer_peer_callee_auth_pass)[*]) = $xavp(callee_peer_prefs=>peer_auth_pass);
                 	}
-                	if($avp(s:callee_peer_auth_realm) != $null)
+                	if($xavp(callee_peer_prefs=>peer_auth_realm) != $null)
                 	{
-                        	xlog("L_INFO", "Overruling peer auth realm by callee value '$avp(s:callee_peer_auth_realm)' - [% logreq -%]\n");
-                        	$(avp(s:peer_peer_callee_auth_realm)[*]) = $avp(s:callee_peer_auth_realm);
+                        	xlog("L_INFO", "Overruling peer auth realm by callee value '$xavp(callee_peer_prefs=>peer_auth_realm)' - [% logreq -%]\n");
+                        	$(avp(s:peer_peer_callee_auth_realm)[*]) = $xavp(callee_peer_prefs=>peer_auth_realm);
                 	}
                 	if($avp(s:peer_peer_callee_auth_user) != $null && $avp(s:peer_peer_callee_auth_pass) != $null && $avp(s:peer_peer_callee_auth_realm) != $null)
                 	{
