@@ -20,7 +20,7 @@ end
 
 function ngcp_clean(vtype)
     ngcp:clean(vtype)
-    if #loaded_keys[vtpe] > 0 then
+    if #loaded_keys[vtype] > 0 then
         sr.log("info", string.format("callee-> real: %s", table.tostring(loaded_keys[vtype])))
     end
 end
