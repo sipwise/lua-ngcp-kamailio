@@ -3,7 +3,7 @@
 require 'ngcp.ngcp'
 
 ngcp = NGCP:new()
-loaded_keys = {caller={real={}, peer={}}, callee={real={}, peer={}}}
+loaded_keys = {caller={}, callee={}}
 
 -- set config
 ngcp.config.db_user = "[% kamailio.proxy.dbrwuser %]"
@@ -19,60 +19,37 @@ function ngcp_test()
 end
 
 function ngcp_clean(vtype)
-    local real = ""
-    local peer = ""
-
-    if #loaded_keys > 0 then
-        sr.log('loaded_keys has values\n')
-    end
     ngcp:clean(vtype)
-    local keys = loaded_keys["caller"]
-    if keys and keys[real] then
-        real = table.tostring(keys.real)
+    if #loaded_keys[vtpe] > 0 then
+        sr.log("info", string.format("callee-> real: %s", table.tostring(loaded_keys[vtype])))
     end
-    if keys and keys[peer] then
-        peer = table.tostring(keys.peer)
-    end
-    sr.log("info", string.format("caller-> real: %s peer: %s", real, peer))
-    keys = loaded_keys["callee"]
-    if keys and keys[real] then
-        real = table.tostring(keys.real)
-    end
-    if keys and keys[peer] then
-        peer = table.tostring(keys.peer)
-    end
-    sr.log("info", string.format("callee-> real: %s peer: %s", real, peer))
 end
 
 function print_loaded_prefs(vtype)
     local _,v
     local xavp = NGCPRealPrefs:xavp(vtype)
-    for _,v in pairs(loaded_keys[vtype].real) do
+    for _,v in pairs(loaded_keys[vtype]) do
         sr.log("info", string.format("real key:%s value:%s\n", v, xavp(v)))
     end
-    xavp = NGCPPeerPrefs:xavp(vtype)
-    for _,v in pairs(loaded_keys[vtype].peer) do
-        sr.log("info", string.format("peer key:%s value:%s\n", v, xavp(v)))
-    end
 end
 
-function ngcp_load_caller_peer(peer)
-    ngcp_load_caller(nil, nil, peer)
+function ngcp_caller_peer_load(peer)
+    loaded_keys["caller"] = ngcp:caller_peer_load(peer)
+    sr.log("info", string.format("real: %s", table.tostring(loaded_keys["caller"])))
 end
 
-function ngcp_load_callee_peer(peer)
-    ngcp_load_callee(nil, nil, peer)
+function ngcp_callee_peer_load(peer)
+    loaded_keys["callee"] = ngcp:callee_peer_load(peer)
+    sr.log("info", string.format("real: %s", table.tostring(loaded_keys["callee"])))
 end
 
-function ngcp_load_caller(uuid, domain, peer)
-    loaded_keys["caller"] = ngcp:caller_load(uuid, domain, peer)
-    local keys = loaded_keys["caller"]
-    sr.log("info", string.format("real: %s peer: %s", table.tostring(keys.real), table.tostring(keys.peer)))
+function ngcp_caller_usr_load(peer)
+    loaded_keys["caller"] = ngcp:caller_usr_load(peer)
+    sr.log("info", string.format("real: %s", table.tostring(loaded_keys["caller"])))
 end
 
-function ngcp_load_callee(uuid, domain, peer)
-    loaded_keys["callee"] = ngcp:caller_load(uuid, domain, peer)
-    local keys = loaded_keys["callee"]
-    sr.log("info", string.format("real: %s peer: %s", table.tostring(keys.real), table.tostring(keys.peer)))
+function ngcp_callee_usr_load(peer)
+    loaded_keys["callee"] = ngcp:callee_usr_load(peer)
+    sr.log("info", string.format("real: %s", table.tostring(loaded_keys["callee"])))
 end
 --EOF
