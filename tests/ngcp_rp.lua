@@ -65,7 +65,25 @@ TestNGCPRealPrefs = {} --class
         assertError(self.real.callee_load, nil)
     end
 
-    function TestNGCPRealPrefs:test_caller_load()
+    function TestNGCPRealPrefs:test_caller_peer_load()
+        local keys = {"uno"}
+        local xavp = {
+            domain  = NGCPDomainPrefs:xavp("caller"),
+            user    = NGCPUserPrefs:xavp("caller"),
+            peer    = NGCPPeerPrefs:xavp("caller"),
+            real    = NGCPRealPrefs:xavp("caller")
+        }
+        xavp.domain("uno",1)
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>uno)"),1)
+        xavp.user("uno",2)
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>uno)"),2)
+        xavp.peer("uno",3)
+        local real_keys = self.real:caller_peer_load(keys)
+        assertEquals(real_keys, keys)
+        assertEquals(xavp.real("uno"),3)
+    end
+
+    function TestNGCPRealPrefs:test_caller_usr_load()
         local keys = {"uno"}
         local xavp = {
             domain  = NGCPDomainPrefs:xavp("caller"),
@@ -76,12 +94,12 @@ TestNGCPRealPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>uno)"),1)
         xavp.user("uno",2)
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>uno)"),2)
-        local real_keys = self.real:caller_load(keys)
+        local real_keys = self.real:caller_usr_load(keys)
         assertEquals(real_keys, keys)
         assertEquals(xavp.real("uno"),2)
     end
 
-    function TestNGCPRealPrefs:test_caller_load1()
+    function TestNGCPRealPrefs:test_caller_usr_load1()
         local keys = {"uno", "dos"}
         local xavp = {
             domain  = NGCPDomainPrefs:xavp("caller"),
@@ -92,13 +110,13 @@ TestNGCPRealPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>uno)"),1)
         xavp.user("dos",2)
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dos)"),2)
-        local real_keys = self.real:caller_load(keys)
+        local real_keys = self.real:caller_usr_load(keys)
         assertEquals(real_keys, keys)
         assertEquals(xavp.real("uno"),1)
         assertEquals(xavp.real("dos"),2)
     end
 
-    function TestNGCPRealPrefs:test_callee_load()
+    function TestNGCPRealPrefs:test_callee_usr_load()
         local keys = {"uno"}
         local xavp = {
             domain  = NGCPDomainPrefs:xavp("callee"),
@@ -109,12 +127,12 @@ TestNGCPRealPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>uno)"),1)
         xavp.user("uno",2)
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>uno)"),2)
-        local real_keys = self.real:callee_load(keys)
+        local real_keys = self.real:callee_usr_load(keys)
         assertEquals(real_keys, keys)
         assertEquals(xavp.real("uno"),2)
     end
 
-    function TestNGCPRealPrefs:test_callee_load1()
+    function TestNGCPRealPrefs:test_callee_usr_load1()
         local keys = {"uno", "dos"}
         local xavp = {
             domain  = NGCPDomainPrefs:xavp("callee"),
@@ -125,7 +143,7 @@ TestNGCPRealPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>uno)"),1)
         xavp.user("dos",2)
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dos)"),2)
-        local real_keys = self.real:callee_load(keys)
+        local real_keys = self.real:callee_usr_load(keys)
         assertEquals(real_keys, keys)
         assertEquals(xavp.real("uno"),1)
         assertEquals(xavp.real("dos"),2)

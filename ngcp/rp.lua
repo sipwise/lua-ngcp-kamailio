@@ -13,15 +13,44 @@ NGCPRealPrefs_MT = { __index = NGCPRealPrefs }
         return setmetatable( t, NGCPRealPrefs_MT )
     end
 
-    function NGCPRealPrefs:caller_load(keys)
-        return NGCPRealPrefs:_load("caller", keys)
+    function NGCPRealPrefs:caller_peer_load(keys)
+        return NGCPRealPrefs:_peer_load("caller", keys)
     end
 
-    function NGCPRealPrefs:callee_load(keys)
-        return NGCPRealPrefs:_load("callee", keys)
+    function NGCPRealPrefs:callee_peer_load(keys)
+        return NGCPRealPrefs:_peer_load("callee", keys)
     end
 
-    function NGCPRealPrefs:_load(level, keys)
+    function NGCPRealPrefs:caller_usr_load(keys)
+        return NGCPRealPrefs:_usr_load("caller", keys)
+    end
+
+    function NGCPRealPrefs:callee_usr_load(keys)
+        return NGCPRealPrefs:_usr_load("callee", keys)
+    end
+
+    function NGCPRealPrefs:_peer_load(level, keys)
+        local _,v
+        local xavp = {
+            real = NGCPRealPrefs:xavp(level),
+            peer  = NGCPPeerPrefs:xavp(level),
+        }
+        local real_keys = {}
+        local value
+        for _,v in pairs(keys) do
+            value = xavp.peer(v)
+            if value then
+                table.add(real_keys, v)
+                --sr.log("info", string.format("key:%s value:%s", v, value))
+                xavp.real(v, value)
+            else
+                sr.log("err", string.format("key:%s not in user or domain", v))
+            end
+        end
+        return real_keys
+    end
+
+    function NGCPRealPrefs:_usr_load(level, keys)
         local _,v
         local xavp = {
             real = NGCPRealPrefs:xavp(level),

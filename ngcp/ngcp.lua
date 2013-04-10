@@ -57,34 +57,44 @@ NGCP_MT = { __index = NGCP }
         return t
     end
 
-    function NGCP:caller_load(uuid, domain, peer)
-        local keys = {
-            domain = self.prefs.dom:caller_load(domain),
-            user   = self.prefs.usr:caller_load(uuid),
-            peer   = self.prefs.peer:caller_load(peer)
-        }
-        local unique_keys = table.deepcopy(keys.domain)
-        local _,v
-        for _,v in pairs(keys.user) do
-            table.add(unique_keys, v)
-        end
-        self.prefs.real:caller_load(unique_keys)
-        return {real = unique_keys, peer = keys.peer}
+    function NGCP:caller_peer_load(peer)
+        local keys = self.prefs.peer:caller_load(peer)
+        self.prefs.real:caller_usr_load(keys)
+        return keys
     end
 
-    function NGCP:callee_load(uuid, domain, peer)
+    function NGCP:callee_peer_load(peer)
+        local keys = self.prefs.peer:callee_load(peer)
+        self.prefs.real:callee_peer_load(keys)
+        return keys
+    end
+
+    function NGCP:caller_usr_load(uuid, domain)
         local keys = {
-            domain = self.prefs.dom:callee_load(domain),
-            user   = self.prefs.usr:callee_load(uuid),
-            peer   = self.prefs.peer:caller_load(peer)
+            domain = self.prefs.dom:caller_load(domain),
+            user   = self.prefs.usr:caller_load(uuid)
         }
         local unique_keys = table.deepcopy(keys.domain)
         local _,v
         for _,v in pairs(keys.user) do
             table.add(unique_keys, v)
         end
-        self.prefs.real:callee_load(unique_keys)
-        return {real = unique_keys, peer = keys.peer}
+        self.prefs.real:caller_usr_load(unique_keys)
+        return unique_keys
+    end
+
+    function NGCP:callee_usr_load(uuid, domain)
+        local keys = {
+            domain = self.prefs.dom:callee_load(domain),
+            user   = self.prefs.usr:callee_load(uuid)
+        }
+        local unique_keys = table.deepcopy(keys.domain)
+        local _,v
+        for _,v in pairs(keys.user) do
+            table.add(unique_keys, v)
+        end
+        self.prefs.real:callee_usr_load(unique_keys)
+        return unique_keys
     end
 
     function NGCP:clean(vtype, group)

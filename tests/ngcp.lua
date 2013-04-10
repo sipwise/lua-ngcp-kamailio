@@ -64,12 +64,20 @@ TestNGCP = {} --class
         assertTrue(self.ngcp.prefs.real)
     end
 
-    function TestNGCP:test_load_caller()
-        assertEquals(self.ngcp:caller_load(), {real={}, peer={}})
+    function TestNGCP:test_caller_usr_load_empty()
+        assertEquals(self.ngcp:caller_usr_load(), {})
     end
 
-    function TestNGCP:test_load_callee()
-        assertEquals(self.ngcp:callee_load(), {real={}, peer={}})
+    function TestNGCP:test_callee_usr_load_empty()
+        assertEquals(self.ngcp:callee_usr_load(), {})
+    end
+
+    function TestNGCP:test_caller_peer_load_empty()
+        assertEquals(self.ngcp:caller_peer_load(), {})
+    end
+
+    function TestNGCP:test_callee_peer_load_empty()
+        assertEquals(self.ngcp:callee_peer_load(), {})
     end
 
     function TestNGCP:test_clean()
