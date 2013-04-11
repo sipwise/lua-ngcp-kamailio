@@ -81,9 +81,9 @@ TestNGCPXAvp = {} --class
         assertEquals(sr.pv.get("$xavp(caller_peer=>testid)"),1)
         assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"),"caller")
         xavp:clean()
+        assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"),"caller")
         assertFalse(xavp("testid"))
         assertFalse(sr.pv.get("$xavp(caller_peer=>testid)"))
-        assertFalse(sr.pv.get("$xavp(caller_peer)"))
     end
 
     function TestNGCPXAvp:test_clean_all()
@@ -93,12 +93,12 @@ TestNGCPXAvp = {} --class
         assertEquals(sr.pv.get("$xavp(callee_peer=>dummy)"),"callee")
 
         xavp_caller:clean()
-        assertFalse(sr.pv.get("$xavp(caller_peer=>dummy)"))
+        assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"),"caller")
         assertEquals(sr.pv.get("$xavp(callee_peer=>dummy)"),"callee")
         
         xavp_callee:clean()
-        assertFalse(sr.pv.get("$xavp(callee_peer=>dummy)"))
-        assertFalse(sr.pv.get("$xavp(caller_peer=>dummy)"))
+        assertEquals(sr.pv.get("$xavp(callee_peer=>dummy)"), "callee")
+        assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"), "caller")
     end
 
 

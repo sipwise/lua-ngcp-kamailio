@@ -90,6 +90,7 @@ NGCPXAvp_MT = {
         local name = string.format("$xavp(%s=>dummy)", self.name)
         if not sr.pv.get(name) then
             NGCPXAvp._setvalue(name, 0, self.level)
+            sr.log("dbg",string.format("%s created with dummy value:%s", name, self.level))
         end
         for i=1,#l do
             name = string.format("$xavp(%s[0]=>%s)", self.name, l[i].attribute)
@@ -100,6 +101,7 @@ NGCPXAvp_MT = {
 
     function NGCPXAvp:clean()
         sr.pv.unset(string.format("$xavp(%s)", self.name))
+        sr.pv.sets(string.format("$xavp(%s=>dummy)", self.name), self.level)
     end
 -- class
 --EOF

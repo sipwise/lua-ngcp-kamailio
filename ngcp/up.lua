@@ -1,6 +1,6 @@
 #!/usr/bin/env lua5.1
 require 'ngcp.utils'
-require 'ngcp.xavp'
+require 'ngcp.pref'
 
 -- class NGCPUserPrefs
 NGCPUserPrefs = {
@@ -13,6 +13,8 @@ NGCPUserPrefs_MT = { __index = NGCPUserPrefs }
             config = config,
             db_table = "usr_preferences"
         }
+        -- creates xavp usr
+        NGCPPrefs.init("usr_prefs")
         return setmetatable( t, NGCPUserPrefs_MT )
     end
 

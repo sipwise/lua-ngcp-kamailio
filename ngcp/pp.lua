@@ -13,6 +13,8 @@ NGCPPeerPrefs_MT = { __index = NGCPPeerPrefs }
             config = config,
             db_table = "peer_preferences"
         }
+        -- creates xavp peer
+        NGCPPrefs.init("peer_prefs")
         return setmetatable( t, NGCPPeerPrefs_MT )
     end
 

@@ -132,10 +132,10 @@ TestNGCPUserPrefs = {} --class
         xavp("foo","foo")
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>testid)"),1)
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>foo)"),"foo")
-        assertFalse(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
         self.d:clean()
-        assertFalse(sr.pv.get("$xavp(caller_usr_prefs)"))
-        assertFalse(sr.pv.get("$xavp(callee_usr_prefs)"))
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"), "caller")
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"), "callee")
     end
 
     function TestNGCPUserPrefs:test_callee_clean()
@@ -157,7 +157,7 @@ TestNGCPUserPrefs = {} --class
         assertFalse(sr.pv.get("$xavp(callee_usr_prefs=>foo)"))
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>other)"),1)
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>otherfoo)"),"foo")
-        assertFalse(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"))
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPUserPrefs:test_caller_clean()
@@ -174,7 +174,7 @@ TestNGCPUserPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>otherfoo)"),"foo")
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
         self.d:clean('caller')
-        assertFalse(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"))
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
         assertFalse(sr.pv.get("$xavp(caller_usr_prefs=>other)"))
         assertFalse(sr.pv.get("$xavp(caller_usr_prefs=>otherfoo)"))
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>testid)"),1)

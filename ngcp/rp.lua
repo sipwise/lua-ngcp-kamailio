@@ -1,6 +1,6 @@
 #!/usr/bin/env lua5.1
 require 'ngcp.utils'
-require 'ngcp.xavp'
+require 'ngcp.pref'
 
 -- class NGCPRealPrefs
 NGCPRealPrefs = {
@@ -10,6 +10,8 @@ NGCPRealPrefs_MT = { __index = NGCPRealPrefs }
 
     function NGCPRealPrefs:new()
         local t = {}
+        -- creates xavp real
+        NGCPPrefs.init("real_prefs")
         return setmetatable( t, NGCPRealPrefs_MT )
     end
 

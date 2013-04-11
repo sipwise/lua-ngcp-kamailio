@@ -124,10 +124,10 @@ TestNGCPDomainPrefs = {} --class
         xavp("foo","foo")
         assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>testid)"),1)
         assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>foo)"),"foo")
-        assertFalse(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"))
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
         self.d:clean()
-        assertFalse(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"))
-        assertFalse(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"))
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
         assertFalse(sr.pv.get("$xavp(domain)"))
     end
 
@@ -150,7 +150,7 @@ TestNGCPDomainPrefs = {} --class
         assertFalse(sr.pv.get("$xavp(callee_dom_prefs=>foo)"))
         assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>other)"),1)
         assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>otherfoo)"),"foo")
-        assertFalse(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"))
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPDomainPrefs:test_caller_clean()
@@ -167,7 +167,7 @@ TestNGCPDomainPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>otherfoo)"),"foo")
         assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
         self.d:clean('caller')
-        assertFalse(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"))
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
         assertFalse(sr.pv.get("$xavp(caller_dom_prefs=>other)"))
         assertFalse(sr.pv.get("$xavp(caller_dom_prefs=>otherfoo)"))
         assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>testid)"),1)

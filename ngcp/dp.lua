@@ -1,6 +1,6 @@
 #!/usr/bin/env lua5.1
 require 'ngcp.utils'
-require 'ngcp.xavp'
+require 'ngcp.pref'
 
 -- class NGCPDomainPrefs
 NGCPDomainPrefs = {
@@ -13,6 +13,8 @@ NGCPDomainPrefs_MT = { __index = NGCPDomainPrefs }
             config = config,
             db_table = "dom_preferences"
         }
+        -- creates xavp dom
+        NGCPPrefs.init("dom_prefs")
         return setmetatable( t, NGCPDomainPrefs_MT )
     end
 
