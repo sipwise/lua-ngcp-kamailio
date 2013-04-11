@@ -34,7 +34,6 @@ NGCPRealPrefs_MT = { __index = NGCPRealPrefs }
     function NGCPRealPrefs:_peer_load(level, keys)
         local _,v
         local xavp = {
-            real = NGCPRealPrefs:xavp(level),
             peer  = NGCPPeerPrefs:xavp(level),
         }
         local real_keys = {}
@@ -43,10 +42,6 @@ NGCPRealPrefs_MT = { __index = NGCPRealPrefs }
             value = xavp.peer(v)
             if value then
                 table.add(real_keys, v)
-                --sr.log("info", string.format("key:%s value:%s", v, value))
-                xavp.real(v, value)
-            else
-                sr.log("err", string.format("key:%s not in user or domain", v))
             end
         end
         return real_keys

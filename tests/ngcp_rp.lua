@@ -80,7 +80,8 @@ TestNGCPRealPrefs = {} --class
         xavp.peer("uno",3)
         local real_keys = self.real:caller_peer_load(keys)
         assertEquals(real_keys, keys)
-        assertEquals(xavp.real("uno"),3)
+        assertEquals(xavp.real("uno"),nil)
+        assertEquals(xavp.peer("uno"),3)
     end
 
     function TestNGCPRealPrefs:test_caller_usr_load()
