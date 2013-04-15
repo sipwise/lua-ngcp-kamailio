@@ -18,6 +18,11 @@ function ngcp_test()
     require('tests.test_kamailio')
 end
 
+function ngcp_init()
+    ngcp = NGCP:new()
+    loaded_keys = {caller={}, callee={}}
+end
+
 function ngcp_clean(vtype)
     ngcp:clean(vtype)
     if #loaded_keys[vtype] > 0 then
@@ -43,13 +48,13 @@ function ngcp_callee_peer_load(peer)
     sr.log("info", string.format("real: %s", table.tostring(loaded_keys["callee"])))
 end
 
-function ngcp_caller_usr_load(peer)
-    loaded_keys["caller"] = ngcp:caller_usr_load(peer)
+function ngcp_caller_usr_load(uuid, dom)
+    loaded_keys["caller"] = ngcp:caller_usr_load(uuid, dom)
     sr.log("info", string.format("real: %s", table.tostring(loaded_keys["caller"])))
 end
 
-function ngcp_callee_usr_load(peer)
-    loaded_keys["callee"] = ngcp:callee_usr_load(peer)
+function ngcp_callee_usr_load(uuid, dom)
+    loaded_keys["callee"] = ngcp:callee_usr_load(uuid, dom)
     sr.log("info", string.format("real: %s", table.tostring(loaded_keys["callee"])))
 end
 --EOF
