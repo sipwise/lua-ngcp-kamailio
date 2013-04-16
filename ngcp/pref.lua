@@ -1,4 +1,4 @@
-#!/usr/bin/env lua5.1
+require 'ngcp.avp'
 require 'ngcp.xavp'
 
 -- class NGCPPrefs
@@ -15,5 +15,22 @@ NGCPPrefs_MT = { __index = NGCPPrefs }
         end
     end
 
+    function NGCPPrefs.set_avp(avp_name, xavp_name, default)
+    	local xavp
+    	local avp = NGCPAvp:new(avp_name)
+
+    	if xavp_name then
+    		xavp = sr.pv.get("$xavp(" .. xavp_name .. ")")
+    	else
+    		avp:clean()
+    		return
+    	end
+
+    	if default and not xavp then
+    		avp(default)
+    	else
+    		avp(xavp)
+    	end
+    end
 -- class
 --EOF

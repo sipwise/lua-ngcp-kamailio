@@ -1,5 +1,3 @@
-#!/usr/bin/env lua5.1
-
 -- class NGCPAvp
 NGCPAvp = {
      __class__ = 'NGCPAvp'
