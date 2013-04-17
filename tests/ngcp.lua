@@ -255,5 +255,53 @@ TestNGCP = {} --class
         assertEquals(sr.pv.get("$avp(s:callee_outbound_from_display)"),nil)
     end
 
+    function TestNGCP:test_caller_peer_clean_vars()
+        self:test_caller_peer_load()
+
+        assertEquals(sr.pv.get("$avp(peer_callee_sst_enable)"), "no")
+        assertEquals(sr.pv.get("$avp(peer_callee_sst_refresh_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+
+        self.ngcp:clean('caller', 'peer')
+
+        assertEquals(sr.pv.get("$avp(s:peer_peer_caller_auth_user)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_peer_caller_auth_pass)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_peer_caller_auth_realm)"), nil)
+
+        assertEquals(sr.pv.get("$avp(s:callee_use_rtpproxy)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_callee_ipv46_for_rtpproxy)"), nil)
+
+        assertEquals(sr.pv.get("$avp(s:peer_callee_concurrent_max)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_callee_concurrent_max_out)"), nil)
+
+        assertEquals(sr.pv.get("$avp(s:peer_callee_outbound_socket)"), nil)
+
+        assertEquals(sr.pv.get("$avp(s:pstn_dp_caller_in_id)"), nil)
+        assertEquals(sr.pv.get("$avp(s:pstn_dp_callee_in_id)"), nil)
+        assertEquals(sr.pv.get("$avp(s:pstn_dp_caller_out_id)"), nil)
+        assertEquals(sr.pv.get("$avp(s:pstn_dp_callee_out_id)"), nil)
+
+        assertEquals(sr.pv.get("$avp(s:rewrite_caller_in_dpid)"), nil)
+        assertEquals(sr.pv.get("$avp(s:rewrite_caller_out_dpid)"), nil)
+        assertEquals(sr.pv.get("$avp(s:rewrite_callee_in_dpid)"), nil)
+        assertEquals(sr.pv.get("$avp(s:rewrite_callee_out_dpid)"), nil)
+
+        assertEquals(sr.pv.get("$avp(s:peer_callee_sst_enable)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_callee_sst_expires)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_callee_sst_min_timer)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_callee_sst_max_timer)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_callee_sst_refresh_method)"), nil)
+
+        assertEquals(sr.pv.get("$avp(s:callee_outbound_from_display)"), nil)
+        assertEquals(sr.pv.get("$avp(s:callee_outbound_from_user)"), nil)
+        assertEquals(sr.pv.get("$avp(s:callee_outbound_pai_user)"), nil)
+        assertEquals(sr.pv.get("$avp(s:callee_outbound_ppi_user)"), nil)
+        assertEquals(sr.pv.get("$avp(s:callee_outbound_diversion)"), nil)
+
+        assertEquals(sr.pv.get("$avp(s:concurrent_max)"), nil)
+        assertEquals(sr.pv.get("$avp(s:concurrent_max_out)"), nil)
+        assertEquals(sr.pv.get("$avp(s:concurrent_max_per_account)"), nil)
+        assertEquals(sr.pv.get("$avp(s:concurrent_max_out_per_account)"), nil)
+    end
+
 -- class TestNGCP
 --EOF
