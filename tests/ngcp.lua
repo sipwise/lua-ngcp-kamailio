@@ -1,30 +1,47 @@
 #!/usr/bin/env lua5.1
 require('luaunit')
-require 'mocks.sr'
+require('lemock')
 require 'ngcp.utils'
+require 'tests_v.dp_vars'
+require 'tests_v.pp_vars'
+require 'tests_v.up_vars'
 
-sr = srMock:new()
-
-local mc = lemock.controller()
-local mysql = mc:mock()
-local env   = mc:mock()
-local con   = mc:mock()
-local cur   = mc:mock()
-
-package.loaded.luasql = nil
-package.preload['luasql.mysql'] = function ()
-    luasql = {}
-    luasql.mysql = mysql
-    return mysql
+if not sr then
+    require 'mocks.sr'
+    sr = srMock:new()
+else
+    argv = {}
 end
 
-require 'ngcp.ngcp'
+local mc,env
 
 TestNGCP = {} --class
 
     function TestNGCP:setUp()
         sr.log("dbg", "TestNGCP:setUp")
+        mc = lemock.controller()
+        env = mc:mock()
+        self.con  = mc:mock()
+        self.cur  = mc:mock()
+
+        package.loaded.luasql = nil
+        package.preload['luasql.mysql'] = function ()
+            luasql = {}
+            luasql.mysql = mc:mock()
+            return luasql.mysql
+        end
+
+        require 'ngcp.ngcp'
+
+        luasql.mysql = function ()
+            luasql.mysql = env
+            return env
+        end
+
         self.ngcp = NGCP:new()
+        self.dp_vars = DPFetch:new()
+        self.pp_vars = PPFetch:new()
+        self.up_vars = UPFetch:new()
     end
 
     function TestNGCP:tearDown()
@@ -41,18 +58,6 @@ TestNGCP = {} --class
     end
 
     function TestNGCP:test_config()
-        assertTrue(self.ngcp.config)
-    end
-
-    function TestNGCP:test_connection()
-        assertTrue(self.ngcp.config)
-        local c = self.ngcp.config
-        luasql.mysql() ;mc :returns(env)
-        env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(con)
-
-        mc:replay()
-        c:getDBConnection()
-        mc:verify()
         assertTrue(self.ngcp.config)
     end
 
@@ -86,6 +91,28 @@ TestNGCP = {} --class
         assertEquals(self.ngcp:caller_peer_load(), {})
     end
 
+    function TestNGCP:test_caller_peer_load()
+        --self.ngcp.config:getDBConnection() ;mc :returns(self.con)
+        local c = self.ngcp.config
+        env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
+        self.con:execute(mc.ANYARGS)  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2")) --sst_enable: "no"
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2")) --sst_refresh_method: "UPDATE_FALLBACK_INVITE"
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+        self.con:close()
+
+        mc:replay()
+        local keys = self.ngcp:caller_peer_load("2")
+        mc:verify()
+
+        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"), "caller")
+        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_enable)"), "no")
+        assertEquals(sr.pv.get("$avp(peer_callee_sst_enable)"), "no")
+        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+        assertEquals(sr.pv.get("$avp(peer_callee_sst_refresh_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+    end
+
     function TestNGCP:test_callee_peer_load_empty()
         assertEquals(self.ngcp:callee_peer_load(), {})
     end
@@ -98,9 +125,18 @@ TestNGCP = {} --class
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>foo)"),"foo")
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"), "caller")
         self.ngcp:clean()
+        assertEquals(sr.pv.get("$avp(s:callee_outbound_from_display)"),nil)
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
         assertFalse(sr.pv.get("$xavp(user)"))
+    end
+
+    function TestNGCP:test_clean_vars()
+        local avp = NGCPAvp:new('callee_outbound_from_display')
+        avp("foofighters")
+        assertEquals(sr.pv.get("$avp(s:callee_outbound_from_display)"),"foofighters")
+        self.ngcp:clean()
+        assertEquals(sr.pv.get("$avp(s:callee_outbound_from_display)"),nil)
     end
 
     function TestNGCP:test_clean_caller_groups()
@@ -118,6 +154,25 @@ TestNGCP = {} --class
         assertError(self.ngcp.clean, self.ngcp, "caller", "whatever")
     end
 
+    function TestNGCP:test_clean_caller_groups_vars()
+        local groups = {"peer", "usr", "dom", "real"}
+        local _,v
+        local avp = NGCPAvp:new('callee_outbound_from_display')
+        avp("foofighters")
+        assertEquals(sr.pv.get("$avp(s:callee_outbound_from_display)"),"foofighters")
+
+        for _,v in pairs(groups) do
+            xavp = self.ngcp.prefs[v]:xavp("caller")
+            xavp(string.format("test_%s", v), v)
+            assertEquals(sr.pv.get(string.format("$xavp(caller_%s_prefs=>test_%s)", v, v)), v)
+            assertEquals(sr.pv.get(string.format("$xavp(caller_%s_prefs=>dummy)", v)), "caller")
+            self.ngcp:clean("caller", v)
+            assertEquals(sr.pv.get(string.format("$xavp(caller_%s_prefs=>dummy)", v)), "caller")
+        end
+        assertEquals(sr.pv.get("$avp(s:callee_outbound_from_display)"),nil)
+        assertError(self.ngcp.clean, self.ngcp, "caller", "whatever")
+    end
+
     function TestNGCP:test_clean_callee_groups()
         local groups = {"peer", "usr", "dom", "real"}
         local _,v, xavp
@@ -130,6 +185,25 @@ TestNGCP = {} --class
             self.ngcp:clean("callee", v)
             assertEquals(sr.pv.get(string.format("$xavp(callee_%s_prefs=>dummy)", v)), "callee")
         end
+        assertError(self.ngcp.clean, self.ngcp, "callee", "whatever")
+    end
+
+    function TestNGCP:test_clean_callee_groups_vars()
+        local groups = {"peer", "usr", "dom", "real"}
+        local _,v, xavp
+        local avp = NGCPAvp:new('callee_outbound_from_display')
+        avp("foofighters")
+        assertEquals(sr.pv.get("$avp(s:callee_outbound_from_display)"),"foofighters")
+
+        for _,v in pairs(groups) do
+            xavp = self.ngcp.prefs[v]:xavp("callee")
+            xavp(string.format("test_%s", v), v)
+            assertEquals(sr.pv.get(string.format("$xavp(callee_%s_prefs=>test_%s)", v, v)), v)
+            assertEquals(sr.pv.get(string.format("$xavp(callee_%s_prefs=>dummy)", v)), "callee")
+            self.ngcp:clean("callee", v)
+            assertEquals(sr.pv.get(string.format("$xavp(callee_%s_prefs=>dummy)", v)), "callee")
+        end
+        assertEquals(sr.pv.get("$avp(s:callee_outbound_from_display)"),'foofighters')
         assertError(self.ngcp.clean, self.ngcp, "callee", "whatever")
     end
 
@@ -156,6 +230,9 @@ TestNGCP = {} --class
     end
 
     function TestNGCP:test_caller_clean()
+        local avp = NGCPAvp:new('callee_outbound_from_display')
+        avp("foofighters")
+        assertEquals(sr.pv.get("$avp(s:callee_outbound_from_display)"),"foofighters")
         local callee_xavp = NGCPXAvp:new('callee','peer_prefs')
         callee_xavp("testid",1)
         callee_xavp("foo","foo")
@@ -175,6 +252,7 @@ TestNGCP = {} --class
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>testid)"),1)
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>foo)"),"foo")
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
+        assertEquals(sr.pv.get("$avp(s:callee_outbound_from_display)"),nil)
     end
 
 -- class TestNGCP

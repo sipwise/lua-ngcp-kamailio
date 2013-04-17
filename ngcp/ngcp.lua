@@ -18,7 +18,15 @@ NGCPConfig_MT = { __index = NGCPConfig }
             db_port = 3306,
             db_username = "kamailio",
             db_pass = "somepasswd",
-            db_database = "kamailio"
+            db_database = "kamailio",
+            default = {
+                sst_enable = "yes",
+                sst_expires = 300,
+                sst_min_timer = 90,
+                sst_max_timer = 7200,
+                sst_refresh_method = "UPDATE_FALLBACK_INVITE",
+                outbound_from_user = "npn",
+            }
         }
         setmetatable( t, NGCPConfig_MT )
         return t
@@ -54,12 +62,52 @@ NGCP_MT = { __index = NGCP }
             peer = NGCPPeerPrefs:new(t.config),
             real = NGCPRealPrefs:new(),
         }
+        t.vars = {
+            caller_peer_load = {
+                caller_peer_prefs = {
+                    {"peer_peer_caller_auth_user", "peer_auth_user"},
+                    {"peer_peer_caller_auth_pass", "peer_auth_pass"},
+                    {"peer_peer_caller_auth_realm", "peer_auth_realm"},
+                    {"callee_use_rtpproxy", "use_rtpproxy"},
+                    {"peer_callee_ipv46_for_rtpproxy", "ipv46_for_rtpproxy"},
+                    {"peer_callee_concurrent_max", "concurrent_max"},
+                    {"peer_callee_concurrent_max_out", "concurrent_max_out"},
+                    {"peer_callee_outbound_socket", "outbound_socket"},
+                    {"peer_callee_sst_enable", "sst_enable" },
+                    {"peer_callee_sst_expires", "sst_expires"},
+                    {"peer_callee_sst_min_timer", "sst_min_timer"},
+                    {"peer_callee_sst_max_timer", "sst_max_timer"},
+                    {"peer_callee_sst_refresh_refresh_method", "sst_refresh_method"},
+                    {"callee_outbound_from_user", "outbound_from_user"},
+                    {"callee_outbound_from_display", "outbound_from_display"},
+                    {"callee_outbound_pai_user", "outbound_pai_user"},
+                    {"callee_outbound_ppi_user", "outbound_ppi_user"},
+                    {"callee_outbound_diversion", "outbound_diversion"},
+                    {"pstn_dp_caller_out_id", "rewrite_caller_out_dpid"},
+                    {"pstn_dp_callee_out_id", "rewrite_callee_out_dpid"},
+                    {"rewrite_caller_in_dpid"},
+                    {"rewrite_callee_in_dpid"}
+                }
+            }
+        }
         return t
     end
 
     function NGCP:caller_peer_load(peer)
+        local _,v, default, xvap
         local keys = self.prefs.peer:caller_load(peer)
+        local vars = self.vars.caller_peer_load
+
         self.prefs.real:caller_usr_load(keys)
+        for _,v in pairs(vars.caller_peer_prefs) do
+            default = self.config.default[v[2]]
+            if v[2] then
+                xavp = "caller_peer_prefs=>" .. v[2]
+            else
+                xavp = nil
+            end
+            NGCPPrefs.set_avp(v[1], xavp, default)
+        end
         return keys
     end
 
@@ -97,15 +145,40 @@ NGCP_MT = { __index = NGCP }
         return unique_keys
     end
 
+    function NGCP:clean_vars(vtype, group)
+        local _, v, var, vars_index, avp
+        vars_index = vtype .. "_" .. group .. "_load"
+        if self.vars[vars_index] then
+            for _,v in pairs(self.vars[vars_index]) do
+                for _,var in pairs(v) do
+                    avp = NGCPAvp:new(var[1])
+                    avp:clean()
+                end
+            end
+        end
+    end
+
     function NGCP:clean(vtype, group)
-        local _,v
+        local _,k,v
         if not group then
-            for _,v in pairs(self.prefs) do
+            for k,v in pairs(self.prefs) do
                 v:clean(vtype)
+                if not vtype then
+                    self:clean_vars('caller', k)
+                    self:clean_vars('callee', k)
+                else
+                    self:clean_vars(vtype, k)
+                end
             end
         else
             if self.prefs[group] then
                 self.prefs[group]:clean(vtype)
+                if not vtype then
+                    self:clean_vars('caller', group)
+                    self:clean_vars('callee', group)
+                else
+                    self:clean_vars(vtype, group)
+                end
             else
                 error(string.format("unknown group:%s", group))
             end
