@@ -1,8 +1,8 @@
 #!/usr/bin/env lua5.1
 require('luaunit')
+require('lemock')
 require 'ngcp.utils'
 require 'tests_v.dp_vars'
-require('lemock')
 
 if not sr then
     require 'mocks.sr'
@@ -11,24 +11,6 @@ else
     argv = {}
 end
 local mc = nil
-
-DPFetch = {
-    __class__ = 'DPFetch',
-    _i = 1
-}
-    function DPFetch:new()
-        t = {}
-        return setmetatable(t, { __index = DPFetch })
-    end
-
-    function DPFetch:val(uuid)
-        self._i = self._i + 1
-        return dp_vars[uuid][self._i-1]
-    end
-
-    function DPFetch:reset()
-        self._i = 1
-    end
 
 TestNGCPDomainPrefs = {} --class
 

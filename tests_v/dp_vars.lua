@@ -134,3 +134,22 @@ dp_vars = {
       }
     }
 }
+
+DPFetch = {
+    __class__ = 'DPFetch',
+    _i = 1
+}
+    function DPFetch:new()
+        t = {}
+        return setmetatable(t, { __index = DPFetch })
+    end
+
+    function DPFetch:val(uuid)
+        self._i = self._i + 1
+        return dp_vars[uuid][self._i-1]
+    end
+
+    function DPFetch:reset()
+        self._i = 1
+    end
+--EOF

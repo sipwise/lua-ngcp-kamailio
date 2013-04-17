@@ -1,8 +1,8 @@
 #!/usr/bin/env lua5.1
 require('luaunit')
+require('lemock')
 require 'ngcp.utils'
 require 'tests_v.up_vars'
-require('lemock')
 
 if not sr then
     require 'mocks.sr'
@@ -11,24 +11,6 @@ else
     argv = {}
 end
 local mc = nil
-
-UPFetch = {
-    __class__ = 'UPFetch',
-    _i = 1
-}
-    function UPFetch:new()
-        t = {}
-        return setmetatable(t, { __index = UPFetch })
-    end
-
-    function UPFetch:val(uuid)
-        self._i = self._i + 1
-        return up_vars[uuid][self._i-1]
-    end
-
-    function UPFetch:reset()
-        self._i = 1
-    end
 
 TestNGCPUserPrefs = {} --class
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env lua5.1
 require('luaunit')
+require('lemock')
 require 'ngcp.utils'
 require 'tests_v.pp_vars'
-require('lemock')
 
 if not sr then
     require 'mocks.sr'
@@ -11,24 +11,6 @@ else
     argv = {}
 end
 local mc = nil
-
-PPFetch = {
-    __class__ = 'PPFetch',
-    _i = 1
-}
-    function PPFetch:new()
-        t = {}
-        return setmetatable(t, { __index = PPFetch })
-    end
-
-    function PPFetch:val(uuid)
-        self._i = self._i + 1
-        return pp_vars[uuid][self._i-1]
-    end
-
-    function PPFetch:reset()
-        self._i = 1
-    end
 
 TestNGCPPeerPrefs = {} --class
 

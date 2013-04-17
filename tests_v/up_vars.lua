@@ -84,3 +84,22 @@ up_vars = {
         }
     }
 }
+
+UPFetch = {
+    __class__ = 'UPFetch',
+    _i = 1
+}
+    function UPFetch:new()
+        t = {}
+        return setmetatable(t, { __index = UPFetch })
+    end
+
+    function UPFetch:val(uuid)
+        self._i = self._i + 1
+        return up_vars[uuid][self._i-1]
+    end
+
+    function UPFetch:reset()
+        self._i = 1
+    end
+--EOF

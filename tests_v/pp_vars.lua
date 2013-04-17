@@ -154,3 +154,22 @@ pp_vars = {
         }
     }
 }
+
+PPFetch = {
+    __class__ = 'PPFetch',
+    _i = 1
+}
+    function PPFetch:new()
+        t = {}
+        return setmetatable(t, { __index = PPFetch })
+    end
+
+    function PPFetch:val(uuid)
+        self._i = self._i + 1
+        return pp_vars[uuid][self._i-1]
+    end
+
+    function PPFetch:reset()
+        self._i = 1
+    end
+--EOF
