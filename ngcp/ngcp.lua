@@ -26,6 +26,10 @@ NGCPConfig_MT = { __index = NGCPConfig }
                 sst_max_timer = 7200,
                 sst_refresh_method = "UPDATE_FALLBACK_INVITE",
                 outbound_from_user = "npn",
+                inbound_upn = "from_user",
+                inbound_npn = "from_user",
+                inbound_uprn = "from_user",
+                ip_header = "P-NGCP-Src-Ip",
             }
         }
         setmetatable( t, NGCPConfig_MT )
@@ -88,6 +92,31 @@ NGCP_MT = { __index = NGCP }
                     {"rewrite_caller_in_dpid"},
                     {"rewrite_callee_in_dpid"}
                 }
+            },
+            callee_peer_load = {
+                callee_peer_prefs = {
+                    {"peer_peer_callee_auth_user", "peer_auth_user"},
+                    {"peer_peer_callee_auth_pass", "peer_auth_pass"},
+                    {"peer_peer_callee_auth_realm", "peer_auth_realm"},
+                    {"caller_use_rtpproxy", "use_rtpproxy"},
+                    {"caller_force_outbound_calls_to_peer", "force_outbound_calls_to_peer"},
+                    {"peer_caller_find_subscriber_by_uuid", "find_subscriber_by_uuid"},
+                    {"caller_inbound_upn", "inbound_upn"},
+                    {"caller_inbound_npn", "inbound_npn"},
+                    {"caller_inbound_uprn", "inbound_uprn"},
+                    {"pstn_dp_caller_in_id", "rewrite_caller_in_dpid"},
+                    {"pstn_dp_callee_in_id", "rewrite_callee_in_dpid"},
+                    {"rewrite_caller_out_dpid"},
+                    {"rewrite_callee_out_dpid"},
+                    {"peer_caller_ipv46_for_rtpproxy","ipv46_for_rtpproxy"},
+                    {"caller_ip_header","ip_header"},
+                    {"caller_peer_concurrent_max", "concurrent_max"},
+                    {"peer_caller_sst_enable", "sst_enable"},
+                    {"peer_caller_sst_expires", "sst_expires"},
+                    {"peer_caller_sst_min_timer", "sst_min_timer"},
+                    {"peer_caller_sst_max_timer", "sst_max_timer"},
+                    {"peer_caller_sst_refresh_method", "sst_refresh_method"}
+                }
             }
         }
         return t
@@ -98,7 +127,7 @@ NGCP_MT = { __index = NGCP }
         local keys = self.prefs.peer:caller_load(peer)
         local vars = self.vars.caller_peer_load
 
-        self.prefs.real:caller_usr_load(keys)
+        self.prefs.real:caller_peer_load(keys)
         for _,v in pairs(vars.caller_peer_prefs) do
             default = self.config.default[v[2]]
             if v[2] then
@@ -112,8 +141,21 @@ NGCP_MT = { __index = NGCP }
     end
 
     function NGCP:callee_peer_load(peer)
+        local _,v, default, xvap
         local keys = self.prefs.peer:callee_load(peer)
+        local vars = self.vars.callee_peer_load
+
         self.prefs.real:callee_peer_load(keys)
+        for _,v in pairs(vars.callee_peer_prefs) do
+            default = self.config.default[v[2]]
+            if v[2] then
+                xavp = "callee_peer_prefs=>" .. v[2]
+            else
+                xavp = nil
+            end
+            NGCPPrefs.set_avp(v[1], xavp, default)
+        end
+
         return keys
     end
 

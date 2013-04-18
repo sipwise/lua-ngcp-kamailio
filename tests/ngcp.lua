@@ -117,6 +117,27 @@ TestNGCP = {} --class
         assertEquals(self.ngcp:callee_peer_load(), {})
     end
 
+    function TestNGCP:test_callee_peer_load()
+        local c = self.ngcp.config
+        env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
+        self.con:execute(mc.ANYARGS)  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2")) --sst_enable: "no"
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2")) --sst_refresh_method: "UPDATE_FALLBACK_INVITE"
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+        self.con:close()
+
+        mc:replay()
+        local keys = self.ngcp:callee_peer_load("2")
+        mc:verify()
+
+        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"), "callee")
+        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_enable)"), "no")
+        assertEquals(sr.pv.get("$avp(peer_caller_sst_enable)"), "no")
+        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+        assertEquals(sr.pv.get("$avp(peer_caller_sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+    end
+
     function TestNGCP:test_clean()
         local xavp = NGCPXAvp:new('callee','usr_prefs')
         xavp("testid",1)
@@ -301,6 +322,46 @@ TestNGCP = {} --class
         assertEquals(sr.pv.get("$avp(s:concurrent_max_out)"), nil)
         assertEquals(sr.pv.get("$avp(s:concurrent_max_per_account)"), nil)
         assertEquals(sr.pv.get("$avp(s:concurrent_max_out_per_account)"), nil)
+    end
+
+    function TestNGCP:test_callee_peer_clean_vars()
+        self:test_callee_peer_load()
+
+        assertEquals(sr.pv.get("$avp(peer_caller_sst_enable)"), "no")
+        assertEquals(sr.pv.get("$avp(peer_caller_sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+
+        self.ngcp:clean('callee', 'peer')
+
+        assertEquals(sr.pv.get("$avp(s:peer_peer_callee_auth_user)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_peer_callee_auth_pass)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_peer_callee_auth_realm)"), nil)
+
+
+        assertEquals(sr.pv.get("$avp(s:caller_use_rtpproxy)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_caller_ipv46_for_rtpproxy)"), nil)
+
+        assertEquals(sr.pv.get("$avp(s:caller_force_outbound_calls_to_peer)"), nil)
+
+        assertEquals(sr.pv.get("$avp(s:peer_caller_find_subscriber_by_uuid)"), nil)
+
+        assertEquals(sr.pv.get("$avp(s:pstn_dp_caller_in_id)"), nil)
+        assertEquals(sr.pv.get("$avp(s:pstn_dp_callee_in_id)"), nil)
+        assertEquals(sr.pv.get("$avp(s:pstn_dp_caller_out_id)"), nil)
+        assertEquals(sr.pv.get("$avp(s:pstn_dp_callee_out_id)"), nil)
+
+        assertEquals(sr.pv.get("$avp(s:caller_peer_concurrent_max)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_caller_sst_enable)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_caller_sst_expires)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_caller_sst_min_timer)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_caller_sst_max_timer)"), nil)
+        assertEquals(sr.pv.get("$avp(s:peer_caller_sst_refresh_method)"), nil)
+
+        assertEquals(sr.pv.get("$avp(s:caller_inbound_upn)"), nil)
+        assertEquals(sr.pv.get("$avp(s:caller_inbound_npn)"), nil)
+        assertEquals(sr.pv.get("$avp(s:caller_inbound_uprn)"), nil)
+
+        assertEquals(sr.pv.get("$avp(s:caller_ip_header)"), nil)
+        assertEquals(sr.pv.get("$avp(s:caller_ip_val)"), nil)
     end
 
 -- class TestNGCP
