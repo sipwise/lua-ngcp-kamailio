@@ -11,6 +11,47 @@ TestMock = {}
         m.toto( 33, "abc", { 21} )
     end
 
+TestHDRMock = {}
+    function TestHDRMock:setUp()
+        self.hdr = hdrMock:new()
+    end
+
+    function TestHDRMock:tearDown()
+        self.hdr.headers = {}
+        self.hdr.headers_reply = {}
+    end
+
+    function TestHDRMock:test_is_header()
+        assertTrue(self.hdr._is_header("From: hi@there.com\r\n"))
+        assertFalse(self.hdr._is_header("From hi@there.com\r\n"))
+        assertFalse(self.hdr._is_header("From: hi@there.com\r"))
+        assertFalse(self.hdr._is_header("From : hi@there.com\n"))
+        assertFalse(self.hdr._is_header("From : hi@there.com\n\r"))
+        assertTrue(self.hdr._is_header("From: hi@there.com:8080\r\n"))
+    end
+
+    function TestHDRMock:test_append()
+        assertFalse(self.hdr._get_header("From"))
+        self.hdr.append("From: hi@there.com\r\n")
+        assertEquals(self.hdr.headers, {"From: hi@there.com\r\n"})
+        self.hdr.append("To: bye@there.com\r\n")
+        assertEquals(self.hdr.headers, {"From: hi@there.com\r\n", "To: bye@there.com\r\n"})
+    end
+
+    function TestHDRMock:test_insert()
+        assertFalse(self.hdr._get_header("From"))
+        self.hdr.insert("From: hi@there.com\r\n")
+        assertEquals(self.hdr.headers, {"From: hi@there.com\r\n"})
+        self.hdr.insert("To: bye@there.com\r\n")
+        assertEquals(self.hdr.headers, {"To: bye@there.com\r\n", "From: hi@there.com\r\n"})
+    end
+
+    function TestHDRMock:test_get_header()
+        self:test_append()
+        assertEquals(self.hdr._get_header("From"), "hi@there.com")
+    end
+-- end class
+
 TestSRMock = {}
     function TestSRMock:setUp()
         self.sr = srMock:new()
@@ -28,6 +69,26 @@ TestSRMock = {}
         assertEquals(self.sr.pv._clean_id('s:u25'), 'u25')
         assertEquals(self.sr.pv._clean_id('i:u25'), 'u25')
         assertEquals(self.sr.pv._clean_id('u25'), 'u25')
+    end
+
+    function TestSRMock:test_is_hdr_simple()
+        local result
+        result = self.sr.pv._is_hdr("$hdr(id)")
+        assertTrue(result)
+        assertEquals(result.type, 'hdr')
+        assertEquals(result.id, 'id')
+        assertEquals(result.key, nil)
+        assertFalse(result.clean)
+    end
+
+    function TestSRMock:test_is_hdr_complex()
+        local result
+        result = self.sr.pv._is_hdr("$hdr($si)")
+        assertTrue(result)
+        assertEquals(result.type, 'hdr')
+        assertEquals(result.id, '$si')
+        assertEquals(result.key, nil)
+        assertFalse(result.clean)
     end
 
     function TestSRMock:test_is_xavp_simple()
@@ -235,7 +296,7 @@ TestSRMock = {}
         v = 1
         for i=#vals,1,-1 do
            assertEquals(l[i],vals[v])
-           v = v + 1 
+           v = v + 1
         end
     end
 
@@ -248,6 +309,12 @@ TestSRMock = {}
         self.sr.pv.sets("$(avp(s:hithere)[*])", "new_value")
         assertEquals(self.sr.pv.get("$avp(s:hithere)"), "new_value")
         assertEquals(self.sr.pv.get("$(avp(s:hithere)[*])"), {"new_value"})
+    end
+
+    function TestSRMock:test_hdr_get()
+        self.sr.hdr.insert("From: hola\r\n")
+        assertEquals(self.sr.hdr.headers, {"From: hola\r\n"})
+        assertEquals(self.sr.pv.get("$hdr(From)"), "hola")
     end
 
     function TestSRMock:test_unset_var()
@@ -273,7 +340,7 @@ TestSRMock = {}
         self.sr.pv.sets("$xavp(g=>t)", "value1")
         assertEquals(self.sr.pv.get("$xavp(g[0]=>t)"), "value1")
         assertEquals(self.sr.pv.get("$xavp(g[1]=>t)"), "value")
-        -- 
+        --
         self.sr.pv.unset("$xavp(g[0]=>t)")
         assertEquals(self.sr.pv.get("$xavp(g[0]=>t)"), nil)
         assertEquals(self.sr.pv.get("$xavp(g[1]=>t)"), "value")
@@ -293,7 +360,7 @@ TestSRMock = {}
         assertEquals(self.sr.pv.get("$xavp(g[1]=>t)"), "value")
         self.sr.pv.sets("$xavp(g[1]=>z)", "value_z")
         assertEquals(self.sr.pv.get("$xavp(g[1]=>z)"), "value_z")
-        -- 
+        --
         self.sr.pv.unset("$xavp(g[0])")
         assertEquals(self.sr.pv.get("$xavp(g[0]=>t)"), nil)
         assertEquals(self.sr.pv.get("$xavp(g[1]=>t)"), "value")

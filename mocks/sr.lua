@@ -3,9 +3,88 @@ require ('logging.file')
 require 'lemock'
 require 'ngcp.utils'
 
+hdrMock = {
+    __class__ = 'hdrMock',
+    headers = {},
+    headers_reply = {},
+    _logger = logging.file('reports/sr_hdr_%s.log', '%Y-%m-%d'),
+    _logger_levels = {
+        dbg  = logging.DEBUG,
+        info = logging.INFO,
+        warn = logging.WARN,
+        err  = logging.ERROR,
+        crit = logging.FATAL
+    }
+}
+    function hdrMock:new()
+        local t = {}
+
+        t.__class__ = 'hdrMock'
+        t.headers = {}
+        t.headers_reply = {}
+
+        function t._is_header(text)
+            local result = string.match(text,'[^:]+: .+\r\n$')
+            if result then
+                return true
+            end
+            return false
+        end
+
+        function t._get_header(text)
+            local _,v, result
+            local pattern = "^" .. text .. ": (.+)\r\n$"
+            if text then
+                for _,v in ipairs(t.headers) do
+                    result = string.match(v, pattern)
+                    --print(string.format("v:%s pattern:%s result:%s", v, pattern, tostring(result)))
+                    if result then
+                        return result
+                    end
+                end
+            end
+        end
+
+        function t.append(text)
+            if text then
+                if not t._is_header(text) then
+                    error("text: " .. text .. " malformed header")
+                end
+                table.insert(t.headers, text)
+            end
+        end
+
+        function t.insert(text)
+            if text then
+                if not t._is_header(text) then
+                    error("text: " .. text .. " malformed header")
+                end
+                table.insert(t.headers, 1, text)
+            end
+        end
+
+        function t.remove(text)
+            local i,v
+            if text then
+                for i,v in ipairs(t.headers) do
+                    if string.starts(v, text .. ":") then
+                        table.remove(t.headers, i)
+                        return
+                    end
+                end
+            end
+        end
+
+        hdrMock_MT = { __index = hdrMock }
+        setmetatable(t, hdrMock_MT)
+        return t
+    end
+-- end class
+
 pvMock = {
     __class__ = 'pvMock',
     vars = {},
+    hdr = nil,
     _logger = logging.file('reports/sr_pv_%s.log', '%Y-%m-%d'),
     _logger_levels = {
         dbg  = logging.DEBUG,
@@ -15,11 +94,12 @@ pvMock = {
         crit = logging.FATAL
     }
 }
-    function pvMock:new()
+    function pvMock:new(hdr)
         local t = {}
 
         t.__class__ = 'pvMock'
         t.vars = {}
+        t.hdr = hdr
 
         function t._is_xavp(id)
             local _id, indx, key
@@ -77,6 +157,18 @@ pvMock = {
             end
         end
 
+        function t._is_hdr(id)
+            local key, _, v
+            local patterns = {
+                '%$hdr%(([^:]+)%)$',
+            }
+            for _,v in pairs(patterns) do
+                for key in string.gmatch(id, v) do
+                    return { id=key, clean=false, type='hdr' }
+                end
+            end
+        end
+
         function t._is(id)
             if not id then
                 error("id empty")
@@ -90,6 +182,9 @@ pvMock = {
                 result = t._is_var(id)
             end
             if not result then
+                result = t._is_hdr(id)
+            end
+            if not result then
                 error(string.format("not implemented or wrong id:%s", id))
             end
             result.private_id = result.type .. ':' .. result.id
@@ -101,7 +196,7 @@ pvMock = {
             if not result then
                 return
             end
-            
+
             if result.type == 'var' then
                 return t.vars[result.private_id]
             elseif result.type == 'xavp' then
@@ -114,7 +209,7 @@ pvMock = {
                     else
                         result.real_indx = #t.vars[result.private_id]._et - result.indx
                         return t.vars[result.private_id]._et[result.real_indx]
-                    end                    
+                    end
                 end
                 if not result.indx then
                     result.indx = 0
@@ -131,6 +226,10 @@ pvMock = {
                     else
                         return l[1]
                     end
+                end
+            elseif result.type == 'hdr' then
+                if t.hdr then
+                    return t.hdr._get_header(result.id)
                 end
             end
         end
@@ -267,7 +366,6 @@ pvMock = {
 -- class srMock
 srMock = {
     __class__ = 'srMock',
-    pv = pvMock:new(),
     _logger = logging.file("reports/sr_%s.log", "%Y-%m-%d"),
     _logger_levels = {
         dbg  = logging.DEBUG,
@@ -280,6 +378,8 @@ srMock = {
 srMock_MT = { __index = srMock, __newindex = lemock.controller():mock() }
     function srMock:new()
         local t = {}
+        t.hdr = hdrMock:new()
+        t.pv = pvMock:new(t.hdr)
             function t.log(level, message)
                 if not t._logger_levels[level] then
                     error(string.format("level %s unknown", level))
