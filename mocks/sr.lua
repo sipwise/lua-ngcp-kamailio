@@ -98,6 +98,16 @@ pvMock = {
         local t = {}
 
         t.__class__ = 'pvMock'
+        -- fake pseudo vars go here
+        t.vars_pv = {
+            ro = {
+                si = "127.0.0.1",
+                sp = "9090"
+            },
+            rw = {
+                rU = "noname"
+            }
+        }
         t.vars = {}
         t.hdr = hdr
 
@@ -169,6 +179,22 @@ pvMock = {
             end
         end
 
+        function t._is_pv(id)
+            local k0,k,_
+            local real_id = string.match(id, '%$(%w+)$')
+            if not real_id then
+                return
+            end
+            for k,_ in pairs(t.vars_pv) do
+                for k0,_ in pairs(t.vars_pv[k]) do
+                    --print(string.format("id:%s, k:%s k0:%s", real_id, k, k0))
+                    if real_id == k0 then
+                        return { id=k0, clean=false, type='pv', mode=k}
+                    end
+                end
+            end
+        end
+
         function t._is(id)
             if not id then
                 error("id empty")
@@ -183,6 +209,9 @@ pvMock = {
             end
             if not result then
                 result = t._is_hdr(id)
+            end
+            if not result then
+                result = t._is_pv(id)
             end
             if not result then
                 error(string.format("not implemented or wrong id:%s", id))
@@ -231,6 +260,8 @@ pvMock = {
                 if t.hdr then
                     return t.hdr._get_header(result.id)
                 end
+            elseif result.type == 'pv' then
+                return t.vars_pv[result.mode][result.id]
             end
         end
 
@@ -252,6 +283,8 @@ pvMock = {
             elseif result.type == 'avp' then
                 t.vars[result.private_id] = Stack:new()
                 t.vars[result.private_id]:push(value)
+            elseif result.type == 'pv' and result.mode == 'rw' then
+                t.vars_pv.rw[result.id] = value
             end
         end
 
@@ -275,6 +308,8 @@ pvMock = {
                 end
             elseif result.type == 'avp' then
                 t.vars[result.private_id]:push(value)
+            elseif result.type == 'pv' and result.mode == 'rw' then
+                t.vars_pv.rw[result.id] = value
             end
         end
 

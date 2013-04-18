@@ -71,6 +71,28 @@ TestSRMock = {}
         assertEquals(self.sr.pv._clean_id('u25'), 'u25')
     end
 
+    function TestSRMock:test_is_pv_simple()
+        local result
+        result = self.sr.pv._is_pv("$si")
+        assertTrue(result)
+        assertEquals(result.type, 'pv')
+        assertEquals(result.id, 'si')
+        assertEquals(result.key, nil)
+        assertEquals(result.mode, 'ro')
+        assertFalse(result.clean)
+    end
+
+    function TestSRMock:test_is_pv_rw()
+        local result
+        result = self.sr.pv._is_pv("$rU")
+        assertTrue(result)
+        assertEquals(result.type, 'pv')
+        assertEquals(result.id, 'rU')
+        assertEquals(result.key, nil)
+        assertEquals(result.mode, 'rw')
+        assertFalse(result.clean)
+    end
+
     function TestSRMock:test_is_hdr_simple()
         local result
         result = self.sr.pv._is_hdr("$hdr(id)")
@@ -315,6 +337,16 @@ TestSRMock = {}
         self.sr.hdr.insert("From: hola\r\n")
         assertEquals(self.sr.hdr.headers, {"From: hola\r\n"})
         assertEquals(self.sr.pv.get("$hdr(From)"), "hola")
+    end
+
+    function TestSRMock:test_pv_seti()
+        self.sr.pv.seti("$rU", 0)
+        assertEquals(self.sr.pv.get("$rU"), 0)
+    end
+
+    function TestSRMock:test_pv_sets()
+        self.sr.pv.sets("$rU", "0")
+        assertEquals(self.sr.pv.get("$rU"), "0")
     end
 
     function TestSRMock:test_unset_var()
