@@ -30,6 +30,7 @@ NGCPConfig_MT = { __index = NGCPConfig }
                 inbound_npn = "from_user",
                 inbound_uprn = "from_user",
                 ip_header = "P-NGCP-Src-Ip",
+                account_id = 0,
             }
         }
         setmetatable( t, NGCPConfig_MT )
@@ -117,9 +118,95 @@ NGCP_MT = { __index = NGCP }
                     {"peer_caller_sst_max_timer", "sst_max_timer"},
                     {"peer_caller_sst_refresh_method", "sst_refresh_method"}
                 }
-            }
+            },
+            caller_usr_load = {
+                caller_usr_prefs = {
+                    {"allowed_ips_grp", "allowed_ips_grp"},
+                    {"man_allowed_ips_grp", "man_allowed_ips_grp"},
+                    {"ignore_allowed_ips", "ignore_allowed_ips"},
+                    {"caller_account_id", "account_id"},
+                    {"caller_cc", "cc"},
+                    {"caller_ac", "ac"},
+                    {"caller_emergency_cli", "emergency_cli"},
+                    {"caller_emergency_prefix", "emergency_prefix"},
+                    {"caller_emergency_suffix", "emergency_suffix"},
+                    {"caller_lock", "lock"},
+                    {"caller_block_override", "block_out_override_pin"},
+                    {"caller_adm_block_override", "dm_block_out_override_pin"},
+                    {"caller_allowed_clis", "allowed_clis"},
+                    {"caller_user_cli", "user_cli"},
+                    {"caller_block_out_mode", "block_out_mode"},
+                    {"caller_block_out_list", "block_out_list"},
+                    {"caller_adm_block_out_mode", "adm_block_out_mode"},
+                    {"caller_adm_block_out_list", "adm_block_out_list"},
+                    {"caller_peer_auth_user", "peer_auth_user"},
+                    {"caller_peer_auth_pass", "peer_auth_pass"},
+                    {"caller_peer_auth_realm", "peer_auth_realm"},
+                    {"caller_ext_subscriber_id", "ext_subscriber_id"},
+                    {"caller_ext_contract_id", "ext_contract_id"},
+                    {"caller_prepaid", "prepaid"},
+                },
+                caller_real_prefs = {
+                    {"caller_reject_emergency", "reject_emergency"},
+                    {"caller_ncos_id", "ncos_id"},
+                    {"caller_inbound_upn", "inbound_upn"},
+                    {"caller_extension_in_npn", "extension_in_npn"},
+                    {"caller_inbound_uprn", "inbound_uprn", "npn"},
+                    {"caller_ipv46_for_rtpproxy", "ipv46_for_rtpproxy"},
+                    {"caller_force_outbound_calls_to_peer", "force_outbound_calls_to_peer"},
+                    {"caller_use_rtpproxy", "use_rtpproxy"},
+                    {"rewrite_caller_in_dpid", "rewrite_caller_in_dpid"},
+                    {"rewrite_callee_in_dpid", "rewrite_callee_in_dpid"},
+                    {"caller_ip_header", "ip_header"},
+                    {"caller_allow_out_foreign_domain", "allow_out_foreign_domain"},
+                	{"caller_concurrent_max", "concurrent_max"},
+					{"caller_concurrent_max_out", "concurrent_max_out"},
+					{"caller_concurrent_max_per_account", "concurrent_max_per_account"},
+					{"caller_concurrent_max_out_per_account", "concurrent_max_out_per_account"},
+                    {"caller_sst_enable", "sst_enable"},
+                    {"caller_sst_expires", "sst_expires"},
+                    {"caller_sst_min_timer", "sst_min_timer"},
+                    {"caller_sst_max_timer", "sst_max_timer"},
+                    {"caller_sst_refresh_method", "sst_refresh_method"}
+				}
+            },
+            callee_usr_load = {}
         }
         return t
+    end
+
+    function NGCP:_set_vars(indx)
+        local _,k,v, default, xvap, var
+        for k,var in pairs(self.vars[indx]) do
+            for _,v in pairs(var) do
+                if not v[3] then
+                    default = self.config.default[v[2]]
+                else
+                    default = v[3]
+                end
+                if v[2] then
+                    xavp = k .. "=>" .. v[2]
+                else
+                    xavp = nil
+                end
+                NGCPPrefs.set_avp(v[1], xavp, default)
+            end
+        end
+    end
+
+    -- value 0 is like null?
+    -- if 0 => use dom pref if not 0
+    function NGCP._set_dom_priority(var, xavp, pref)
+        local avp = NGCPAvp:new(var)
+        local value
+
+        if avp() == 0 then
+            value = xavp(pref)
+            if not value and value ~= 0 then
+                avp:clean()
+                avp(value)
+            end
+        end
     end
 
     function NGCP:caller_peer_load(peer)
@@ -128,15 +215,7 @@ NGCP_MT = { __index = NGCP }
         local vars = self.vars.caller_peer_load
 
         self.prefs.real:caller_peer_load(keys)
-        for _,v in pairs(vars.caller_peer_prefs) do
-            default = self.config.default[v[2]]
-            if v[2] then
-                xavp = "caller_peer_prefs=>" .. v[2]
-            else
-                xavp = nil
-            end
-            NGCPPrefs.set_avp(v[1], xavp, default)
-        end
+        self:_set_vars("caller_peer_load")
         return keys
     end
 
@@ -146,44 +225,47 @@ NGCP_MT = { __index = NGCP }
         local vars = self.vars.callee_peer_load
 
         self.prefs.real:callee_peer_load(keys)
-        for _,v in pairs(vars.callee_peer_prefs) do
-            default = self.config.default[v[2]]
-            if v[2] then
-                xavp = "callee_peer_prefs=>" .. v[2]
-            else
-                xavp = nil
-            end
-            NGCPPrefs.set_avp(v[1], xavp, default)
-        end
-
+        self:_set_vars("callee_peer_load")
         return keys
     end
 
     function NGCP:caller_usr_load(uuid, domain)
+        local _,v
         local keys = {
             domain = self.prefs.dom:caller_load(domain),
             user   = self.prefs.usr:caller_load(uuid)
         }
         local unique_keys = table.deepcopy(keys.domain)
-        local _,v
+
         for _,v in pairs(keys.user) do
             table.add(unique_keys, v)
         end
         self.prefs.real:caller_usr_load(unique_keys)
+        self:_set_vars("caller_usr_load")
+        local xavp = NGCPXAvp:new('caller', 'dom')
+
+        -- if 0 => use dom pref if not 0
+        NGCP._set_dom_priority("caller_concurrent_max", xavp, "concurrent_max")
+        NGCP._set_dom_priority("caller_concurrent_max_out", xavp, "concurrent_max_out")
+        NGCP._set_dom_priority("caller_concurrent_max_per_account", xavp, "concurrent_max_per_account")
+        NGCP._set_dom_priority("caller_concurrent_max_per_account_out", xavp, "concurrent_max_per_account_out")
+
         return unique_keys
     end
 
     function NGCP:callee_usr_load(uuid, domain)
+        local _,v
         local keys = {
             domain = self.prefs.dom:callee_load(domain),
             user   = self.prefs.usr:callee_load(uuid)
         }
         local unique_keys = table.deepcopy(keys.domain)
-        local _,v
+
         for _,v in pairs(keys.user) do
             table.add(unique_keys, v)
         end
         self.prefs.real:callee_usr_load(unique_keys)
+        self:_set_vars("callee_usr_load")
         return unique_keys
     end
 
