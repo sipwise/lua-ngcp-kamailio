@@ -79,10 +79,6 @@ TestNGCP = {} --class
         assertEquals(self.ngcp:caller_usr_load(), {})
     end
 
-    function TestNGCP:test_callee_usr_load_empty()
-        assertEquals(self.ngcp:callee_usr_load(), {})
-    end
-
     function TestNGCP:test_caller_usr_load()
         local c = self.ngcp.config
         env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
@@ -111,6 +107,40 @@ TestNGCP = {} --class
         assertEquals(sr.pv.get("$avp(caller_sst_enable)"), "no")
         assertEquals(sr.pv.get("$xavp(caller_real_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
         assertEquals(sr.pv.get("$avp(caller_sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+    end
+
+    function TestNGCP:test_callee_usr_load_empty()
+        assertEquals(self.ngcp:callee_usr_load(), {})
+    end
+
+    function TestNGCP:test_callee_usr_load()
+        local c = self.ngcp.config
+        env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
+        self.con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.56'")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+        self.con:close()
+        env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
+        self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+        self.con:close()
+
+        mc:replay()
+        local keys = self.ngcp:callee_usr_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c", "192.168.51.56")
+        mc:verify()
+
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"), "callee")
+        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>sst_enable)"), "no")
+        assertEquals(sr.pv.get("$avp(callee_sst_enable)"), "no")
+        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+        assertEquals(sr.pv.get("$avp(callee_sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
     end
 
     function TestNGCP:test_caller_peer_load_empty()
@@ -249,7 +279,7 @@ TestNGCP = {} --class
             self.ngcp:clean("callee", v)
             assertEquals(sr.pv.get(string.format("$xavp(callee_%s_prefs=>dummy)", v)), "callee")
         end
-        assertEquals(sr.pv.get("$avp(s:callee_outbound_from_display)"),'foofighters')
+        assertEquals(sr.pv.get("$avp(s:callee_outbound_from_display)"),nil)
         assertError(self.ngcp.clean, self.ngcp, "callee", "whatever")
     end
 

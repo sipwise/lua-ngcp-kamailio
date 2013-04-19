@@ -170,7 +170,55 @@ NGCP_MT = { __index = NGCP }
                     {"caller_sst_refresh_method", "sst_refresh_method"}
 				}
             },
-            callee_usr_load = {}
+            callee_usr_load = {
+                callee_usr_prefs = {
+                    {"callee_account_id", "account_id"},
+                    {"callee_cc", "cc"},
+                    {"callee_ac", "ac"},
+                    {"callee_cfu", "cfu"},
+                    {"callee_cfna", "cfna"},
+                    {"callee_cfb", "cfb"},
+                    {"callee_cft", "cft"},
+                    {"callee_ringtimeout", "ringtimeout"},
+                    {"callee_lock", "lock"},
+                    {"callee_e164_to_ruri", "e164_to_ruri"},
+                    {"callee_block_in_mode", "block_in_mode"},
+                    {"callee_block_in_list", "block_in_list"},
+                    {"callee_block_in_clir", "block_in_clir"},
+                    {"callee_adm_block_in_mode", "adm_block_in_mode"},
+                    {"callee_adm_block_in_list", "adm_block_in_list"},
+                    {"callee_adm_block_in_clir", "adm_block_in_clir"},
+                    {"callee_ext_subscriber_id", "ext_subscriber_id"},
+                    {"callee_ext_contract_id", "ext_contract_id"},
+                    {"callee_peer_auth_user", "peer_auth_user"},
+                    {"callee_peer_auth_pass", "peer_auth_pass"},
+                    {"callee_peer_auth_realm", "peer_auth_realm"},
+                    {"concurrent_max_out"},
+                    {"concurrent_max_out_per_account"},
+                    {"callee_prepaid", "prepaid"},
+                },
+                callee_real_prefs = {
+                    {"callee_force_inbound_calls_to_peer", "force_inbound_calls_to_peer"},
+                    {"callee_concurrent_max", "concurrent_max"},
+                    {"callee_concurrent_max_per_account", "concurrent_max_per_account"},
+                    {"callee_sound_set", "sound_set"},
+                    {"callee_use_rtpproxy", "usr_rtpproxy"},
+                    {"callee_ipv46_for_rtpproxy", "ipv46_for_rtpproxy"},
+                    {"callee_outbound_from_user", "outbound_from_user"},
+                    {"callee_outbound_from_display", "outbound_from_display"},
+                    {"callee_outbound_pai_user", "outbound_pai_user"},
+                    {"callee_outbound_ppi_user", "outbound_ppi_user"},
+                    {"callee_outbound_diversion", "outbound_diversion"},
+                    {"rewrite_caller_out_dpid", "rewrite_caller_out_dpid"},
+                    {"rewrite_callee_out_dpid", "rewrite_callee_out_dpid"},
+                    {"callee_sst_enable", "sst_enable"},
+                    {"callee_sst_expires", "sst_expires"},
+                    {"callee_sst_min_timer", "sst_min_timer"},
+                    {"callee_sst_max_timer", "sst_max_timer"},
+                    {"callee_sst_refresh_method", "sst_refresh_method"},
+                    {"callee_mobile_push_enable", "mobile_push_enable"},
+                }
+            }
         }
         return t
     end
@@ -266,6 +314,11 @@ NGCP_MT = { __index = NGCP }
         end
         self.prefs.real:callee_usr_load(unique_keys)
         self:_set_vars("callee_usr_load")
+
+        -- if 0 => use dom pref if not 0
+        NGCP._set_dom_priority("callee_concurrent_max", xavp, "concurrent_max")
+        NGCP._set_dom_priority("callee_concurrent_max_per_account", xavp, "concurrent_max_per_account")
+
         return unique_keys
     end
 
