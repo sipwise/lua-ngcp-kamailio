@@ -145,6 +145,8 @@ NGCP_MT = { __index = NGCP }
                     {"caller_ext_subscriber_id", "ext_subscriber_id"},
                     {"caller_ext_contract_id", "ext_contract_id"},
                     {"caller_prepaid", "prepaid"},
+                    {"caller_ring_group_dest", "ring_group_dest"},
+                    {"caller_ring_group_policy", "ring_group_policy"}
                 },
                 caller_real_prefs = {
                     {"caller_reject_emergency", "reject_emergency"},
@@ -167,7 +169,8 @@ NGCP_MT = { __index = NGCP }
                     {"caller_sst_expires", "sst_expires"},
                     {"caller_sst_min_timer", "sst_min_timer"},
                     {"caller_sst_max_timer", "sst_max_timer"},
-                    {"caller_sst_refresh_method", "sst_refresh_method"}
+                    {"caller_sst_refresh_method", "sst_refresh_method"},
+                    {"caller_cloud_pbx", "cloud_pbx"}
 				}
             },
             callee_usr_load = {
@@ -217,6 +220,7 @@ NGCP_MT = { __index = NGCP }
                     {"callee_sst_max_timer", "sst_max_timer"},
                     {"callee_sst_refresh_method", "sst_refresh_method"},
                     {"callee_mobile_push_enable", "mobile_push_enable"},
+                    {"callee_cloud_pbx", "cloud_pbx"}
                 }
             }
         }
