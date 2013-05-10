@@ -1,0 +1,18 @@
+Source: lua-ngcp
+Priority: extra
+Maintainer: Victor Seva <vseva@sipwise.com>
+Build-Depends: debhelper (>= 8~), dh-lua (>= 16~)
+Standards-Version: 3.9.4
+Section: libs
+Homepage: git://git.mgm.sipwise.com/kamailio-conf-lua
+
+Package: lua-ngcp
+Section: libs
+Architecture: any
+Depends: lua-sql-mysql, ${shlibs:Depends}, ${misc:Depends}
+Provides: ${lua:Provides}
+XB-Lua-Versions: ${lua:Versions}
+Description: lua framework for ngcp-kamailio config
+ This package provides the lua ngcp lib that ngcp-template-kamailio
+ uses.
+
