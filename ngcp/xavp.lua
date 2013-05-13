@@ -103,5 +103,17 @@ NGCPXAvp_MT = {
         sr.pv.unset(string.format("$xavp(%s)", self.name))
         sr.pv.sets(string.format("$xavp(%s=>dummy)", self.name), self.level)
     end
+
+    function NGCPXAvp.__tostring(xavp)
+        local l,k,v
+        local output
+
+        l = sr.xavp.get(xavp.name, 0)
+        if l then
+            output = table.tostring(l)
+        end
+        sr.log("dbg", string.format("output:%s", output))
+        return output
+    end
 -- class
 --EOF

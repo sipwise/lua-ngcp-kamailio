@@ -277,9 +277,9 @@ TestSRMock = {}
 
     function TestSRMock:test_xavp_sets1()
         self.sr.pv.sets("$xavp(g=>hithere)", "value")
-        assertEquals(self.sr.pv.get("$xavp(g=>hithere)"), "value")
+        assertEquals(self.sr.pv.get("$xavp(g[0]=>hithere)"), "value")
         self.sr.pv.sets("$xavp(g=>hithere)", "value_bye")
-        assertEquals(self.sr.pv.get("$xavp(g=>hithere)"), "value_bye")
+        assertEquals(self.sr.pv.get("$xavp(g[0]=>hithere)"), "value_bye")
         assertEquals(self.sr.pv.get("$xavp(g[1]=>hithere)"), "value")
     end
 
@@ -428,5 +428,54 @@ TestSRMock = {}
         self.sr.pv.seti("$(avp(s:hithere)[*])", 1)
         assertEquals(self.sr.pv.get("$avp(s:hithere)"), 1)
         assertEquals(self.sr.pv.get("$(avp(s:hithere)[*])"), {1})
+    end
+-- end class
+
+TestXAVPMock = {}
+    function TestXAVPMock:setUp()
+        self.pv = pvMock:new()
+        self.xavp = xavpMock:new(self.pv)
+
+        self.pv.sets("$xavp(test=>uno)", "uno")
+        assertEquals(self.pv.get("$xavp(test[0]=>uno)"), "uno")
+        self.pv.seti("$xavp(test[0]=>dos)", 2)
+        assertEquals(self.pv.get("$xavp(test[0]=>dos)"), 2)
+        self.pv.seti("$xavp(test=>uno)", 1)
+        assertEquals(self.pv.get("$xavp(test[0]=>uno)"), 1)
+        self.pv.sets("$xavp(test[0]=>dos)", "dos")
+        assertEquals(self.pv.get("$xavp(test[0]=>dos)"), "dos")
+        self.pv.seti("$xavp(test[0]=>tres)", 3)
+        assertEquals(self.pv.get("$xavp(test[0]=>tres)"), 3)
+        --
+        assertEquals(self.pv.get("$xavp(test[1]=>uno)"), "uno")
+        assertEquals(self.pv.get("$xavp(test[1]=>dos)"), 2)
+    end
+
+    function TestXAVPMock:tearDown()
+        self.pv.vars = {}
+    end
+
+    function TestXAVPMock:test_get_keys()
+        local l = self.xavp.get_keys("test", 0)
+        assertTrue(l)
+        assertItemsEquals(l, {"uno", "dos", "tres"})
+    end
+
+    function TestXAVPMock:test_get_keys_1()
+        local l = self.xavp.get_keys("test", 1)
+        assertTrue(l)
+        assertItemsEquals(l, {"uno", "dos"})
+    end
+
+    function TestXAVPMock:test_get()
+        local l = self.xavp.get("test", 0)
+        assertTrue(l)
+        assertItemsEquals(l, {uno=1, dos="dos", tres=3})
+    end
+
+    function TestXAVPMock:test_get()
+        local l = self.xavp.get("test", 1)
+        assertTrue(l)
+        assertItemsEquals(l, {uno="uno", dos=2})
     end
 --EOF

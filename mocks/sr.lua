@@ -398,6 +398,58 @@ pvMock = {
     end
 -- end class
 
+-- class xavpMock
+xavpMock = {
+    __class__ =  'xavpMock',
+    _logger = logging.file("reports/xavp_%s.log", "%Y-%m-%d"),
+    _logger_levels = {
+        dbg  = logging.DEBUG,
+        info = logging.INFO,
+        warn = logging.WARN,
+        err  = logging.ERROR,
+        crit = logging.FATAL
+    }
+}
+    function xavpMock:new(pv)
+        local t = {}
+
+        t.__class__ = 'hdrMock'
+        t.pv = pv
+
+        function t._get_xavp(xavp_name, index)
+            local private_id = "xavp:" .. xavp_name
+            local real_indx = #t.pv.vars[private_id]._et - index
+
+            if not t.pv.vars[private_id] then
+                error(string.format("%s not found", xavp_name))
+            elseif not t.pv.vars[private_id]._et[real_indx] then
+                error(string.format("%s[%d] not found", xavp_name, indx))
+            end
+            return t.pv.vars[private_id]._et[real_indx]
+        end
+
+        function t.get_keys(xavp_name, index)
+            local k,_
+            local output = {}
+
+            xavp = t._get_xavp(xavp_name, index)
+            for k,_ in pairs(xavp) do
+                table.insert(output, k)
+            end
+            return output
+        end
+
+        function t.get(xavp_name, index)
+            xavp = t._get_xavp(xavp_name, index)
+            return xavp
+        end
+
+        xavpMock_MT = { __index = xavpMock }
+        setmetatable(t, xavpMock_MT)
+        return t
+    end
+--end class
+
 -- class srMock
 srMock = {
     __class__ = 'srMock',
@@ -421,6 +473,7 @@ srMock_MT = { __index = srMock, __newindex = lemock.controller():mock() }
                 end
                 t._logger:log(t._logger_levels[level], message)
             end
+        t.xavp = xavpMock:new(t.pv)
         setmetatable(t, srMock_MT)
         return t
     end
