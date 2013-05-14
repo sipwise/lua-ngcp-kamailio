@@ -469,7 +469,7 @@ srMock_MT = { __index = srMock, __newindex = lemock.controller():mock() }
         t.pv = pvMock:new(t.hdr)
             function t.log(level, message)
                 if not t._logger_levels[level] then
-                    error(string.format("level %s unknown", level))
+                    error(string.format("level %s unknown", tostring(level)))
                 end
                 t._logger:log(t._logger_levels[level], message)
             end
