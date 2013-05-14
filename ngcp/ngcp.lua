@@ -4,7 +4,7 @@ require 'ngcp.dp'
 require 'ngcp.up'
 require 'ngcp.rp'
 -- load drivers
-require "luasql.mysql"
+luasql = require "luasql.mysql"
 
 -- class NGCPConfig
 NGCPConfig = {
