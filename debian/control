@@ -16,3 +16,13 @@ Description: lua framework for ngcp-kamailio config
  This package provides the lua ngcp lib that ngcp-template-kamailio
  uses.
 
+Package: lua-ngcp-kamailio-dev
+Section: libs
+Architecture: any
+Depends: lua-sql-mysql, lua-unit, lua-lemock, lua-logging, ${shlibs:Depends}, ${misc:Depends}
+Provides: ${lua:Provides}
+XB-Lua-Versions: ${lua:Versions}
+Description: lua framework for ngcp-kamailio config development tests
+ This package provides the lua ngcp lib that ngcp-template-kamailio
+ uses.
+
