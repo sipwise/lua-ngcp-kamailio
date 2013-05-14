@@ -20,11 +20,11 @@ NGCPXAvp_MT = {
                 return sr.pv.get(id)
             elseif type(value) == "number" then
                 table.add(t.keys, key)
-                sr.log("info", string.format("seti: [%s]:%d", id, value))
+                sr.log("dbg", string.format("seti: [%s]:%d", id, value))
                 sr.pv.seti(id, value)
             elseif type(value) == "string" then
                 table.add(t.keys, key)
-                sr.log("info", string.format("sets: [%s]:%s", id, value))
+                sr.log("dbg", string.format("sets: [%s]:%s", id, value))
                 sr.pv.sets(id, value)
             else
                 error("value is not a number or string")
