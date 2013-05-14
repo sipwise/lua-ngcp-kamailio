@@ -503,5 +503,12 @@ TestNGCP = {} --class
 
         assertEquals(sr.pv.get("$avp(s:caller_ip_header)"), nil)
     end
+
+    function TestNGCP:test_log_var()
+        self:test_caller_usr_load()
+        self.ngcp:log_var()
+        self.ngcp:log_var(nil, nil, "peer")
+        self.ngcp:log_var("info", "caller")
+    end
 -- class TestNGCP
 --EOF

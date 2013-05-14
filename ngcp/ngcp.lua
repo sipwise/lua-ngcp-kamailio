@@ -356,6 +356,36 @@ NGCP_MT = { __index = NGCP }
         end
     end
 
+    function NGCP:_log_var(level, vtype, group)
+        local _, v, var, vars_index, avp
+        vars_index = vtype .. "_" .. group .. "_load"
+        if self.vars[vars_index] then
+            for _,v in pairs(self.vars[vars_index]) do
+                for _,var in pairs(v) do
+                    avp = NGCPAvp:new(var[1])
+                    avp:log(level)
+                end
+            end
+        end
+    end
+
+    function NGCP:log_var(level, vtype, group)
+        if not level then
+            level = "dbg"
+        end
+        if not vtype then
+            if group then
+                self:_log_var(level, "caller", group)
+                self:_log_var(level, "callee", group)
+            else
+                self:_log_var(level, "caller", "peer")
+                self:_log_var(level, "callee", "peer")
+                self:_log_var(level, "caller", "usr")
+                self:_log_var(level, "callee", "usr")
+            end
+        end
+    end
+
     function NGCP:clean_vars(vtype, group)
         local _, v, var, vars_index, avp
         vars_index = vtype .. "_" .. group .. "_load"
