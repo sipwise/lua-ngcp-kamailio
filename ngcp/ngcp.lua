@@ -326,6 +326,36 @@ NGCP_MT = { __index = NGCP }
         return unique_keys
     end
 
+    function NGCP:log_pref(level, vtype)
+        local _,pref,xavp,xavp_log
+
+        if not level then
+            level = "dbg"
+        end
+
+        if not vtype then
+            for _,pref in pairs(self.prefs) do
+                xavp = pref:xavp("caller")
+                xavp_log = tostring(xavp)
+                sr.log(level, string.format("%s:%s\n", xavp.name, xavp_log))
+                xavp = pref:xavp("callee")
+                xavp_log = tostring(xavp)
+                sr.log(level, string.format("%s:%s\n", xavp.name, xavp_log))
+            end
+        else
+            if self.prefs[vtype] then
+                xavp = self.prefs[vtype]:xavp("caller")
+                xavp_log = tostring(xavp)
+                sr.log(level, string.format("%s:%s\n", xavp.name, xavp_log))
+                xavp = self.prefs[vtype]:xavp("callee")
+                xavp_log = tostring(xavp)
+                sr.log(level, string.format("%s:%s\n", xavp.name, xavp_log))
+            else
+                error(string.format("there is no prefs for %s", vtype))
+            end
+        end
+    end
+
     function NGCP:clean_vars(vtype, group)
         local _, v, var, vars_index, avp
         vars_index = vtype .. "_" .. group .. "_load"

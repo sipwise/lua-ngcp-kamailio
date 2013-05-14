@@ -75,6 +75,19 @@ TestNGCP = {} --class
         assertEquals(sr.pv.get("$xavp(callee_real_prefs=>dummy)"),"callee")
     end
 
+    function TestNGCP:test_log_pref()
+        self.ngcp:log_pref()
+        assertError(self.ngcp.log_pref, self.ngcp, "dbg", "foo_var")
+    end
+
+    function TestNGCP:test_log_pref_info()
+        self.ngcp:log_pref("info")
+    end
+
+    function TestNGCP:test_log_pref_peer()
+        self.ngcp:log_pref("dbg", "peer")
+    end
+
     function TestNGCP:test_caller_usr_load_empty()
         assertEquals(self.ngcp:caller_usr_load(), {})
     end
