@@ -1,3 +1,9 @@
+lua-ngcp-kamailio (0.1.0~bpo60+1) squeeze-backports; urgency=low
+
+  * Rebuild for squeeze-backports.
+
+ -- Victor Seva <vseva@sipwise.com>  Tue, 14 May 2013 16:20:13 +0200
+
 lua-ngcp-kamailio (0.1.0) UNRELEASED; urgency=low
 
   * Initial Release.
