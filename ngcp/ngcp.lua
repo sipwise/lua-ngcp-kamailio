@@ -4,8 +4,10 @@ require 'ngcp.dp'
 require 'ngcp.up'
 require 'ngcp.rp'
 -- load drivers
-luasql = require "luasql.mysql"
-
+local driver = require "luasql.mysql"
+if not luasql then
+    luasql = driver
+end
 -- class NGCPConfig
 NGCPConfig = {
      __class__ = 'NGCPConfig'
