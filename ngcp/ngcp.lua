@@ -53,6 +53,15 @@ NGCP = {
 }
 NGCP_MT = { __index = NGCP }
 
+NGCP_MT.__tostring = function (t)
+    local k,v
+    output = ''
+    for k,v in pairs(t.prefs) do
+        output = output .. tostring(v)
+    end
+    return output
+end
+
     function NGCP:new()
         local t = NGCP.init()
         setmetatable( t, NGCP_MT )

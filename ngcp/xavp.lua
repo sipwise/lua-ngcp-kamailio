@@ -30,6 +30,17 @@ NGCPXAvp_MT = {
                 error("value is not a number or string")
             end
         end
+        NGCPXAvp_MT.__tostring = function (t)
+            local l,k,v
+            local output
+
+            l = sr.xavp.get(t.name, 0)
+            if l then
+                output = table.tostring(l)
+            end
+            sr.log("dbg", string.format("output:%s", output))
+            return output
+        end
         setmetatable( t, NGCPXAvp_MT )
         return t
     end
@@ -102,18 +113,6 @@ NGCPXAvp_MT = {
     function NGCPXAvp:clean()
         sr.pv.unset(string.format("$xavp(%s)", self.name))
         sr.pv.sets(string.format("$xavp(%s=>dummy)", self.name), self.level)
-    end
-
-    function NGCPXAvp.__tostring(xavp)
-        local l,k,v
-        local output
-
-        l = sr.xavp.get(xavp.name, 0)
-        if l then
-            output = table.tostring(l)
-        end
-        sr.log("dbg", string.format("output:%s", output))
-        return output
     end
 -- class
 --EOF

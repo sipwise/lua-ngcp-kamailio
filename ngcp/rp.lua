@@ -8,6 +8,15 @@ NGCPRealPrefs = {
  }
 NGCPRealPrefs_MT = { __index = NGCPRealPrefs }
 
+NGCPRealPrefs_MT.__tostring = function ()
+        local output = ''
+        local xavp = NGCPXAvp:new('caller','real_prefs')
+        output = string.format("caller_real_prefs:%s\n", tostring(xavp))
+        xavp = NGCPXAvp:new('callee','real_prefs')
+        output = output .. string.format("callee_real_prefs:%s\n", tostring(xavp))
+        return output
+    end
+
     function NGCPRealPrefs:new()
         local t = {}
         -- creates xavp real

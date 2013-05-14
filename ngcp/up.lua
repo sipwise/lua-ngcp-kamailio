@@ -8,6 +8,15 @@ NGCPUserPrefs = {
 }
 NGCPUserPrefs_MT = { __index = NGCPUserPrefs }
 
+NGCPUserPrefs_MT.__tostring = function ()
+        local output = ''
+        local xavp = NGCPXAvp:new('caller','usr_prefs')
+        output = string.format("caller_usr_prefs:%s\n", tostring(xavp))
+        xavp = NGCPXAvp:new('callee','usr_prefs')
+        output = output .. string.format("callee_usr_prefs:%s\n", tostring(xavp))
+        return output
+    end
+
     function NGCPUserPrefs:new(config)
         local t = {
             config = config,

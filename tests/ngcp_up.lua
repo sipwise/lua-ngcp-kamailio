@@ -107,7 +107,7 @@ TestNGCPUserPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>ac)"),"1")
         assertItemsEquals(keys, {"account_id", "cli", "cc", "ac"})
     end
-    
+
     function TestNGCPUserPrefs:test_clean()
         local xavp = NGCPUserPrefs:xavp('callee')
         xavp("testid",1)
@@ -162,6 +162,16 @@ TestNGCPUserPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>testid)"),1)
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>foo)"),"foo")
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
+    end
+
+    function TestNGCPUserPrefs:test_tostring()
+        local callee_xavp = NGCPUserPrefs:xavp('callee')
+        callee_xavp("testid",1)
+        callee_xavp("foo","foo")
+        local caller_xavp = NGCPUserPrefs:xavp('caller')
+        caller_xavp("other",1)
+        caller_xavp("otherfoo","foo")
+        assertEquals(tostring(self.d),'caller_usr_prefs:{other=1,otherfoo="foo",dummy="caller"}\ncallee_usr_prefs:{dummy="callee",testid=1,foo="foo"}\n')
     end
 -- class TestNGCPUserPrefs
 --EOF

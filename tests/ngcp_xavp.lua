@@ -103,7 +103,7 @@ TestNGCPXAvp = {} --class
 
     function TestNGCPXAvp:test_tostring()
         local xavp = NGCPXAvp:new("caller", "peer", {})
-        assertEquals(xavp:__tostring(), '{dummy="caller"}')
+        assertEquals(tostring(xavp), '{dummy="caller"}')
     end
 
     function TestNGCPXAvp:test_keys()

@@ -8,6 +8,15 @@ NGCPPeerPrefs = {
 }
 NGCPPeerPrefs_MT = { __index = NGCPPeerPrefs }
 
+NGCPPeerPrefs_MT.__tostring = function ()
+        local output = ''
+        local xavp = NGCPXAvp:new('caller','peer_prefs')
+        output = string.format("caller_peer_prefs:%s\n", tostring(xavp))
+        xavp = NGCPXAvp:new('callee','peer_prefs')
+        output = output .. string.format("callee_peer_prefs:%s\n", tostring(xavp))
+        return output
+    end
+
     function NGCPPeerPrefs:new(config)
         local t = {
             config = config,

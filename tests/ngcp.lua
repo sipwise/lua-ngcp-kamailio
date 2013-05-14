@@ -504,6 +504,10 @@ TestNGCP = {} --class
         assertEquals(sr.pv.get("$avp(s:caller_ip_header)"), nil)
     end
 
+    function TestNGCP:test_tostring()
+        assertEquals(tostring(self.ngcp), 'caller_usr_prefs:{dummy="caller"}\ncallee_usr_prefs:{dummy="callee"}\ncaller_real_prefs:{dummy="caller"}\ncallee_real_prefs:{dummy="callee"}\ncaller_peer_prefs:{dummy="caller"}\ncallee_peer_prefs:{dummy="callee"}\ncaller_dom_prefs:{dummy="caller"}\ncallee_dom_prefs:{dummy="callee"}\n')
+    end
+
     function TestNGCP:test_log_var()
         self:test_caller_usr_load()
         self.ngcp:log_var()

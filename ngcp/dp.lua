@@ -8,6 +8,15 @@ NGCPDomainPrefs = {
 }
 NGCPDomainPrefs_MT = { __index = NGCPDomainPrefs }
 
+NGCPDomainPrefs_MT.__tostring = function ()
+        local output = ''
+        local xavp = NGCPXAvp:new('caller','dom_prefs')
+        output = string.format("caller_dom_prefs:%s\n", tostring(xavp))
+        xavp = NGCPXAvp:new('callee','dom_prefs')
+        output = output .. string.format("callee_dom_prefs:%s\n", tostring(xavp))
+        return output
+    end
+
     function NGCPDomainPrefs:new(config)
         local t = {
             config = config,
