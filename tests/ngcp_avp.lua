@@ -53,5 +53,9 @@ TestNGCPAvp = {} --class
         self.avp:clean()
         assertFalse(self.avp())
     end
+
+    function TestNGCPAvp:test_log()
+        self.avp:log()
+    end
 -- class TestNGCPAvp
 --EOF

@@ -27,6 +27,14 @@ NGCPAvp_MT = {
         return setmetatable( t, NGCPAvp_MT )
     end
 
+    function NGCPAvp:log(level)
+        local value = sr.pv.get(self.id)
+        if not level then
+            level = "dbg"
+        end
+        sr.log(level, string.format("%s:%s\n", self.id, tostring(value)))
+    end
+
     function NGCPAvp:clean()
         --print("NGCPAvp:clean")
         --print(table.tostring(getmetatable(self)))
