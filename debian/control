@@ -19,7 +19,7 @@ Description: lua framework for ngcp-kamailio config
 Package: lua-ngcp-kamailio-dev
 Section: libs
 Architecture: any
-Depends: liblua5.1-sql-mysql-2, lua-unit, lua-lemock, lua-logging, ${shlibs:Depends}, ${misc:Depends}
+Depends: liblua5.1-sql-mysql-2, lua-unit, lua-lemock, liblua5.1-logging, ${shlibs:Depends}, ${misc:Depends}
 Provides: ${lua:Provides}
 XB-Lua-Versions: ${lua:Versions}
 Description: lua framework for ngcp-kamailio config development tests
