@@ -160,6 +160,7 @@ end
                     {"caller_ring_group_policy", "ring_group_policy"}
                 },
                 caller_real_prefs = {
+                    {"caller_no_nat_sipping", "no_nat_sipping"},
                     {"caller_reject_emergency", "reject_emergency"},
                     {"caller_ncos_id", "ncos_id"},
                     {"caller_inbound_upn", "inbound_upn"},

@@ -92,6 +92,35 @@ TestNGCP = {} --class
         assertEquals(self.ngcp:caller_usr_load(), {})
     end
 
+    function TestNGCP:test_caller_usr_load_empty_dom()
+        local c = self.ngcp.config
+        env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
+        self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+        self.con:close()
+
+        mc:replay()
+        local keys = self.ngcp:caller_usr_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c")
+        mc:verify()
+
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"), "caller")
+        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>account_id)"), 2)
+        assertEquals(sr.pv.get("$avp(s:caller_account_id)"), 2)
+        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>cli)"), "4311001")
+        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>cc)"), "43")
+        assertEquals(sr.pv.get("$avp(s:caller_cc)"), "43")
+        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>ac)"), "1")
+        assertEquals(sr.pv.get("$avp(s:caller_ac)"), "1")
+        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>no_nat_sipping)"), "no")
+        assertEquals(sr.pv.get("$avp(s:caller_no_nat_sipping)"), "no")
+    end
+
     function TestNGCP:test_caller_usr_load()
         local c = self.ngcp.config
         env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
