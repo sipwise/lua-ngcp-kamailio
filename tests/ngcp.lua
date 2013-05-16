@@ -543,5 +543,10 @@ TestNGCP = {} --class
         self.ngcp:log_var(nil, nil, "peer")
         self.ngcp:log_var("info", "caller")
     end
+
+    function TestNGCP:test_str_var()
+        self:test_caller_usr_load()
+        assertEquals(self.ngcp:_str_var("caller", "usr"), "{$avp(s:allowed_ips_grp):nil,$avp(s:man_allowed_ips_grp):nil,$avp(s:ignore_allowed_ips):nil,$avp(s:caller_account_id):2,$avp(s:caller_cc):43,$avp(s:caller_ac):1,$avp(s:caller_emergency_cli):nil,$avp(s:caller_emergency_prefix):nil,$avp(s:caller_emergency_suffix):nil,$avp(s:caller_lock):nil,$avp(s:caller_block_override):nil,$avp(s:caller_adm_block_override):nil,$avp(s:caller_allowed_clis):nil,$avp(s:caller_user_cli):nil,$avp(s:caller_block_out_mode):nil,$avp(s:caller_block_out_list):nil,$avp(s:caller_adm_block_out_mode):nil,$avp(s:caller_adm_block_out_list):nil,$avp(s:caller_peer_auth_user):nil,$avp(s:caller_peer_auth_pass):nil,$avp(s:caller_peer_auth_realm):nil,$avp(s:caller_ext_subscriber_id):nil,$avp(s:caller_ext_contract_id):nil,$avp(s:caller_prepaid):nil,$avp(s:caller_ring_group_dest):nil,$avp(s:caller_ring_group_policy):nil,$avp(s:caller_no_nat_sipping):nil,$avp(s:caller_reject_emergency):nil,$avp(s:caller_ncos_id):nil,$avp(s:caller_inbound_upn):from_user,$avp(s:caller_extension_in_npn):nil,$avp(s:caller_inbound_uprn):npn,$avp(s:caller_ipv46_for_rtpproxy):nil,$avp(s:caller_force_outbound_calls_to_peer):nil,$avp(s:caller_use_rtpproxy):nil,$avp(s:rewrite_caller_in_dpid):nil,$avp(s:rewrite_callee_in_dpid):nil,$avp(s:caller_ip_header):P-NGCP-Src-Ip,$avp(s:caller_allow_out_foreign_domain):nil,$avp(s:caller_concurrent_max):nil,$avp(s:caller_concurrent_max_out):nil,$avp(s:caller_concurrent_max_per_account):nil,$avp(s:caller_concurrent_max_out_per_account):nil,$avp(s:caller_sst_enable):no,$avp(s:caller_sst_expires):300,$avp(s:caller_sst_min_timer):90,$avp(s:caller_sst_max_timer):7200,$avp(s:caller_sst_refresh_method):UPDATE_FALLBACK_INVITE,$avp(s:caller_cloud_pbx):nil,}\n")
+    end
 -- class TestNGCP
 --EOF
