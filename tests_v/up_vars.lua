@@ -49,6 +49,16 @@ up_vars = {
           type = 0,
           value = "no",
           last_modified = "1900-01-01 00:00:01"
+        },
+        {
+          id = 11,
+          uuid = "ae736f72-21d1-4ea6-a3ea-4d7f56b3887c",
+          username = "testuser1",
+          domain = "192.168.51.56",
+          attribute = "force_outbound_calls_to_peer",
+          type = 1,
+          value = 1,
+          last_modified = "1900-01-01 00:00:01"
         }
     },
     _94023caf_dfba_4f33_8bdb_b613ce627613 = {
