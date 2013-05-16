@@ -24,15 +24,18 @@ NGCPAvp_MT = {
         function t.all()
             return sr.pv.get("$(avp(" .. id .. ")[*])")
         end
+        NGCPAvp_MT.__tostring = function(t)
+            local value = sr.pv.get(t.id)
+            return string.format("%s:%s", t.id, tostring(value))
+        end
         return setmetatable( t, NGCPAvp_MT )
     end
 
     function NGCPAvp:log(level)
-        local value = sr.pv.get(self.id)
         if not level then
             level = "dbg"
         end
-        sr.log(level, string.format("%s:%s\n", self.id, tostring(value)))
+        sr.log(level, tostring(self))
     end
 
     function NGCPAvp:clean()

@@ -57,5 +57,12 @@ TestNGCPAvp = {} --class
     function TestNGCPAvp:test_log()
         self.avp:log()
     end
+
+    function TestNGCPAvp:test_tostring()
+        self.avp(1)
+        assertEquals(tostring(self.avp), "$avp(s:testid):1")
+        self.avp("hola")
+        assertEquals(tostring(self.avp), "$avp(s:testid):hola")
+    end
 -- class TestNGCPAvp
 --EOF
