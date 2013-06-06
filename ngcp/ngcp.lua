@@ -182,7 +182,8 @@ end
                     {"caller_sst_min_timer", "sst_min_timer"},
                     {"caller_sst_max_timer", "sst_max_timer"},
                     {"caller_sst_refresh_method", "sst_refresh_method"},
-                    {"caller_cloud_pbx", "cloud_pbx"}
+                    {"caller_cloud_pbx", "cloud_pbx"},
+                    {"caller_sound_set", "sound_set"}
                 }
             },
             callee_usr_load = {
