@@ -91,7 +91,6 @@ end
             },
             caller_usr_load = {
                 caller_usr_prefs = {
-                    {"caller_account_id", "account_id"},
                     {"caller_cc", "cc"},
                     {"caller_ac", "ac"},
                     {"caller_emergency_cli", "emergency_cli"},
@@ -108,7 +107,6 @@ end
             },
             callee_usr_load = {
                 callee_usr_prefs = {
-                    {"callee_account_id", "account_id"},
                     {"callee_cc", "cc"},
                     {"callee_ac", "ac"},
                     {"callee_cfu", "cfu"},
