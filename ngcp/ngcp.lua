@@ -33,6 +33,9 @@ NGCPConfig_MT = { __index = NGCPConfig }
                 inbound_uprn = "from_user",
                 ip_header = "P-NGCP-Src-Ip",
                 account_id = 0,
+		ext_subscriber_id = "",
+		ext_contract_id = "",
+		ringtimeout = 180,
             }
         }
         setmetatable( t, NGCPConfig_MT )
@@ -81,8 +84,6 @@ end
         t.vars = {
             caller_peer_load = {
                 caller_peer_prefs = {
-                    {"caller_force_outbound_calls_to_peer", "force_outbound_calls_to_peer"},
-                    {"caller_ip_header","ip_header"}
                 }
             },
             callee_peer_load = {
@@ -91,31 +92,12 @@ end
             },
             caller_usr_load = {
                 caller_usr_prefs = {
-                    {"caller_cc", "cc"},
-                    {"caller_ac", "ac"},
-                    {"caller_emergency_cli", "emergency_cli"},
-                    {"caller_emergency_prefix", "emergency_prefix"},
-                    {"caller_emergency_suffix", "emergency_suffix"},
-                    {"caller_ext_subscriber_id", "ext_subscriber_id"},
-                    {"caller_ext_contract_id", "ext_contract_id"},
-                    {"caller_ring_group_dest", "ring_group_dest"},
-                    {"caller_ring_group_policy", "ring_group_policy"}
                 },
                 caller_real_prefs = {
-                    {"caller_ip_header", "ip_header"}
                 }
             },
             callee_usr_load = {
                 callee_usr_prefs = {
-                    {"callee_cc", "cc"},
-                    {"callee_ac", "ac"},
-                    {"callee_cfu", "cfu"},
-                    {"callee_cfna", "cfna"},
-                    {"callee_cfb", "cfb"},
-                    {"callee_cft", "cft"},
-                    {"callee_ringtimeout", "ringtimeout"},
-                    {"callee_ext_subscriber_id", "ext_subscriber_id"},
-                    {"callee_ext_contract_id", "ext_contract_id"}
                 },
                 callee_real_prefs = {
                 }
