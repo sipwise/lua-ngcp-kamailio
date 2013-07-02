@@ -18,7 +18,6 @@ local mc,env
 TestNGCP = {} --class
 
     function TestNGCP:setUp()
-        sr.log("dbg", "TestNGCP:setUp")
         mc = lemock.controller()
         env = mc:mock()
         self.con  = mc:mock()
@@ -41,7 +40,6 @@ TestNGCP = {} --class
     end
 
     function TestNGCP:tearDown()
-        sr.log("dbg", "TestNGCP:tearDown")
         sr.pv.unset("$xavp(caller_dom_prefs)")
         sr.pv.unset("$xavp(callee_dom_prefs)")
         sr.pv.unset("$xavp(caller_peer_prefs)")
@@ -55,6 +53,22 @@ TestNGCP = {} --class
 
     function TestNGCP:test_config()
         assertTrue(self.ngcp.config)
+        assertEquals(self.ngcp.config.default.all.sst_enable, "yes")
+    end
+
+    function TestNGCP:test_config_get_defaults_all()
+        local defaults = NGCPConfig.get_defaults(self.ngcp.config, 'peer')
+        assertItemsEquals(defaults, self.ngcp.config.default.all)
+    end
+
+    function TestNGCP:test_config_get_defaults_real()
+        local defaults = NGCPConfig.get_defaults(self.ngcp.config, 'usr')
+        local real_defaults = table.deepcopy(self.ngcp.config.default.all)
+        local k,v
+        for k,v in pairs(self.ngcp.config.default.real) do
+            real_defaults[k] = v
+        end
+        assertItemsEquals(defaults, real_defaults)
     end
 
     function TestNGCP:test_prefs_init()
@@ -111,12 +125,9 @@ TestNGCP = {} --class
 
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"), "caller")
         assertEquals(sr.pv.get("$xavp(caller_real_prefs=>account_id)"), 2)
-        assertEquals(sr.pv.get("$avp(s:caller_account_id)"), 2)
         assertEquals(sr.pv.get("$xavp(caller_real_prefs=>cli)"), "4311001")
         assertEquals(sr.pv.get("$xavp(caller_real_prefs=>cc)"), "43")
-        assertEquals(sr.pv.get("$avp(s:caller_cc)"), "43")
         assertEquals(sr.pv.get("$xavp(caller_real_prefs=>ac)"), "1")
-        assertEquals(sr.pv.get("$avp(s:caller_ac)"), "1")
         assertEquals(sr.pv.get("$xavp(caller_real_prefs=>no_nat_sipping)"), "no")
     end
 
@@ -242,15 +253,7 @@ TestNGCP = {} --class
         assertEquals(sr.pv.get("$avp(s:callee_cfb)"),nil)
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
-        assertFalse(sr.pv.get("$xavp(user)"))
-    end
-
-    function TestNGCP:test_clean_vars()
-        local avp = NGCPAvp:new('caller_account_id')
-        avp("foofighters")
-        assertEquals(sr.pv.get("$avp(s:caller_account_id)"),"foofighters")
-        self.ngcp:clean()
-        assertEquals(sr.pv.get("$avp(s:caller_account_id)"),nil)
+        assertIsNil(sr.pv.get("$xavp(user)"))
     end
 
     function TestNGCP:test_clean_caller_groups()
@@ -268,24 +271,6 @@ TestNGCP = {} --class
         assertError(self.ngcp.clean, self.ngcp, "caller", "whatever")
     end
 
-    function TestNGCP:test_clean_caller_groups_vars()
-        local groups = {"peer", "usr", "dom", "real"}
-        local _,v
-        local avp = NGCPAvp:new('caller_account_id')
-        avp("foofighters")
-        assertEquals(sr.pv.get("$avp(s:caller_account_id)"),"foofighters")
-
-        for _,v in pairs(groups) do
-            xavp = self.ngcp.prefs[v]:xavp("caller")
-            xavp(string.format("test_%s", v), v)
-            assertEquals(sr.pv.get(string.format("$xavp(caller_%s_prefs=>test_%s)", v, v)), v)
-            assertEquals(sr.pv.get(string.format("$xavp(caller_%s_prefs=>dummy)", v)), "caller")
-            self.ngcp:clean("caller", v)
-            assertEquals(sr.pv.get(string.format("$xavp(caller_%s_prefs=>dummy)", v)), "caller")
-        end
-        assertEquals(sr.pv.get("$avp(s:caller_account_id)"),nil)
-        assertError(self.ngcp.clean, self.ngcp, "caller", "whatever")
-    end
 
     function TestNGCP:test_clean_callee_groups()
         local groups = {"peer", "usr", "dom", "real"}
@@ -299,25 +284,6 @@ TestNGCP = {} --class
             self.ngcp:clean("callee", v)
             assertEquals(sr.pv.get(string.format("$xavp(callee_%s_prefs=>dummy)", v)), "callee")
         end
-        assertError(self.ngcp.clean, self.ngcp, "callee", "whatever")
-    end
-
-    function TestNGCP:test_clean_callee_groups_vars()
-        local groups = {"peer", "usr", "dom", "real"}
-        local _,v, xavp
-        local avp = NGCPAvp:new('callee_cfb')
-        avp("foofighters")
-        assertEquals(sr.pv.get("$avp(s:callee_cfb)"),"foofighters")
-
-        for _,v in pairs(groups) do
-            xavp = self.ngcp.prefs[v]:xavp("callee")
-            xavp(string.format("test_%s", v), v)
-            assertEquals(sr.pv.get(string.format("$xavp(callee_%s_prefs=>test_%s)", v, v)), v)
-            assertEquals(sr.pv.get(string.format("$xavp(callee_%s_prefs=>dummy)", v)), "callee")
-            self.ngcp:clean("callee", v)
-            assertEquals(sr.pv.get(string.format("$xavp(callee_%s_prefs=>dummy)", v)), "callee")
-        end
-        assertEquals(sr.pv.get("$avp(s:callee_cfb)"),nil)
         assertError(self.ngcp.clean, self.ngcp, "callee", "whatever")
     end
 
@@ -336,27 +302,14 @@ TestNGCP = {} --class
         assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
         self.ngcp:clean('callee')
         assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"),'caller')
-        assertFalse(sr.pv.get("$xavp(callee_dom_prefs=>testid)"))
-        assertFalse(sr.pv.get("$xavp(callee_dom_prefs=>foo)"))
+        assertIsNil(sr.pv.get("$xavp(callee_dom_prefs=>testid)"))
+        assertIsNil(sr.pv.get("$xavp(callee_dom_prefs=>foo)"))
         assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>other)"),1)
         assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>otherfoo)"),"foo")
         assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"), "callee")
     end
 
-    function TestNGCP:test_callee_clean_2()
-        sr.pv.seti("$xavp(caller_usr_prefs=>force_outbound_calls_to_peer)", 1)
-        sr.pv.seti("$xavp(caller_real_prefs=>force_outbound_calls_to_peer)", 1)
-        sr.pv.seti("$avp(caller_force_outbound_calls_to_peer)", 1)
-        assertEquals(sr.pv.get("$avp(caller_force_outbound_calls_to_peer)"), 1)
-        TestNGCP:test_callee_usr_load()
-        self.ngcp:clean('callee', 'usr')
-        assertEquals(sr.pv.get("$avp(caller_force_outbound_calls_to_peer)"), 1)
-    end
-
     function TestNGCP:test_caller_clean()
-        local avp = NGCPAvp:new('caller_force_outbound_calls_to_peer')
-        avp("foofighters")
-        assertEquals(sr.pv.get("$avp(s:caller_force_outbound_calls_to_peer)"),"foofighters")
         local callee_xavp = NGCPXAvp:new('callee','peer_prefs')
         callee_xavp("testid",1)
         callee_xavp("foo","foo")
@@ -376,123 +329,10 @@ TestNGCP = {} --class
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>testid)"),1)
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>foo)"),"foo")
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
-        assertEquals(sr.pv.get("$avp(s:caller_force_outbound_calls_to_peer)"),nil)
-    end
-
-    function TestNGCP:test_caller_peer_clean_vars()
-        self:test_caller_peer_load()
-
-        self.ngcp:clean('caller', 'peer')
-
-        if self.ngcp.vars['caller_peer_load'] then
-            for _,v in pairs(self.ngcp.vars['caller_peer_load']) do
-                for _,var in pairs(v) do
-                    assertEquals(sr.pv.get("$avp(s:".. var[1] .. ")"), nil)
-                end
-            end
-        end
-    end
-
-    function TestNGCP:test_callee_peer_clean_vars()
-        self:test_callee_peer_load()
-
-        self.ngcp:clean('callee', 'peer')
-
-        if self.ngcp.vars['callee_peer_load'] then
-            for _,v in pairs(self.ngcp.vars['callee_peer_load']) do
-                for _,var in pairs(v) do
-                    assertEquals(sr.pv.get("$avp(s:".. var[1] .. ")"), nil)
-                end
-            end
-        end
-    end
-
-    function TestNGCP:test_caller_usr_clean_vars()
-        self:test_caller_usr_load()
-
-        self.ngcp:clean('caller', 'usr')
-
-        assertEquals(sr.pv.get("$avp(s:caller_account_id)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_lock)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_allowed_clis)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_user_cli)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_cc)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_ac)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_emergency_cli)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_emergency_prefix)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_emergency_suffix)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_block_out_mode)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_block_out_list)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_adm_block_out_mode)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_adm_block_out_list)"), nil)
-
-        assertEquals(sr.pv.get("$avp(s:allowed_ips_grp)"), nil)
-        assertEquals(sr.pv.get("$avp(s:man_allowed_ips_grp)"), nil)
-        assertEquals(sr.pv.get("$avp(s:ignore_allowed_ips)"), nil)
-
-        assertEquals(sr.pv.get("$avp(s:caller_ncos_id)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_adm_ncos_id)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_dom_ncos_id)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_dom_adm_ncos_id)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_block_override)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_adm_block_override)"), nil)
-
-        assertEquals(sr.pv.get("$avp(s:caller_peer_auth_user)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_peer_auth_pass)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_peer_auth_realm)"), nil)
-
-        assertEquals(sr.pv.get("$avp(s:caller_ext_subscriber_id)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_ext_contract_id)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_prepaid)"), nil)
-
-        assertEquals(sr.pv.get("$avp(s:caller_ipv46_for_rtpproxy)"), nil)
-
-        assertEquals(sr.pv.get("$avp(s:caller_use_rtpproxy)"), nil)
-
-        assertEquals(sr.pv.get("$avp(s:caller_force_outbound_calls_to_peer)"), nil)
-
-        assertEquals(sr.pv.get("$avp(s:caller_concurrent_max)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_concurrent_max_out)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_concurrent_max_per_account)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_concurrent_max_out_per_account)"), nil)
-
-        assertEquals(sr.pv.get("$avp(s:caller_sst_enable)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_sst_expires)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_sst_min_timer)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_sst_max_timer)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_sst_refresh_method)"), nil)
-
-        assertEquals(sr.pv.get("$avp(s:caller_reject_emergency)"), nil)
-
-        assertEquals(sr.pv.get("$avp(s:caller_inbound_upn)"), nil)
-        assertEquals(sr.pv.get("$avp(s:caller_inbound_uprn)"), nil)
-
-        assertEquals(sr.pv.get("$avp(s:caller_extension_in_npn)"), nil)
-
-        assertEquals(sr.pv.get("$avp(s:caller_allow_out_foreign_domain)"), nil)
-
-        assertEquals(sr.pv.get("$avp(s:rewrite_caller_in_dpid)"), nil)
-        assertEquals(sr.pv.get("$avp(s:rewrite_caller_out_dpid)"), nil)
-        assertEquals(sr.pv.get("$avp(s:rewrite_callee_in_dpid)"), nil)
-        assertEquals(sr.pv.get("$avp(s:rewrite_callee_out_dpid)"), nil)
-
-        assertEquals(sr.pv.get("$avp(s:caller_ip_header)"), nil)
     end
 
     function TestNGCP:test_tostring()
         assertEquals(tostring(self.ngcp), 'caller_usr_prefs:{dummy="caller"}\ncallee_usr_prefs:{dummy="callee"}\ncaller_real_prefs:{dummy="caller"}\ncallee_real_prefs:{dummy="callee"}\ncaller_peer_prefs:{dummy="caller"}\ncallee_peer_prefs:{dummy="callee"}\ncaller_dom_prefs:{dummy="caller"}\ncallee_dom_prefs:{dummy="callee"}\n')
-    end
-
-    function TestNGCP:test_log_var()
-        self:test_caller_usr_load()
-        self.ngcp:log_var()
-        self.ngcp:log_var(nil, nil, "peer")
-        self.ngcp:log_var("info", "caller")
-    end
-
-    function TestNGCP:test_str_var()
-        self:test_caller_usr_load()
-        assertEquals(self.ngcp:_str_var("caller", "usr"), "{$avp(s:caller_account_id):2,$avp(s:caller_cc):43,$avp(s:caller_ac):1,$avp(s:caller_emergency_cli):nil,$avp(s:caller_emergency_prefix):nil,$avp(s:caller_emergency_suffix):nil,$avp(s:caller_ext_subscriber_id):nil,$avp(s:caller_ext_contract_id):nil,$avp(s:caller_ring_group_dest):nil,$avp(s:caller_ring_group_policy):nil,$avp(s:caller_ip_header):P-NGCP-Src-Ip,}\n")
     end
 -- class TestNGCP
 --EOF

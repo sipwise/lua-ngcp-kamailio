@@ -41,11 +41,25 @@ NGCPUserPrefs_MT.__tostring = function ()
         return NGCPUserPrefs._load(self,"callee",uuid)
     end
 
+    function NGCPUserPrefs:_get_defaults(level)
+        local defaults = self.config:get_defaults('usr')
+        local keys = {}
+        local k,_
+
+        if defaults then
+            self:xavp(level, defaults)
+            for k,_ in pairs(defaults) do
+                table.insert(keys, k)
+            end
+        end
+        return keys
+    end
+
     function NGCPUserPrefs:_load(level, uuid)
         local con = assert (self.config:getDBConnection())
         local query = "SELECT * FROM " .. self.db_table .. " WHERE uuid ='" .. uuid .. "'"
         local cur = assert (con:execute(query))
-        local keys = {}
+        local keys = self:_get_defaults(level)
         local result = {}
         local row = cur:fetch({}, "a")
 
@@ -59,7 +73,7 @@ NGCPUserPrefs_MT.__tostring = function ()
         else
             sr.log("dbg", string.format("no results for query:%s", query))
         end
-        NGCPUserPrefs:xavp(level,result)
+        self:xavp(level,result)
         cur:close()
         con:close()
         return keys

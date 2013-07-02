@@ -10,26 +10,30 @@ if not sr then
 else
     argv = {}
 end
-local mc = nil
+local mc,env,con
 
 TestNGCPUserPrefs = {} --class
 
     function TestNGCPUserPrefs:setUp()
         mc = lemock.controller()
-        self.config = mc:mock()
-        self.mysql = mc:mock()
-        self.env = mc:mock()
-        self.con = mc:mock()
+        env = mc:mock()
+        con = mc:mock()
         self.cur = mc:mock()
 
         package.loaded.luasql = nil
         package.preload['luasql.mysql'] = function ()
             luasql = {}
-            luasql.mysql = mysql
-            return mysql
+            luasql.mysql = function ()
+                return env
+            end
         end
 
-        require 'ngcp.up'
+        require 'ngcp.dp'
+
+        self.config = NGCPConfig:new()
+        self.config.getDBConnection = function ()
+            return con
+        end
 
         self.d = NGCPUserPrefs:new(self.config)
         self.up_vars = UPFetch:new()
@@ -62,17 +66,27 @@ TestNGCPUserPrefs = {} --class
         assertEquals(self.d.db_table, "usr_preferences")
     end
 
+    function TestNGCPUserPrefs:get_defaults()
+        local keys_expected = {"account_id", "cli", "cc", "ac"}
+        local defaults = NGCPConfig.get_defaults(self.d.config, 'usr')
+        local k,_
+
+        for k,_ in pairs(defaults) do
+            table.add(keys_expected, k)
+        end
+        return keys_expected
+    end
+
     function TestNGCPUserPrefs:test_caller_load()
         assertTrue(self.d.config)
-        self.config:getDBConnection() ;mc :returns(self.con)
-        self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
+        con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
-        self.con:close()
+        con:close()
 
         mc:replay()
         local keys = self.d:caller_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c")
@@ -82,20 +96,19 @@ TestNGCPUserPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>cli)"),"4311001")
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>cc)"),"43")
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>ac)"),"1")
-        assertItemsEquals(keys, {"account_id", "cli", "cc", "ac"})
+        assertItemsEquals(keys, TestNGCPUserPrefs:get_defaults())
     end
 
     function TestNGCPUserPrefs:test_callee_load()
         assertTrue(self.d.config)
-        self.config:getDBConnection() ;mc :returns(self.con)
-        self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
+        con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
-        self.con:close()
+        con:close()
 
         mc:replay()
         local keys = self.d:callee_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c")
@@ -105,7 +118,7 @@ TestNGCPUserPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>cli)"),"4311001")
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>cc)"),"43")
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>ac)"),"1")
-        assertItemsEquals(keys, {"account_id", "cli", "cc", "ac"})
+        assertItemsEquals(keys, TestNGCPUserPrefs:get_defaults())
     end
 
     function TestNGCPUserPrefs:test_clean()

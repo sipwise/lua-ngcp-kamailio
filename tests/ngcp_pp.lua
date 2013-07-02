@@ -10,26 +10,30 @@ if not sr then
 else
     argv = {}
 end
-local mc = nil
+local mc,env,con
 
 TestNGCPPeerPrefs = {} --class
 
     function TestNGCPPeerPrefs:setUp()
         mc = lemock.controller()
-        self.config = mc:mock()
-        self.mysql = mc:mock()
-        self.env = mc:mock()
-        self.con = mc:mock()
+        env = mc:mock()
+        con = mc:mock()
         self.cur = mc:mock()
 
         package.loaded.luasql = nil
         package.preload['luasql.mysql'] = function ()
             luasql = {}
-            luasql.mysql = mysql
-            return mysql
+            luasql.mysql = function ()
+                return env
+            end
         end
 
-        require 'ngcp.pp'
+        require 'ngcp.dp'
+
+        self.config = NGCPConfig:new()
+        self.config.getDBConnection = function ()
+            return con
+        end
 
         self.d = NGCPPeerPrefs:new(self.config)
         self.pp_vars = PPFetch:new()
@@ -52,6 +56,17 @@ TestNGCPPeerPrefs = {} --class
         assertEquals(self.d.db_table, "peer_preferences")
     end
 
+    function TestNGCPPeerPrefs:get_defaults()
+        local keys_expected = {"sst_enable", "sst_refresh_method"}
+        local defaults = NGCPConfig.get_defaults(self.d.config, 'peer')
+        local k,_
+
+        for k,_ in pairs(defaults) do
+            table.add(keys_expected, k)
+        end
+        return keys_expected
+    end
+
     function TestNGCPPeerPrefs:test_caller_load_empty()
         assertTrue(self.d.config)
         assertEquals(self.d:caller_load(), {})
@@ -64,13 +79,12 @@ TestNGCPPeerPrefs = {} --class
 
     function TestNGCPPeerPrefs:test_caller_load()
         assertTrue(self.d.config)
-        self.config:getDBConnection() ;mc :returns(self.con)
-        self.con:execute("SELECT * FROM peer_preferences WHERE uuid = '2'")  ;mc :returns(self.cur)
+        con:execute("SELECT * FROM peer_preferences WHERE uuid = '2'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
-        self.con:close()
+        con:close()
 
         mc:replay()
         local keys = self.d:caller_load("2")
@@ -79,17 +93,17 @@ TestNGCPPeerPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"), "caller")
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_enable)"),"no")
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+        assertItemsEquals(keys, TestNGCPPeerPrefs:get_defaults())
     end
 
     function TestNGCPPeerPrefs:test_callee_load()
         assertTrue(self.d.config)
-        self.config:getDBConnection() ;mc :returns(self.con)
-        self.con:execute("SELECT * FROM peer_preferences WHERE uuid = '2'")  ;mc :returns(self.cur)
+        con:execute("SELECT * FROM peer_preferences WHERE uuid = '2'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
-        self.con:close()
+        con:close()
 
         mc:replay()
         local keys = self.d:callee_load("2")
@@ -98,6 +112,7 @@ TestNGCPPeerPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"), "callee")
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_enable)"),"no")
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+        assertItemsEquals(keys, TestNGCPPeerPrefs:get_defaults())
     end
 
     function TestNGCPPeerPrefs:test_clean()

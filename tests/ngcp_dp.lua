@@ -10,27 +10,30 @@ if not sr then
 else
     argv = {}
 end
-local mc = nil
+local mc,env,con
 
 TestNGCPDomainPrefs = {} --class
 
     function TestNGCPDomainPrefs:setUp()
         mc = lemock.controller()
-        self.config = mc:mock()
-        self.mysql = mc:mock()
-        self.env = mc:mock()
-        self.con = mc:mock()
+        env = mc:mock()
+        con = mc:mock()
         self.cur = mc:mock()
 
         package.loaded.luasql = nil
         package.preload['luasql.mysql'] = function ()
             luasql = {}
-            luasql.mysql = mysql
-            return mysql
+            luasql.mysql = function ()
+                return env
+            end
         end
 
         require 'ngcp.dp'
 
+        self.config = NGCPConfig:new()
+        self.config.getDBConnection = function ()
+            return con
+        end
         self.d = NGCPDomainPrefs:new(self.config)
         self.dp_vars = DPFetch:new()
     end
@@ -62,15 +65,25 @@ TestNGCPDomainPrefs = {} --class
         assertEquals(self.d:callee_load(), {})
     end
 
+    function TestNGCPDomainPrefs:get_defaults()
+        local keys_expected = {"sst_enable", "sst_refresh_method"}
+        local defaults = NGCPConfig.get_defaults(self.d.config, 'dom')
+        local k,_
+
+        for k,_ in pairs(defaults) do
+            table.add(keys_expected, k)
+        end
+        return keys_expected
+    end
+
     function TestNGCPDomainPrefs:test_caller_load()
         assertTrue(self.d.config)
-        self.config:getDBConnection() ;mc :returns(self.con)
-        self.con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.56'")  ;mc :returns(self.cur)
+        con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.56'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
-        self.con:close()
+        con:close()
 
         mc:replay()
         local keys = self.d:caller_load("192.168.51.56")
@@ -78,18 +91,17 @@ TestNGCPDomainPrefs = {} --class
 
         assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>sst_enable)"),"no")
         assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
-        assertItemsEquals(keys, {"sst_enable", "sst_refresh_method"})
+        assertItemsEquals(keys, TestNGCPDomainPrefs:get_defaults())
     end
 
     function TestNGCPDomainPrefs:test_callee_load()
         assertTrue(self.d.config)
-        self.config:getDBConnection() ;mc :returns(self.con)
-        self.con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.56'")  ;mc :returns(self.cur)
+        con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.56'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
-        self.con:close()
+        con:close()
 
         mc:replay()
         local keys = self.d:callee_load("192.168.51.56")
@@ -97,7 +109,7 @@ TestNGCPDomainPrefs = {} --class
 
         assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>sst_enable)"),"no")
         assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
-        assertItemsEquals(keys, {"sst_enable", "sst_refresh_method"})
+        assertItemsEquals(keys, TestNGCPDomainPrefs:get_defaults())
     end
 
     function TestNGCPDomainPrefs:test_clean()

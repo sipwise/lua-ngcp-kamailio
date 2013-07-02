@@ -22,20 +22,24 @@ NGCPConfig_MT = { __index = NGCPConfig }
             db_pass = "somepasswd",
             db_database = "kamailio",
             default = {
-                sst_enable = "yes",
-                sst_expires = 300,
-                sst_min_timer = 90,
-                sst_max_timer = 7200,
-                sst_refresh_method = "UPDATE_FALLBACK_INVITE",
-                outbound_from_user = "npn",
-                inbound_upn = "from_user",
-                inbound_npn = "from_user",
-                inbound_uprn = "from_user",
-                ip_header = "P-NGCP-Src-Ip",
-                account_id = 0,
-		ext_subscriber_id = "",
-		ext_contract_id = "",
-		ringtimeout = 180,
+                all = {
+                    sst_enable = "yes",
+                    sst_expires = 300,
+                    sst_min_timer = 90,
+                    sst_max_timer = 7200,
+                    sst_refresh_method = "UPDATE_FALLBACK_INVITE",
+                    outbound_from_user = "npn",
+                    inbound_upn = "from_user",
+                    inbound_npn = "from_user",
+                    inbound_uprn = "from_user",
+                    ip_header = "P-NGCP-Src-Ip",
+                },
+                real = {
+                    account_id = 0,
+                    ext_subscriber_id = "",
+                    ext_contract_id = "",
+                    ringtimeout = 180,
+                }
             }
         }
         setmetatable( t, NGCPConfig_MT )
@@ -45,8 +49,24 @@ NGCPConfig_MT = { __index = NGCPConfig }
     function NGCPConfig:getDBConnection()
         local env = assert (luasql.mysql())
         sr.log("dbg","connecting to mysql")
-        return assert (env:connect( self.db_database,
-            self.db_username, self.db_pass, self.db_host, self.db_port))
+        return env:connect( self.db_database,
+            self.db_username, self.db_pass, self.db_host, self.db_port)
+    end
+
+    function NGCPConfig:get_defaults(vtype)
+        local k,v
+        local defs = table.deepcopy(self.default.all)
+
+        if (vtype == 'dom' or vtype == 'usr') then
+            vtype = 'real'
+        end
+
+        if self.default.vtype then
+            for k,v in pairs(default.vtype) do
+                defs[k] = v
+            end
+        end
+        return defs
     end
 -- class
 
@@ -81,82 +101,22 @@ end
             peer = NGCPPeerPrefs:new(t.config),
             real = NGCPRealPrefs:new(),
         }
-        t.vars = {
-            caller_peer_load = {
-                caller_peer_prefs = {
-                }
-            },
-            callee_peer_load = {
-                callee_peer_prefs = {
-                }
-            },
-            caller_usr_load = {
-                caller_usr_prefs = {
-                },
-                caller_real_prefs = {
-                }
-            },
-            callee_usr_load = {
-                callee_usr_prefs = {
-                },
-                callee_real_prefs = {
-                }
-            }
-        }
         return t
     end
 
-    function NGCP:_set_vars(indx)
-        local _,k,v, default, xvap, var
-        for k,var in pairs(self.vars[indx]) do
-            for _,v in pairs(var) do
-                if not v[3] then
-                    default = self.config.default[v[2]]
-                else
-                    default = v[3]
-                end
-                if v[2] then
-                    xavp = k .. "=>" .. v[2]
-                else
-                    xavp = nil
-                end
-                NGCPPrefs.set_avp(v[1], xavp, default)
-            end
-        end
-    end
-
-    -- value 0 is like null?
-    -- if 0 => use dom pref if not 0
-    function NGCP._set_dom_priority(var, xavp, pref)
-        local avp = NGCPAvp:new(var)
-        local value
-
-        if avp() == 0 then
-            value = xavp(pref)
-            if not value and value ~= 0 then
-                avp:clean()
-                avp(value)
-            end
-        end
-    end
-
     function NGCP:caller_peer_load(peer)
-        local _,v, default, xvap
+        local _,v, xvap
         local keys = self.prefs.peer:caller_load(peer)
-        local vars = self.vars.caller_peer_load
 
         self.prefs.real:caller_peer_load(keys)
-        self:_set_vars("caller_peer_load")
         return keys
     end
 
     function NGCP:callee_peer_load(peer)
-        local _,v, default, xvap
+        local _,v, xvap
         local keys = self.prefs.peer:callee_load(peer)
-        local vars = self.vars.callee_peer_load
 
         self.prefs.real:callee_peer_load(keys)
-        self:_set_vars("callee_peer_load")
         return keys
     end
 
@@ -172,14 +132,7 @@ end
             table.add(unique_keys, v)
         end
         self.prefs.real:caller_usr_load(unique_keys)
-        self:_set_vars("caller_usr_load")
         local xavp = NGCPXAvp:new('caller', 'dom')
-
-        -- if 0 => use dom pref if not 0
-        NGCP._set_dom_priority("caller_concurrent_max", xavp, "concurrent_max")
-        NGCP._set_dom_priority("caller_concurrent_max_out", xavp, "concurrent_max_out")
-        NGCP._set_dom_priority("caller_concurrent_max_per_account", xavp, "concurrent_max_per_account")
-        NGCP._set_dom_priority("caller_concurrent_max_per_account_out", xavp, "concurrent_max_per_account_out")
 
         return unique_keys
     end
@@ -196,11 +149,6 @@ end
             table.add(unique_keys, v)
         end
         self.prefs.real:callee_usr_load(unique_keys)
-        self:_set_vars("callee_usr_load")
-
-        -- if 0 => use dom pref if not 0
-        NGCP._set_dom_priority("callee_concurrent_max", xavp, "concurrent_max")
-        NGCP._set_dom_priority("callee_concurrent_max_per_account", xavp, "concurrent_max_per_account")
 
         return unique_keys
     end
@@ -235,81 +183,15 @@ end
         end
     end
 
-    function NGCP:_str_var(vtype, group)
-        local _, v, var, vars_index, avp
-        local output = "{"
-        vars_index = vtype .. "_" .. group .. "_load"
-        if self.vars[vars_index] then
-            for _,v in pairs(self.vars[vars_index]) do
-                for _,var in pairs(v) do
-                    avp = NGCPAvp:new(var[1])
-                    output = output .. tostring(avp) .. ","
-                end
-            end
-        end
-        output = output .. "}\n"
-        return output
-    end
-
-    function NGCP:log_var(level, vtype, group)
-        local vtypes, groups
-        local _,vt,gr
-
-        if not level then
-            level = "dbg"
-        end
-        if not vtype then
-            vtypes = {"caller", "callee"}
-        else
-            vtypes = { vtype }
-        end
-        if not group then
-            groups = { "peer", "usr"}
-        else
-            groups = { group }
-        end
-
-        for _,vt in pairs(vtypes) do
-            for _,gr in pairs(groups) do
-                sr.log(level, self:_str_var(vt, gr))
-            end
-        end
-    end
-
-    function NGCP:clean_vars(vtype, group)
-        local _, v, var, vars_index, avp
-        vars_index = vtype .. "_" .. group .. "_load"
-        if self.vars[vars_index] then
-            for _,v in pairs(self.vars[vars_index]) do
-                for _,var in pairs(v) do
-                    avp = NGCPAvp:new(var[1])
-                    avp:clean()
-                end
-            end
-        end
-    end
-
     function NGCP:clean(vtype, group)
         local _,k,v
         if not group then
             for k,v in pairs(self.prefs) do
                 v:clean(vtype)
-                if not vtype then
-                    self:clean_vars('caller', k)
-                    self:clean_vars('callee', k)
-                else
-                    self:clean_vars(vtype, k)
-                end
             end
         else
             if self.prefs[group] then
                 self.prefs[group]:clean(vtype)
-                if not vtype then
-                    self:clean_vars('caller', group)
-                    self:clean_vars('callee', group)
-                else
-                    self:clean_vars(vtype, group)
-                end
             else
                 error(string.format("unknown group:%s", group))
             end

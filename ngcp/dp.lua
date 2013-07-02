@@ -41,11 +41,25 @@ NGCPDomainPrefs_MT.__tostring = function ()
         return NGCPDomainPrefs._load(self,"callee",uuid)
     end
 
-    function NGCPDomainPrefs:_load(level, uuid)
-        local con = assert (self.config:getDBConnection())
-        local query = "SELECT * FROM " .. self.db_table .. " WHERE domain ='" .. uuid .."'"
-        local cur = assert (con:execute(query))
+    function NGCPDomainPrefs:_get_defaults(level)
+        local defaults = self.config:get_defaults('dom')
         local keys = {}
+        local k,_
+
+        if defaults then
+            self:xavp(level, defaults)
+            for k,_ in pairs(defaults) do
+                table.insert(keys, k)
+            end
+        end
+        return keys
+    end
+
+    function NGCPDomainPrefs:_load(level, uuid)
+        local con = self.config:getDBConnection()
+        local query = "SELECT * FROM " .. self.db_table .. " WHERE domain ='" .. uuid .."'"
+        local cur = con:execute(query)
+        local keys = self:_get_defaults(level)
         local result = {}
         local row = cur:fetch({}, "a")
 
@@ -59,9 +73,10 @@ NGCPDomainPrefs_MT.__tostring = function ()
         else
             sr.log("dbg", string.format("no results for query:%s", query))
         end
-        NGCPDomainPrefs:xavp(level, result)
         cur:close()
         con:close()
+        self:xavp(level, result)
+
         return keys
     end
 
