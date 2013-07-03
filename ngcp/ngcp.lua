@@ -87,8 +87,8 @@ NGCPConfig_MT = { __index = NGCPConfig }
         local k,v
         local defs = {}
 
-        if self.default.vtype then
-            for k,v in pairs(default.vtype) do
+        if self.default[vtype] then
+            for k,v in pairs(self.default[vtype]) do
                 defs[k] = v
             end
         end

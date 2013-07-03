@@ -66,7 +66,7 @@ TestNGCPUserPrefs = {} --class
         sr.pv.unset("$xavp(callee_usr_prefs)")
         sr.pv.unset("$xavp(caller_real_prefs)")
         sr.pv.unset("$xavp(callee_real_prefs)")
-        sr.log("info", "---cleaned---")
+        sr.log("info", "---TestNGCPUserPrefs::cleaned---")
     end
 
     function TestNGCPUserPrefs:test_caller_load_empty()
@@ -84,13 +84,22 @@ TestNGCPUserPrefs = {} --class
         assertEquals(self.d.db_table, "usr_preferences")
     end
 
-    function TestNGCPUserPrefs:get_defaults()
-        local keys_expected = {"account_id", "cli", "cc", "ac"}
-        local defaults = NGCPConfig.get_defaults(self.d.config, 'usr')
-        local k,_
+    function TestNGCPUserPrefs:get_defaults(level, set)
+        local keys_expected = {}
+        local defaults = self.d.config:get_defaults('usr')
+        local k,v
 
-        for k,_ in pairs(defaults) do
+        if set then
+            keys_expected = table.deepcopy(set)
+            for k,v in pairs(keys_expected) do
+                sr.log("dbg", string.format("removed key:%s is been loaded.", v))
+                defaults[v] = nil
+            end
+        end
+
+        for k,v in pairs(defaults) do
             table.add(keys_expected, k)
+            assertEquals(sr.pv.get("$xavp("..level.."_usr_prefs=>"..k..")"), v)
         end
         return keys_expected
     end
@@ -114,7 +123,8 @@ TestNGCPUserPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>cli)"),"4311001")
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>cc)"),"43")
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>ac)"),"1")
-        assertItemsEquals(keys, TestNGCPUserPrefs:get_defaults())
+        --assertEquals(sr.pv.get("$xavp(caller_real_prefs=>ringtimeout)"), self.d.config.default.usr.ringtimeout)
+        assertItemsEquals(keys, TestNGCPUserPrefs:get_defaults("caller", {"account_id", "cli", "cc", "ac", "ringtimeout"}))
     end
 
     function TestNGCPUserPrefs:test_callee_load()
@@ -136,7 +146,8 @@ TestNGCPUserPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>cli)"),"4311001")
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>cc)"),"43")
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>ac)"),"1")
-        assertItemsEquals(keys, TestNGCPUserPrefs:get_defaults())
+        --assertEquals(sr.pv.get("$xavp(callee_real_prefs=>ringtimeout)"), self.d.config.default.usr.ringtimeout)
+        assertItemsEquals(keys, TestNGCPUserPrefs:get_defaults("callee", {"account_id", "cli", "cc", "ac", "ringtimeout"}))
     end
 
     function TestNGCPUserPrefs:test_clean()

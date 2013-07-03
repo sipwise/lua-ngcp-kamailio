@@ -66,7 +66,7 @@ TestNGCPPeerPrefs = {} --class
         sr.pv.unset("$xavp(callee_usr_prefs)")
         sr.pv.unset("$xavp(caller_real_prefs)")
         sr.pv.unset("$xavp(callee_real_prefs)")
-        sr.log("info", "---cleaned---")
+        sr.log("info", "---TestNGCPPeerPrefs::cleaned---")
     end
 
     function TestNGCPPeerPrefs:test_init()
@@ -74,10 +74,18 @@ TestNGCPPeerPrefs = {} --class
         assertEquals(self.d.db_table, "peer_preferences")
     end
 
-    function TestNGCPPeerPrefs:get_defaults(level)
-        local keys_expected = {"sst_enable", "sst_refresh_method"}
+    function TestNGCPPeerPrefs:get_defaults(level, set)
+        local keys_expected = {}
         local defaults = self.d.config:get_defaults('peer')
         local k,v
+
+        if set then
+            keys_expected = table.deepcopy(set)
+            for k,v in pairs(keys_expected) do
+                sr.log("dbg", string.format("removed key:%s is been loaded.", v))
+                defaults[v] = nil
+            end
+        end
 
         for k,v in pairs(defaults) do
             table.add(keys_expected, k)
@@ -112,7 +120,8 @@ TestNGCPPeerPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"), "caller")
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_enable)"),"no")
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
-        assertItemsEquals(keys, TestNGCPPeerPrefs:get_defaults("caller"))
+        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_min_timer)"), 90)
+        assertItemsEquals(keys, TestNGCPPeerPrefs:get_defaults("caller", {"sst_enable", "sst_refresh_method"}))
     end
 
     function TestNGCPPeerPrefs:test_callee_load()
@@ -131,7 +140,8 @@ TestNGCPPeerPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"), "callee")
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_enable)"),"no")
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
-        assertItemsEquals(keys, TestNGCPPeerPrefs:get_defaults("callee"))
+        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_min_timer)"), 90)
+        assertItemsEquals(keys, TestNGCPPeerPrefs:get_defaults("callee", {"sst_enable", "sst_refresh_method"}))
     end
 
     function TestNGCPPeerPrefs:test_clean()

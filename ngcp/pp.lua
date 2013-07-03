@@ -103,6 +103,7 @@ NGCPPeerPrefs_MT.__tostring = function ()
 
         xavp = self:xavp(level, result)
         for k,v in pairs(defaults) do
+            sr.log("dbg", string.format("setting default[%s]:%s", k, tostring(v)))
             xavp(k, v)
         end
         return keys
