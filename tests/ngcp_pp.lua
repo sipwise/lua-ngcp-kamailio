@@ -56,13 +56,14 @@ TestNGCPPeerPrefs = {} --class
         assertEquals(self.d.db_table, "peer_preferences")
     end
 
-    function TestNGCPPeerPrefs:get_defaults()
+    function TestNGCPPeerPrefs:get_defaults(level)
         local keys_expected = {"sst_enable", "sst_refresh_method"}
-        local defaults = NGCPConfig.get_defaults(self.d.config, 'peer')
-        local k,_
+        local defaults = self.d.config:get_defaults('peer')
+        local k,v
 
-        for k,_ in pairs(defaults) do
+        for k,v in pairs(defaults) do
             table.add(keys_expected, k)
+            assertEquals(sr.pv.get("$xavp("..level.."_peer_prefs=>"..k..")"), v)
         end
         return keys_expected
     end
@@ -93,7 +94,7 @@ TestNGCPPeerPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"), "caller")
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_enable)"),"no")
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
-        assertItemsEquals(keys, TestNGCPPeerPrefs:get_defaults())
+        assertItemsEquals(keys, TestNGCPPeerPrefs:get_defaults("caller"))
     end
 
     function TestNGCPPeerPrefs:test_callee_load()
@@ -112,7 +113,7 @@ TestNGCPPeerPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"), "callee")
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_enable)"),"no")
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
-        assertItemsEquals(keys, TestNGCPPeerPrefs:get_defaults())
+        assertItemsEquals(keys, TestNGCPPeerPrefs:get_defaults("callee"))
     end
 
     function TestNGCPPeerPrefs:test_clean()

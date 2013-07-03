@@ -53,22 +53,17 @@ TestNGCP = {} --class
 
     function TestNGCP:test_config()
         assertTrue(self.ngcp.config)
-        assertEquals(self.ngcp.config.default.all.sst_enable, "yes")
     end
 
     function TestNGCP:test_config_get_defaults_all()
         local defaults = NGCPConfig.get_defaults(self.ngcp.config, 'peer')
-        assertItemsEquals(defaults, self.ngcp.config.default.all)
+        assertItemsEquals(defaults, self.ngcp.config.default.peer)
     end
 
     function TestNGCP:test_config_get_defaults_real()
         local defaults = NGCPConfig.get_defaults(self.ngcp.config, 'usr')
-        local real_defaults = table.deepcopy(self.ngcp.config.default.all)
-        local k,v
-        for k,v in pairs(self.ngcp.config.default.real) do
-            real_defaults[k] = v
-        end
-        assertItemsEquals(defaults, real_defaults)
+        local usr_defaults = table.deepcopy(self.ngcp.config.default.usr)
+        assertItemsEquals(defaults, usr_defaults)
     end
 
     function TestNGCP:test_prefs_init()
@@ -131,6 +126,31 @@ TestNGCP = {} --class
         assertEquals(sr.pv.get("$xavp(caller_real_prefs=>no_nat_sipping)"), "no")
     end
 
+    function TestNGCP:test_caller_usr_load_empty_usr()
+        local c = self.ngcp.config
+        env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
+        self.con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.56'")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+        self.con:close()
+
+        mc:replay()
+        local keys = self.ngcp:caller_usr_load(nil, "192.168.51.56")
+        mc:verify()
+
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"), "caller")
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"), "caller")
+        --- the default is on real and dom NOT in usr
+        assertIsNil(sr.pv.get("$xavp(caller_usr_prefs=>sst_enable)"))
+        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>sst_enable)"), "no")
+        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>sst_enable)"), "no")
+        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+        assertIsNil(sr.pv.get("$xavp(caller_real_prefs=>force_outbound_calls_to_peer)"))
+        assertIsNil(sr.pv.get("$xavp(caller_dom_prefs=>force_outbound_calls_to_peer)"))
+    end
+
     function TestNGCP:test_caller_usr_load()
         local c = self.ngcp.config
         env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
@@ -157,6 +177,8 @@ TestNGCP = {} --class
         mc:verify()
 
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"), "caller")
+        --- the default is on real NOT in usr
+        assertIsNil(sr.pv.get("$xavp(caller_usr_prefs=>sst_enable)"))
         assertEquals(sr.pv.get("$xavp(caller_real_prefs=>sst_enable)"), "no")
         assertEquals(sr.pv.get("$xavp(caller_real_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>force_outbound_calls_to_peer)"), 1)
@@ -192,6 +214,9 @@ TestNGCP = {} --class
         mc:verify()
 
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"), "callee")
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>sst_enable)"), "no")
+        --- the default is on real NOT in usr
+        assertIsNil(sr.pv.get("$xavp(callee_usr_prefs=>sst_enable)"))
         assertEquals(sr.pv.get("$xavp(callee_real_prefs=>sst_enable)"), "no")
         assertEquals(sr.pv.get("$xavp(callee_real_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
     end

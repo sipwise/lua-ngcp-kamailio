@@ -22,7 +22,7 @@ NGCPConfig_MT = { __index = NGCPConfig }
             db_pass = "somepasswd",
             db_database = "kamailio",
             default = {
-                all = {
+                peer = {
                     sst_enable = "yes",
                     sst_expires = 300,
                     sst_min_timer = 90,
@@ -34,7 +34,19 @@ NGCPConfig_MT = { __index = NGCPConfig }
                     inbound_uprn = "from_user",
                     ip_header = "P-NGCP-Src-Ip",
                 },
-                real = {
+                dom = {
+                    sst_enable = "yes",
+                    sst_expires = 300,
+                    sst_min_timer = 90,
+                    sst_max_timer = 7200,
+                    sst_refresh_method = "UPDATE_FALLBACK_INVITE",
+                    outbound_from_user = "npn",
+                    inbound_upn = "from_user",
+                    inbound_uprn = "from_user",
+                    ip_header = "P-NGCP-Src-Ip",
+                },
+                -- just for prefs that are only on usr level
+                usr = {
                     account_id = 0,
                     ext_subscriber_id = "",
                     ext_contract_id = "",
@@ -55,11 +67,7 @@ NGCPConfig_MT = { __index = NGCPConfig }
 
     function NGCPConfig:get_defaults(vtype)
         local k,v
-        local defs = table.deepcopy(self.default.all)
-
-        if (vtype == 'dom' or vtype == 'usr') then
-            vtype = 'real'
-        end
+        local defs = {}
 
         if self.default.vtype then
             for k,v in pairs(default.vtype) do
@@ -99,7 +107,7 @@ end
             dom  = NGCPDomainPrefs:new(t.config),
             usr  = NGCPUserPrefs:new(t.config),
             peer = NGCPPeerPrefs:new(t.config),
-            real = NGCPRealPrefs:new(),
+            real = NGCPRealPrefs:new(t.config),
         }
         return t
     end
