@@ -45,18 +45,18 @@ NGCPDomainPrefs_MT.__tostring = function ()
         return setmetatable( t, NGCPDomainPrefs_MT )
     end
 
-    function NGCPDomainPrefs:caller_load(uuid)
-        if not uuid then
+    function NGCPDomainPrefs:caller_load(domain)
+        if not domain then
             return {}
         end
-        return NGCPDomainPrefs._load(self,"caller",uuid)
+        return NGCPDomainPrefs._load(self,"caller",domain)
     end
 
-    function NGCPDomainPrefs:callee_load(uuid)
-        if not uuid then
+    function NGCPDomainPrefs:callee_load(domain)
+        if not domain then
             return {}
         end
-        return NGCPDomainPrefs._load(self,"callee",uuid)
+        return NGCPDomainPrefs._load(self,"callee",domain)
     end
 
     function NGCPDomainPrefs:_defaults(level)
@@ -72,9 +72,9 @@ NGCPDomainPrefs_MT.__tostring = function ()
         return keys, defaults
     end
 
-    function NGCPDomainPrefs:_load(level, uuid)
+    function NGCPDomainPrefs:_load(level, domain)
         local con = self.config:getDBConnection()
-        local query = "SELECT * FROM " .. self.db_table .. " WHERE domain ='" .. uuid .."'"
+        local query = "SELECT * FROM " .. self.db_table .. " WHERE domain ='" .. domain .."'"
         local cur = con:execute(query)
         local defaults
         local keys
