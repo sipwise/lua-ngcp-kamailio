@@ -44,6 +44,16 @@ NGCPXAvp_MT = {
                 table.add(t.keys, key)
                 sr.log("dbg", string.format("sets: [%s]:%s", id, value))
                 sr.pv.sets(id, value)
+            elseif type(value) == "table" then
+                table.add(t.keys, key)
+                local _,v
+                for _,v in pairs(value) do
+                    if type(v) == "number" then
+                        sr.pv.seti(id, value)
+                    else
+                        sr.pv.sets(id, value)
+                    end
+                end
             else
                 error("value is not a number or string")
             end

@@ -63,39 +63,47 @@ NGCPRealPrefs_MT.__tostring = function ()
         local xavp = {
             peer  = NGCPPeerPrefs:xavp(level),
         }
-        local real_keys = {}
-        local value
+        local peer_values = {}
+        local values = sr.xavp.get(xavp.peer.name, 0, 1)
         for _,v in pairs(keys) do
-            value = xavp.peer(v)
+            local value = values[v]
             if value then
-                table.add(real_keys, v)
+                peer_values = v
             end
         end
-        return real_keys
+        local peer_keys = {}
+        for k,v in pairs(peer_values) do
+            table.insert(peer_keys, k)
+            xavp.peer(k, v)
+        end
+        return peer_keys
     end
 
     function NGCPRealPrefs:_usr_load(level, keys)
-        local _,v
+        local _,v,k
         local xavp = {
-            real = NGCPRealPrefs:xavp(level),
+            real = NGCPRealPrefs:xavp(level),  
             dom  = NGCPDomainPrefs:xavp(level),
             usr  = NGCPUserPrefs:xavp(level)
         }
-        local real_keys = {}
-        local value
+        local real_values = {}
+        local dom_values = sr.xavp.get(xavp.dom.name, 0, 1)
+        local usr_values = sr.xavp.get(xavp.usr.name, 0, 1)
         for _,v in pairs(keys) do
-            value = xavp.usr(v)
+            local value = usr_values[v]
             if not value then
-                value = xavp.dom(v)
-                --sr.log("info", string.format("key:%s value:%s from domain", v, value))
+                value = dom_values[v]
             end
             if value then
-                table.add(real_keys, v)
-                --sr.log("info", string.format("key:%s value:%s", v, value))
-                xavp.real(v, value)
+                real_values[v] = value
             else
                 sr.log("err", string.format("key:%s not in user or domain", v))
             end
+        end
+        local real_keys = {}
+        for k,v in pairs(real_values) do
+            table.insert(real_keys, k)
+            xavp.real(k, v)
         end
         return real_keys
     end
