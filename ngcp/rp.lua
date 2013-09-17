@@ -87,8 +87,8 @@ NGCPRealPrefs_MT.__tostring = function ()
             usr  = NGCPUserPrefs:xavp(level)
         }
         local real_values = {}
-        local dom_values = sr.xavp.get(xavp.dom.name, 0, 1)
-        local usr_values = sr.xavp.get(xavp.usr.name, 0, 1)
+        local dom_values = sr.xavp.get(xavp.dom.name, 0, 0)
+        local usr_values = sr.xavp.get(xavp.usr.name, 0, 0)
         for _,v in pairs(keys) do
             local value = usr_values[v]
             if not value then
