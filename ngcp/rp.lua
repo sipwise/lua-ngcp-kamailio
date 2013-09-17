@@ -63,18 +63,13 @@ NGCPRealPrefs_MT.__tostring = function ()
         local xavp = {
             peer  = NGCPPeerPrefs:xavp(level),
         }
-        local peer_values = {}
+        local peer_keys = {}
         local values = sr.xavp.get(xavp.peer.name, 0, 0)
         for _,v in pairs(keys) do
             local value = values[v]
             if value then
-                peer_values[v] = value
+                table.add(peer_keys, v)
             end
-        end
-        local peer_keys = {}
-        for k,v in pairs(peer_values) do
-            table.insert(peer_keys, k)
-            xavp.peer(k, v)
         end
         return peer_keys
     end
