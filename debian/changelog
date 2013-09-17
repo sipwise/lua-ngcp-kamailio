@@ -1,3 +1,11 @@
+lua-ngcp-kamailio (0.1.1) unstable; urgency=low
+
+  [ Victor Seva ]
+  * [12a5e3c] replace uuid parameter for domain. This was confusing.
+  * [6543b27] Copy all values not only the first one
+
+ -- Victor Seva <vseva@sipwise.com>  Tue, 17 Sep 2013 16:32:55 +0200
+
 lua-ngcp-kamailio (0.1.0) unstable; urgency=low
 
   * Initial Release.
