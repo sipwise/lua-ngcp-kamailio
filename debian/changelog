@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (0.1.2) unstable; urgency=low
+
+  [ Victor Seva ]
+  * [9c89ae5] fix peer load.
+
+ -- Victor Seva <vseva@sipwise.com>  Tue, 17 Sep 2013 17:56:27 +0200
+
 lua-ngcp-kamailio (0.1.1) unstable; urgency=low
 
   [ Victor Seva ]
