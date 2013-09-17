@@ -38,12 +38,25 @@ NGCPXAvp_MT = {
                 return sr.pv.get(id)
             elseif type(value) == "number" then
                 table.add(t.keys, key)
-                sr.log("dbg", string.format("seti: [%s]:%d", id, value))
+                --sr.log("dbg", string.format("seti: [%s]:%d", id, value))
                 sr.pv.seti(id, value)
             elseif type(value) == "string" then
                 table.add(t.keys, key)
-                sr.log("dbg", string.format("sets: [%s]:%s", id, value))
+                --sr.log("dbg", string.format("sets: [%s]:%s", id, value))
                 sr.pv.sets(id, value)
+            elseif type(value) == "table" then
+                table.add(t.keys, key)
+                local i, v
+                for i = #value, 1, -1 do
+                    v = value[i]
+                    if type(v) == "number" then
+                        sr.pv.seti(id, v)
+                    elseif type(v) == "string" then
+                        sr.pv.sets(id, v)
+                    else
+                        error("unknown type: %s", type(v))
+                    end
+                end
             else
                 error("value is not a number or string")
             end
