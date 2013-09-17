@@ -46,12 +46,15 @@ NGCPXAvp_MT = {
                 sr.pv.sets(id, value)
             elseif type(value) == "table" then
                 table.add(t.keys, key)
-                local _,v
-                for _,v in pairs(value) do
+                local i, v
+                for i = #value, 1, -1 do
+                    v = value[i]
                     if type(v) == "number" then
                         sr.pv.seti(id, value)
-                    else
+                    elseif type(v) == "string" then
                         sr.pv.sets(id, value)
+                    else
+                        error("unknown type: %s", type(v))
                     end
                 end
             else

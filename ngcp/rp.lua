@@ -68,7 +68,7 @@ NGCPRealPrefs_MT.__tostring = function ()
         for _,v in pairs(keys) do
             local value = values[v]
             if value then
-                peer_values = v
+                peer_values[v] = value
             end
         end
         local peer_keys = {}

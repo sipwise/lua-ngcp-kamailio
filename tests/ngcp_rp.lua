@@ -130,7 +130,7 @@ TestNGCPRealPrefs = {} --class
         xavp.user("dos",2)
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dos)"),2)
         local real_keys = self.real:caller_usr_load(keys)
-        assertEquals(real_keys, keys)
+        assertItemsEquals(real_keys, keys)
         assertEquals(xavp.real("uno"),1)
         assertEquals(xavp.real("dos"),2)
     end
@@ -163,7 +163,7 @@ TestNGCPRealPrefs = {} --class
         xavp.user("dos",2)
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dos)"),2)
         local real_keys = self.real:callee_usr_load(keys)
-        assertEquals(real_keys, keys)
+        assertItemsEquals(real_keys, keys)
         assertEquals(xavp.real("uno"),1)
         assertEquals(xavp.real("dos"),2)
     end
