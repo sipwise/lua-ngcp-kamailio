@@ -138,6 +138,8 @@ TestSRMock = {}
         assertEquals(result.type, 'xavp')
         assertEquals(result.id, 'id')
         assertEquals(result.key, 'key')
+        assertIsNil(result.indx)
+        assertIsNil(result.kindx)
         assertFalse(result.clean)
     end
 
@@ -149,6 +151,7 @@ TestSRMock = {}
         assertEquals(result.id, 'id1')
         assertEquals(result.key, 'key3g2')
         assertEquals(result.indx, 8)
+        assertIsNil(result.kindx)
         assertFalse(result.clean)
         result = self.sr.pv._is_xavp("$xavp(id2g1f[9]=>keygg33_f)")
         assertTrue(result)
@@ -156,6 +159,27 @@ TestSRMock = {}
         assertEquals(result.id, 'id2g1f')
         assertEquals(result.key, 'keygg33_f')
         assertEquals(result.indx, 9)
+        assertIsNil(result.kindx)
+        assertFalse(result.clean)
+    end
+
+    function TestSRMock:test_is_xavp_complex_indx()
+        local result
+        result = self.sr.pv._is_xavp("$xavp(id1[8]=>key3g2)")
+        assertTrue(result)
+        assertEquals(result.type, 'xavp')
+        assertEquals(result.id, 'id1')
+        assertEquals(result.key, 'key3g2')
+        assertEquals(result.indx, 8)
+        assertIsNil(result.kindx)
+        assertFalse(result.clean)
+        result = self.sr.pv._is_xavp("$xavp(id2g1f[9]=>keygg33_f[2])")
+        assertTrue(result)
+        assertEquals(result.type, 'xavp')
+        assertEquals(result.id, 'id2g1f')
+        assertEquals(result.key, 'keygg33_f')
+        assertEquals(result.indx, 9)
+        assertEquals(result.kindx, 2)
         assertFalse(result.clean)
     end
 
@@ -177,7 +201,8 @@ TestSRMock = {}
         assertEquals(result.type, 'xavp')
         assertEquals(result.id, 'id1')
         assertFalse(result.key)
-        assertFalse(result.indx)
+        assertIsNil(result.indx)
+        assertIsNil(result.kindx)
         assertFalse(result.clean)
     end
 
@@ -293,12 +318,31 @@ TestSRMock = {}
         assertEquals(self.sr.pv.get("$xavp(g=>bythere)"), "value_bye")
     end
 
+    function TestSRMock:test_xavp_sets_multi()
+        self.sr.pv.sets("$xavp(g=>hithere)", "value1")
+        assertEquals(self.sr.pv.get("$xavp(g=>hithere)"), "value1")
+        self.sr.pv.sets("$xavp(g[0]=>hithere)", "value0")
+        assertEquals(self.sr.pv.get("$xavp(g[0]=>hithere)"), "value0")
+        assertEquals(self.sr.pv.get("$xavp(g=>hithere[1])"), "value1")
+    end
+
     function TestSRMock:test_xavp_sets1()
         self.sr.pv.sets("$xavp(g=>hithere)", "value")
         assertEquals(self.sr.pv.get("$xavp(g[0]=>hithere)"), "value")
         self.sr.pv.sets("$xavp(g=>hithere)", "value_bye")
         assertEquals(self.sr.pv.get("$xavp(g[0]=>hithere)"), "value_bye")
         assertEquals(self.sr.pv.get("$xavp(g[1]=>hithere)"), "value")
+    end
+
+    function TestSRMock:test_xavp_sets1_multi()
+        self.sr.pv.sets("$xavp(g=>hithere)", "value1")
+        assertEquals(self.sr.pv.get("$xavp(g[0]=>hithere)"), "value1")
+        self.sr.pv.sets("$xavp(g[0]=>hithere)", "value0")
+        assertEquals(self.sr.pv.get("$xavp(g[0]=>hithere)"), "value0")
+        assertEquals(self.sr.pv.get("$xavp(g[0]=>hithere[1])"), "value1")
+        self.sr.pv.sets("$xavp(g=>hithere)", "value_bye")
+        assertEquals(self.sr.pv.get("$xavp(g[0]=>hithere)"), "value_bye")
+        assertEquals(self.sr.pv.get("$xavp(g[1]=>hithere)"), "value0")
     end
 
     function TestSRMock:test_xavp_seti()
@@ -312,6 +356,13 @@ TestSRMock = {}
     function TestSRMock:test_xavp_get()
         self.sr.pv.sets("$xavp(g=>hithere)", "value")
         assertTrue(self.sr.pv.get, "$xavp(g)")
+    end
+
+    function TestSRMock:test_xavp_get_multi()
+        self.sr.pv.sets("$xavp(g=>hithere)", "value1")
+        self.sr.pv.sets("$xavp(g[0]=>hithere)", "value2")
+        assertEquals(self.sr.pv.get("$xavp(g[0]=>hithere[0])"), "value2")
+        assertEquals(self.sr.pv.get("$xavp(g[0]=>hithere[1])"), "value1")
     end
 
     function TestSRMock:test_avp_get_simple()
@@ -394,7 +445,6 @@ TestSRMock = {}
         self.sr.pv.unset("$xavp(g[0]=>t)")
         assertEquals(self.sr.pv.get("$xavp(g[0]=>t)"), nil)
         assertEquals(self.sr.pv.get("$xavp(g[1]=>t)"), "value")
-        assertTrue(self.sr.pv.get("$xavp(g[0])"))
         --
         self.sr.pv.unset("$xavp(g[1])")
         assertFalse(self.sr.pv.get("$xavp(g[1])"))
@@ -456,9 +506,11 @@ TestXAVPMock = {}
 
         self.pv.sets("$xavp(test=>uno)", "uno")
         assertEquals(self.pv.get("$xavp(test[0]=>uno)"), "uno")
+        self.pv.seti("$xavp(test[0]=>dos)", 4)
         self.pv.seti("$xavp(test[0]=>dos)", 2)
         assertEquals(self.pv.get("$xavp(test[0]=>dos)"), 2)
-        self.pv.seti("$xavp(test=>uno)", 1)
+        self.pv.seti("$xavp(test=>uno)", 3)
+        self.pv.seti("$xavp(test[0]=>uno)", 1)
         assertEquals(self.pv.get("$xavp(test[0]=>uno)"), 1)
         self.pv.sets("$xavp(test[0]=>dos)", "dos")
         assertEquals(self.pv.get("$xavp(test[0]=>dos)"), "dos")
@@ -485,15 +537,27 @@ TestXAVPMock = {}
         assertItemsEquals(l, {"uno", "dos"})
     end
 
-    function TestXAVPMock:test_get()
-        local l = self.xavp.get("test", 0)
+    function TestXAVPMock:test_get_simple()
+        local l = self.xavp.get("test", 0, 1)
         assertTrue(l)
         assertItemsEquals(l, {uno=1, dos="dos", tres=3})
     end
 
-    function TestXAVPMock:test_get()
-        local l = self.xavp.get("test", 1)
+    function TestXAVPMock:test_get_simple_1()
+        local l = self.xavp.get("test", 1, 1)
         assertTrue(l)
         assertItemsEquals(l, {uno="uno", dos=2})
+    end
+
+    function TestXAVPMock:test_get()
+        local l = self.xavp.get("test", 0, 0)
+        assertTrue(l)
+        assertItemsEquals(l, {uno={1,3}, dos={"dos"}, tres={3}})
+    end
+
+    function TestXAVPMock:test_get_1()
+        local l = self.xavp.get("test", 1, 0)
+        assertTrue(l)
+        assertItemsEquals(l, {uno={"uno"}, dos={2,4}})
     end
 --EOF

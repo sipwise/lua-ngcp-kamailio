@@ -132,20 +132,29 @@ pvMock = {
         function t._is_xavp(id)
             local _id, indx, key
             local patterns = {
-                '%$xavp%(([%w_]+)%)$',
+                '%$xavp%(([%w_^%[]+)%)$',
                 '%$xavp%(([%w_^%[]+)%[(%d+)%]%)$',
-                '%$xavp%(([%w_]+)=>([%w_]+)%)$',
-                '%$xavp%(([%w_^%[]+)%[(%d+)%]=>([%w_]+)%)$'
+                '%$xavp%(([%w_^%[]+)=>([%w_^%[]+)%)$',
+                '%$xavp%(([%w_^%[]+)%[(%d+)%]=>([%w_^%[]+)%)$',
+                '%$xavp%(([%w_^%[]+)=>([%w_^%[]+)%[(%d+)%]%)$',
+                '%$xavp%(([%w_^%[]+)%[(%d+)%]=>([%w_^%[]+)%[(%d+)%]%)$'
             }
+            local logger = logging.file('reports/sr_pv_%s.log', '%Y-%m-%d')
             for _,v in pairs(patterns) do
-                for _id, indx, key in string.gmatch(id, v) do
-                    if not key and tonumber(indx) == nil then
+                for _id, indx, key, kindx in string.gmatch(id, v) do
+                    logger:log(logging.DEBUG, string.format("_:%d id:%s v:%s _id:%s indx:%s key:%s kindx:%s", _, id, v, tostring(_id), tostring(indx), tostring(key), tostring(kindx)))
+                    if _ == 5 or _ == 3 then
+                        kindx = key
                         key = indx
                         indx = nil
                     else
                         indx = tonumber(indx)
                     end
-                    return { id=_id, key=key, indx=indx, type='xavp' }
+                    if kindx then
+                        kindx = tonumber(kindx)
+                    end
+                    return { id=_id, key=key,
+                            indx=indx, kindx=kindx, type='xavp' }
                 end
             end
         end
@@ -250,20 +259,23 @@ pvMock = {
                 if not t.vars[result.private_id] then
                     return
                 end
+                if not result.kindx then
+                    result.kindx = 0
+                end
                 if not result.key then
                     if not result.indx then
                         return t.vars[result.private_id]
-                    else
-                        result.real_indx = #t.vars[result.private_id]._et - result.indx
-                        return t.vars[result.private_id]._et[result.real_indx]
                     end
                 end
                 if not result.indx then
                     result.indx = 0
                 end
-                result.real_indx = #t.vars[result.private_id]._et - result.indx
-                if t.vars[result.private_id]._et[result.real_indx] then
-                    return t.vars[result.private_id]._et[result.real_indx][result.key]
+                if t.vars[result.private_id][result.indx] then
+                    if t.vars[result.private_id][result.indx][result.key] then
+                        if t.vars[result.private_id][result.indx][result.key][result.kindx] then
+                            return t.vars[result.private_id][result.indx][result.key][result.kindx]
+                        end
+                    end
                 end
             elseif result.type == 'avp' then
                 if t.vars[result.private_id] then
@@ -291,12 +303,16 @@ pvMock = {
                 if not result.indx then
                     result.indx = 0
                 end
-                if result.indx ~= 0 then
+                if not result.kindx then
+                    result.kindx = 0
+                end
+                if result.indx ~= 0 or result.kindx ~= 0 then
                     error(string.format("xavp(%s) has not been initilizated", result.id))
                 end
                 t.vars[result.private_id] = Stack:new()
                 temp = {}
-                temp[result.key] = value
+                temp[result.key] = Stack:new()
+                temp[result.key]:push(value)
                 t.vars[result.private_id]:push(temp)
             elseif result.type == 'avp' then
                 t.vars[result.private_id] = Stack:new()
@@ -312,17 +328,27 @@ pvMock = {
                 t.vars[result.private_id] = value
             elseif result.type == 'xavp' then
                 if not result.indx then
+                    if result.kindx and result.kindx ~= 0 then
+                        error(string.format("kindx:%d must be 0", result.kindx))
+                    end
                     temp = {}
-                    temp[result.key] = value
+                    temp[result.key] = Stack:new()
+                    temp[result.key]:push(value)
                     t.vars[result.private_id]:push(temp)
                 else
-                    result.real_indx = #t.vars[result.private_id]._et - result.indx
-                    if t.vars[result.private_id]._et[result.real_indx] == nil then
+                    if t.vars[result.private_id][result.indx] == nil then
                         error(string.format("xavp(%s[%d]) does not exist", result.id, result.indx))
-                    elseif t.vars[result.private_id]._et[result.real_indx] == false then
-                        t.vars[result.private_id]._et[result.real_indx] = {}
+                    elseif t.vars[result.private_id][result.indx] == false then
+                        t.vars[result.private_id][result.indx] = {}
                     end
-                    t.vars[result.private_id]._et[result.real_indx][result.key] = value
+                    if not result.kindx then
+                        result.kindx = 0
+                    end
+                    if not t.vars[result.private_id][result.indx][result.key] then
+                        t.vars[result.private_id][result.indx][result.key] = Stack:new()
+                        --error(string.format("t:%s result:%s", table.tostring(t.vars[result.private_id]), table.tostring(result)))
+                    end
+                    t.vars[result.private_id][result.indx][result.key]:push(value)
                 end
             elseif result.type == 'avp' then
                 t.vars[result.private_id]:push(value)
@@ -371,8 +397,7 @@ pvMock = {
                             return
                         else
                             -- xavp(g[0])
-                            result.real_indx = #t.vars[result.private_id]._et - result.indx
-                            t.vars[result.private_id]._et[result.real_indx] = false
+                            t.vars[result.private_id][result.indx] = false
                             return
                         end
                     else
@@ -381,8 +406,7 @@ pvMock = {
                         end
                     end
                     -- xavp(g[1]=>k)
-                    result.real_indx = #t.vars[result.private_id]._et - result.indx
-                    t.vars[result.private_id]._et[result.real_indx][result.key] = nil
+                    t.vars[result.private_id][result.indx][result.key] = nil
                 end
             elseif result.type == 'avp' then
                 t.vars[result.private_id] = nil
@@ -434,31 +458,40 @@ xavpMock = {
         t.__class__ = 'hdrMock'
         t.pv = pv
 
-        function t._get_xavp(xavp_name, index)
+        function t._get_xavp(xavp_name, index, mode)
             local private_id = "xavp:" .. xavp_name
-            local real_indx = #t.pv.vars[private_id]._et - index
-
+            local k,v
+            local temp = {}
             if not t.pv.vars[private_id] then
                 error(string.format("%s not found", xavp_name))
-            elseif not t.pv.vars[private_id]._et[real_indx] then
-                error(string.format("%s[%d] not found", xavp_name, indx))
+            elseif not t.pv.vars[private_id][index] then
+                error(string.format("%s[%d] not found", xavp_name, index))
             end
-            return t.pv.vars[private_id]._et[real_indx]
+            if mode == 0 then
+                for k,v in pairs(t.pv.vars[private_id][index]) do
+                    temp[k] = v:list()
+                end
+            else
+                for k,v in pairs(t.pv.vars[private_id][index]) do
+                    temp[k] = v[0]
+                end
+            end
+            return temp
         end
 
         function t.get_keys(xavp_name, index)
             local k,_
             local output = {}
 
-            xavp = t._get_xavp(xavp_name, index)
+            xavp = t._get_xavp(xavp_name, index, 1)
             for k,_ in pairs(xavp) do
                 table.insert(output, k)
             end
             return output
         end
 
-        function t.get(xavp_name, index)
-            xavp = t._get_xavp(xavp_name, index)
+        function t.get(xavp_name, index, mode)
+            xavp = t._get_xavp(xavp_name, index, mode)
             return xavp
         end
 
