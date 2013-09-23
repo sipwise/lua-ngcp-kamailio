@@ -103,23 +103,117 @@ TestUtils = {} --class
 
 TestStack = {}
     function TestStack:test()
-        s = Stack:new()
-        assertEquals(#s._et,0)
+        local s = Stack:new()
+        assertEquals(type(s), 'table')
+        assertEquals(s.__class__, 'Stack')
+    end
+
+    function TestStack:test_size()
+        local s = Stack:new()
+        assertEquals(s:size(),0)
+        s:push(1)
+        assertEquals(s:size(),1)
+        s:pop()
+        assertEquals(s:size(),0)
+    end
+
+    function TestStack:test_push()
+        local s s = Stack:new()
+        s:push(1)
+        assertEquals(s:size(),1)
+    end
+
+    function TestStack:test_pop()
+        local s = Stack:new()
         assertEquals(s:pop(), nil)
         s:push(1)
-        assertEquals(#s._et,1)
+        assertEquals(s:size(),1)
         assertEquals(s:pop(),1)
         assertEquals(s:size(),0)
+    end
+
+    function TestStack:test_get()
+        local s = Stack:new()
+        s:push(1)
+        assertEquals(s:get(0),1)
+        s:push({1,2,3})
+        assertEquals(s:get(0),{1,2,3})
+        assertEquals(s:get(1),1)
+        assertError(s.get, s, -1)
+        assertIsNil(s:get(2))
+    end
+
+    function TestStack:test_get_op()
+        local s = Stack:new()
+        s:push(1)
+        assertEquals(s[0],1)
+        s:push({1,2,3})
+        assertEquals(s[0],{1,2,3})
+        assertEquals(s[1],1)
+        assertIsNil(s[2])
+    end
+
+    function TestStack:test_set()
+        local s = Stack:new()
         s:push(1)
         s:push({1,2,3})
         assertEquals(s:size(),2)
+        assertEquals(s:get(0),{1,2,3})
+        assertEquals(s:get(1),1)
+        s:set(1, 2)
+        assertEquals(s:size(),2)
+        assertEquals(s:get(0),{1,2,3})
+        assertEquals(s:get(1),2)
+        s:set(2, 3)
+        assertEquals(s:size(),2)
+        assertEquals(s:get(0),{1,2,3})
+        assertEquals(s:get(1),2)
+        assertIsNil(s:get(2))
+        assertError(s.set, s, "no", -1)
+        assertError(s.set, s, -1, 2)
+    end
+
+    function TestStack:test_set_op()
+        local s = Stack:new()
+        s:push(1)
+        s:push({1,2,3})
+        assertEquals(s:size(),2)
+        assertEquals(s:get(0),{1,2,3})
+        assertEquals(s:get(1),1)
+        s[1] = 2
+        assertEquals(s:size(),2)
+        assertEquals(s:get(0),{1,2,3})
+        assertEquals(s:get(1),2)
+        s[0] = "new"
+        assertEquals(s:size(),2)
+        assertEquals(s:get(0),"new")
+        assertEquals(s:get(1),2)
+        s[1] = "old"
+        assertEquals(s:get(0),"new")
+        assertEquals(s:get(1),"old")
+        assertEquals(s:size(),2)
+        s[2] = "error"
+        assertEquals(s:get(0),"new")
+        assertEquals(s:get(1),"old")
+        assertIsNil(s:get(2))
+        assertEquals(s:size(),2)
+    end
+
+    function TestStack:test_list()
+        local s = Stack:new()
         local l = s:list()
+        assertEquals(#l, 0)
+        s:push(1)
+        s:push({1,2,3})
+        assertEquals(s:size(),2)
+        l = s:list()
         assertItemsEquals(l[1],{1,2,3})
         assertEquals(l[2],1)
+        assertEquals(s:size(),2)
     end
 
     function TestStack:test_tostring()
-        s = Stack:new()
+        local s = Stack:new()
         s:push(1)
         assertEquals(tostring(s), "{1}")
         s:push(2)

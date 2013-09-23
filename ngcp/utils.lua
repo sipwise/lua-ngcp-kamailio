@@ -159,12 +159,26 @@ end
 
 -- GLOBAL
 Stack = {
-  __class__ = 'Stack',
+  __class__ = 'Stack'
 }
 Stack_MT = {
-  __index = Stack,
   __tostring = function(t)
     return table.tostring(Stack.list(t))
+  end,
+  -- this works only on Lua5.2
+  __len = function(t)
+    return Stack.size(t)
+  end,
+  __index = function(t,k)
+    if type(k) == 'number' then
+      return Stack.get(t,k)
+    end
+    return rawget(Stack,k)
+  end,
+  __newindex = function(t,k,v)
+    if type(k) == 'number' then
+      Stack.set(t,k,v)
+    end
   end
 }
 
@@ -174,6 +188,7 @@ Stack_MT = {
     setmetatable(t, Stack_MT)
     return t
   end
+
   -- push a value on to the stack
   function Stack:push(...)
     if ... then
@@ -206,6 +221,30 @@ Stack_MT = {
     end
     -- return unpacked entries
     return unpack(entries)
+  end
+
+  -- get pos ( starts on 0)
+  function Stack:get(pos)
+    assert(pos)
+    assert(pos>=0)
+    local indx = #self._et - pos
+    if indx>0 then
+      return self._et[indx]
+    end
+  end
+
+  -- set a value in a pos (stars on 0)
+  function Stack:set(pos, value)
+    assert(pos)
+    assert(pos>=0)
+    local indx = #self._et - pos
+    if indx>0 then
+      if self._et[indx] then
+        self._et[indx] = value
+      else
+        error("No pos:"..pos)
+      end
+    end
   end
 
   -- get entries
