@@ -1,3 +1,14 @@
+lua-ngcp-kamailio (0.1.2+0~mr3.3) unstable; urgency=low
+
+  [ Victor Seva ]
+  * [c760b36] utils: add get/set methods. Can be called with [].
+  * [aaa7bbb] run_test.sh can be called with a list of tests to run.
+  * [aea1c65] mock sr: xavp seconf key is a stack.
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Sat, 01 Feb 2014 19:47:01 +0100
+
 lua-ngcp-kamailio (0.1.2) unstable; urgency=low
 
   [ Victor Seva ]
