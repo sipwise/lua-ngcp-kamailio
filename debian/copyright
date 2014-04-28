@@ -3,11 +3,11 @@ Upstream-Name: lua-ngcp-kamailio
 Source: git://git.mgm.sipwise.com/lua-ngcp-kamailio
 
 Files: *
-Copyright: 2013 Sipwise GmbH, Austria
+Copyright: 2013-2014 Sipwise GmbH, Austria
 License: GPL-3.0+
 
 Files: debian/*
-Copyright: 2013 SipWise Team <development@sipwise.com>
+Copyright: 2013-2014 SipWise Team <development@sipwise.com>
 License: GPL-3.0+
 
 License: GPL-3.0+

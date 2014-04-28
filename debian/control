@@ -1,6 +1,6 @@
 Source: lua-ngcp-kamailio
 Priority: extra
-Maintainer: Victor Seva <vseva@sipwise.com>
+Maintainer: Sipwise Development Team <support@sipwise.com>
 Build-Depends: debhelper (>= 8~), dh-lua (>= 16~)
 Standards-Version: 3.9.4
 Section: libs
