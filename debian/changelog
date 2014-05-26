@@ -1,3 +1,12 @@
+lua-ngcp-kamailio (0.2.1.0+0~mr3.3.1.0) unstable; urgency=low
+
+  [ Victor Seva ]
+  * [eab8cfa] MT#6517 unify Debian Packaging
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 26 May 2014 15:46:19 +0200
+
 lua-ngcp-kamailio (0.2.0.0+0~mr3.3.0.0) unstable; urgency=low
 
   [ Victor Seva ]
