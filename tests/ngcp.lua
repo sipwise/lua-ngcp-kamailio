@@ -375,7 +375,7 @@ TestNGCP = {} --class
     end
 
     function TestNGCP:test_tostring()
-        assertEquals(tostring(self.ngcp), 'caller_usr_prefs:{dummy="caller"}\ncallee_usr_prefs:{dummy="callee"}\ncaller_real_prefs:{dummy="caller"}\ncallee_real_prefs:{dummy="callee"}\ncaller_peer_prefs:{dummy="caller"}\ncallee_peer_prefs:{dummy="callee"}\ncaller_dom_prefs:{dummy="caller"}\ncallee_dom_prefs:{dummy="callee"}\n')
+        assertEquals(tostring(self.ngcp), 'caller_contract_prefs:{dummy="caller"}\ncallee_contract_prefs:{dummy="callee"}\ncaller_usr_prefs:{dummy="caller"}\ncallee_usr_prefs:{dummy="callee"}\ncaller_real_prefs:{dummy="caller"}\ncallee_real_prefs:{dummy="callee"}\ncaller_peer_prefs:{dummy="caller"}\ncallee_peer_prefs:{dummy="callee"}\ncaller_dom_prefs:{dummy="caller"}\ncallee_dom_prefs:{dummy="callee"}\n')
     end
 -- class TestNGCP
 --EOF
