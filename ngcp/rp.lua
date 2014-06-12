@@ -42,6 +42,14 @@ NGCPRealPrefs_MT.__tostring = function ()
         return setmetatable( t, NGCPRealPrefs_MT )
     end
 
+    function NGCPRealPrefs:caller_contract_load(keys)
+        return NGCPRealPrefs:_contract_load("caller", keys)
+    end
+
+    function NGCPRealPrefs:callee_contract_load(keys)
+        return NGCPRealPrefs:_contract_load("callee", keys)
+    end
+
     function NGCPRealPrefs:caller_peer_load(keys)
         return NGCPRealPrefs:_peer_load("caller", keys)
     end
@@ -56,6 +64,22 @@ NGCPRealPrefs_MT.__tostring = function ()
 
     function NGCPRealPrefs:callee_usr_load(keys)
         return NGCPRealPrefs:_usr_load("callee", keys)
+    end
+
+    function NGCPRealPrefs:_contract_load(level, keys)
+        local _,v
+        local xavp = {
+            peer  = NGCPContractPrefs:xavp(level),
+        }
+        local contract_keys = {}
+        local values = sr.xavp.get(xavp.contract.name, 0, 0)
+        for _,v in pairs(keys) do
+            local value = values[v]
+            if value then
+                table.add(contract_keys, v)
+            end
+        end
+        return contract_keys
     end
 
     function NGCPRealPrefs:_peer_load(level, keys)

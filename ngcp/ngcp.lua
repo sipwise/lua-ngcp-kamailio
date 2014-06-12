@@ -17,6 +17,7 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
+require 'ngcp.cp'
 require 'ngcp.pp'
 require 'ngcp.dp'
 require 'ngcp.up'
@@ -40,6 +41,8 @@ NGCPConfig_MT = { __index = NGCPConfig }
             db_pass = "somepasswd",
             db_database = "kamailio",
             default = {
+                contract = {
+                },
                 peer = {
                     sst_enable = "yes",
                     sst_expires = 300,
@@ -122,12 +125,29 @@ end
             config = NGCPConfig:new()
         }
         t.prefs = {
-            dom  = NGCPDomainPrefs:new(t.config),
-            usr  = NGCPUserPrefs:new(t.config),
-            peer = NGCPPeerPrefs:new(t.config),
-            real = NGCPRealPrefs:new(t.config),
+            dom      = NGCPDomainPrefs:new(t.config),
+            usr      = NGCPUserPrefs:new(t.config),
+            peer     = NGCPPeerPrefs:new(t.config),
+            real     = NGCPRealPrefs:new(t.config),
+            contract = NGCPContractPrefs:new(t.config),
         }
         return t
+    end
+
+    function NGCP:caller_contract_load(contract)
+        local _,v, xvap
+        local keys = self.prefs.contract:caller_load(contract)
+
+        self.prefs.real:caller_contract_load(keys)
+        return keys
+    end
+
+    function NGCP:callee_contract_load(contract)
+        local _,v, xvap
+        local keys = self.prefs.contract:callee_load(contract)
+
+        self.prefs.real:callee_contract_load(keys)
+        return keys
     end
 
     function NGCP:caller_peer_load(peer)
