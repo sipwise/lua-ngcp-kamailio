@@ -69,7 +69,7 @@ NGCPRealPrefs_MT.__tostring = function ()
     function NGCPRealPrefs:_contract_load(level, keys)
         local _,v
         local xavp = {
-            peer  = NGCPContractPrefs:xavp(level),
+            contract  = NGCPContractPrefs:xavp(level),
         }
         local contract_keys = {}
         local values = sr.xavp.get(xavp.contract.name, 0, 0)
