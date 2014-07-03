@@ -83,6 +83,14 @@ TestNGCPXAvp = {} --class
         assertItemsEquals(xavp("testid"), "1")
     end
 
+    function TestNGCPXAvp:test_xavp_get_all()
+        xavp = NGCPXAvp:new("caller", "peer", vals)
+        sr.pv.sets("$xavp(caller_peer=>testid)", "value")
+        assertEquals(xavp("testid"), "value")
+        sr.pv.sets("$xavp(caller_peer=>testid)", "1")
+        assertItemsEquals(xavp:all("testid"), {"1", "value"})
+    end
+
     function TestNGCPXAvp:test_xavp_set()
         local xavp = NGCPXAvp:new("caller", "peer", vals)
         local vals = {1,"2",3,nil}

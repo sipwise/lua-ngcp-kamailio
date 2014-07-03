@@ -141,6 +141,15 @@ NGCPXAvp_MT = {
         end
     end
 
+    function NGCPXAvp:all(key)
+        if key then
+            local t = sr.xavp.get(self.name, 0, 0)
+            if t then
+                return t[key];
+            end
+        end
+    end
+
     function NGCPXAvp:clean(key)
         if key then
             local id = string.format("$xavp(%s[0]=>%s)", self.name, key)
