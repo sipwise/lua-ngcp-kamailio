@@ -19,6 +19,25 @@
 --
 -- Lua utils
 
+-- improving the built-in pseudorandom generator
+-- http://lua-users.org/wiki/MathLibraryTutorial
+do
+   local oldrandom = math.random
+   local randomtable
+   math.random = function ()
+      if randomtable == nil then
+         randomtable = {}
+         for i = 1, 97 do
+            randomtable[i] = oldrandom()
+         end
+      end
+      local x = oldrandom()
+      local i = 1 + math.floor(97*x)
+      x, randomtable[i] = randomtable[i], x
+      return x
+   end
+end
+
 -- copy a table
 function table.deepcopy(object)
     local lookup_table = {}
@@ -90,6 +109,15 @@ function table.tostring( tbl )
     end
   end
   return "{" .. table.concat( result, "," ) .. "}"
+end
+
+function table.shuffle(tab)
+  local n, order, res = #tab, {}, {}
+  math.randomseed( os.time() );
+  for i=1,n do order[i] = { rnd = math.random(), idx = i } end
+  table.sort(order, function(a,b) return a.rnd < b.rnd end)
+  for i=1,n do res[i] = tab[order[i].idx] end
+  return res
 end
 
 -- from table to string

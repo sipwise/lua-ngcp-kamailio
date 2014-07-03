@@ -66,6 +66,16 @@ TestNGCPAvp = {} --class
         assertEquals(self.avp:all(), okvals)
     end
 
+    function TestNGCPAvp:test_avp_set_list()
+        local vals = {1,2, {"3", 4}}
+        local okvals = {4, "3", 2, 1}
+
+        for i=1,#vals do
+            self.avp(vals[i])
+        end
+        assertItemsEquals(self.avp:all(), okvals)
+    end
+
     function TestNGCPAvp:test_clean()
         self.avp(1)
         self.avp:clean()

@@ -58,6 +58,21 @@ TestUtils = {} --class
         assertEquals(self.simple_list, {1,2,3,5,4})
     end
 
+    function TestUtils:test_table_shuffle()
+        assertEquals(self.simple_list, {1,2,3})
+        table.add(self.simple_list, 4)
+        table.add(self.simple_list, 5)
+        table.add(self.simple_list, 6)
+        local tmp = table.shuffle(self.simple_list)
+        assertItemsEquals(self.simple_list, tmp)
+        assertNotEquals(self.simple_list, tmp)
+        local tmp2 = table.shuffle(self.simple_list)
+        assertItemsEquals(self.simple_list, tmp2)
+        --print(table.tostring(tmp))
+        --print(table.tostring(tmp2))
+        assertNotEquals(tmp2, tmp)
+    end
+
     function TestUtils:test_table_tostring()
         assertError(table.tostring,nil)
         assertEquals(table.tostring(self.simple_list), "{1,2,3}")

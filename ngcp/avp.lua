@@ -32,6 +32,11 @@ NGCPAvp_MT = {
                 --print(table.tostring(sr.pv.vars))
                 --print(t.id)
                 return sr.pv.get(t.id)
+            elseif type(value) == "table" then
+                local i, v
+                for i = #value, 1, -1 do
+                    t(value[i])
+                end
             elseif type(value) == "number" then
                 sr.pv.seti(t.id, value)
             elseif type(value) == "string" then
