@@ -137,7 +137,8 @@ pvMock = {
                 '%$xavp%(([%w_^%[]+)=>([%w_^%[]+)%)$',
                 '%$xavp%(([%w_^%[]+)%[(%d+)%]=>([%w_^%[]+)%)$',
                 '%$xavp%(([%w_^%[]+)=>([%w_^%[]+)%[(%d+)%]%)$',
-                '%$xavp%(([%w_^%[]+)%[(%d+)%]=>([%w_^%[]+)%[(%d+)%]%)$'
+                '%$xavp%(([%w_^%[]+)%[(%d+)%]=>([%w_^%[]+)%[(%d+)%]%)$',
+                '%$xavp%(([%w_^%[]+)%[(%d+)%]=>([%w_^%[]+)%[%*%]%)$'
             }
             local logger = logging.file('reports/sr_pv_%s.log', '%Y-%m-%d')
             for _,v in pairs(patterns) do
@@ -154,7 +155,8 @@ pvMock = {
                         kindx = tonumber(kindx)
                     end
                     return { id=_id, key=key,
-                            indx=indx, kindx=kindx, type='xavp' }
+                            indx=indx, kindx=kindx, clean=(v==patterns[7]),
+                            type='xavp' }
                 end
             end
         end
@@ -272,6 +274,9 @@ pvMock = {
                 end
                 if t.vars[result.private_id][result.indx] then
                     if t.vars[result.private_id][result.indx][result.key] then
+                        if result.clean then
+                            return t.vars[result.private_id][result.indx][result.key]
+                        end
                         if t.vars[result.private_id][result.indx][result.key][result.kindx] then
                             return t.vars[result.private_id][result.indx][result.key][result.kindx]
                         end

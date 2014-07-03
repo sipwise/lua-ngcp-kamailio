@@ -183,6 +183,17 @@ TestSRMock = {}
         assertFalse(result.clean)
     end
 
+    function TestSRMock:test_is_xavp_complex_indx2()
+        result = self.sr.pv._is_xavp("$xavp(gogo[9]=>gogo[*])")
+        assertTrue(result)
+        assertEquals(result.type, 'xavp')
+        assertEquals(result.id, 'gogo')
+        assertEquals(result.key, 'gogo')
+        assertEquals(result.indx, 9)
+        assertFalse(result.kindx)
+        assertTrue(result.clean)
+    end
+
     function TestSRMock:test_is_xavp_simple_nokey()
         local result
         result = self.sr.pv._is_xavp("$xavp(id1[8])")
