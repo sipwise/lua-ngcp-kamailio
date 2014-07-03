@@ -119,6 +119,20 @@ TestNGCPXAvp = {} --class
         assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"), "caller")
     end
 
+    function TestNGCPXAvp:test_clean_key()
+        local xavp = NGCPXAvp:new("caller", "peer", vals)
+        local vals = {1,"2",3,nil}
+        for i=1,#vals do
+            xavp("testid",vals[i])
+            assertEquals(xavp("testid"), vals[i])
+            assertEquals(sr.pv.get("$xavp(caller_peer=>testid)"),vals[i])
+        end
+        xavp("other", 1)
+        xavp:clean("testid")
+        assertIsNil(xavp("testid"))
+        assertEquals(sr.pv.get("$xavp(caller_peer=>other)"),1)
+    end
+
     function TestNGCPXAvp:test_tostring()
         local xavp = NGCPXAvp:new("caller", "peer", {})
         assertEquals(tostring(xavp), '{dummy="caller"}')

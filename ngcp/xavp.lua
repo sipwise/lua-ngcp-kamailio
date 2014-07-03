@@ -141,9 +141,14 @@ NGCPXAvp_MT = {
         end
     end
 
-    function NGCPXAvp:clean()
-        sr.pv.unset(string.format("$xavp(%s)", self.name))
-        sr.pv.sets(string.format("$xavp(%s=>dummy)", self.name), self.level)
+    function NGCPXAvp:clean(key)
+        if key then
+            local id = string.format("$xavp(%s[0]=>%s)", self.name, key)
+            sr.pv.unset(id)
+        else
+            sr.pv.unset(string.format("$xavp(%s)", self.name))
+            sr.pv.sets(string.format("$xavp(%s=>dummy)", self.name), self.level)
+        end
     end
 -- class
 --EOF
