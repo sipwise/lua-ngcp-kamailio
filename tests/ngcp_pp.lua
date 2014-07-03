@@ -209,7 +209,7 @@ TestNGCPPeerPrefs = {} --class
         local caller_xavp = NGCPPeerPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(tostring(self.d), 'caller_peer_prefs:{other=1,otherfoo="foo",dummy="caller"}\ncallee_peer_prefs:{dummy="callee",testid=1,foo="foo"}\n')
+        assertEquals(tostring(self.d), 'caller_peer_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_peer_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n')
     end
 -- class TestNGCPPeerPrefs
 --EOF

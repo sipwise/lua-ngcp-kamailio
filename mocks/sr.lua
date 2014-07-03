@@ -491,6 +491,7 @@ xavpMock = {
         end
 
         function t.get(xavp_name, index, mode)
+            if not mode then mode = 0 end
             xavp = t._get_xavp(xavp_name, index, mode)
             return xavp
         end

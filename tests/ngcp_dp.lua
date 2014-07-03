@@ -194,7 +194,7 @@ TestNGCPDomainPrefs = {} --class
         local caller_xavp = NGCPDomainPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(tostring(self.d), 'caller_dom_prefs:{other=1,otherfoo="foo",dummy="caller"}\ncallee_dom_prefs:{dummy="callee",testid=1,foo="foo"}\n')
+        assertEquals(tostring(self.d), 'caller_dom_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_dom_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n')
     end
 -- class TestNGCPDomainPrefs
 --EOF

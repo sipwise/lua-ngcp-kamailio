@@ -213,7 +213,7 @@ TestNGCPUserPrefs = {} --class
         local caller_xavp = NGCPUserPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(tostring(self.d),'caller_usr_prefs:{other=1,otherfoo="foo",dummy="caller"}\ncallee_usr_prefs:{dummy="callee",testid=1,foo="foo"}\n')
+        assertEquals(tostring(self.d), 'caller_usr_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_usr_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n')
     end
 -- class TestNGCPUserPrefs
 --EOF

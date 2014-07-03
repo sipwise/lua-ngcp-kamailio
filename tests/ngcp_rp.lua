@@ -260,7 +260,7 @@ TestNGCPRealPrefs = {} --class
         callee_xavp("foo","foo")
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(tostring(self.real),'caller_real_prefs:{other=1,otherfoo="foo",dummy="caller"}\ncallee_real_prefs:{dummy="callee",testid=1,foo="foo"}\n')
+        assertEquals(tostring(self.real),'caller_real_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_real_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n')
     end
 -- class TestNGCPRealPrefs
 --EOF
