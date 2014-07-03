@@ -73,6 +73,21 @@ TestUtils = {} --class
         assertNotEquals(tmp2, tmp)
     end
 
+    function TestUtils:test_table_shift()
+        assertEquals(self.simple_list, {1,2,3})
+        table.add(self.simple_list, 4)
+        table.add(self.simple_list, 5)
+        table.add(self.simple_list, 6)
+        table.shift(self.simple_list, 2)
+        assertEquals(self.simple_list, {3,4,5,6,1,2})
+    end
+
+    function TestUtils:test_table_shift2()
+        assertEquals(self.simple_list, {1,2,3})
+        table.shift(self.simple_list, 4)
+        assertEquals(self.simple_list, {2,3,1})
+    end
+
     function TestUtils:test_table_tostring()
         assertError(table.tostring,nil)
         assertEquals(table.tostring(self.simple_list), "{1,2,3}")
