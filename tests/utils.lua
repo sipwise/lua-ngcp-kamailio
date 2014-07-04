@@ -83,9 +83,22 @@ TestUtils = {} --class
     end
 
     function TestUtils:test_table_shift2()
-        assertEquals(self.simple_list, {1,2,3})
-        table.shift(self.simple_list, 4)
-        assertEquals(self.simple_list, {2,3,1})
+        local tmp = table.deepcopy(self.simple_list)
+        assertEquals(tmp, {1,2,3})
+        table.shift(tmp, 0)
+        assertEquals(tmp, {1,2,3})
+        tmp = table.deepcopy(self.simple_list)
+        table.shift(tmp, 1)
+        assertEquals(tmp, {2,3,1})
+        tmp = table.deepcopy(self.simple_list)
+        table.shift(tmp, 2)
+        assertEquals(tmp, {3,1,2})
+        tmp = table.deepcopy(self.simple_list)
+        table.shift(tmp, 3)
+        assertEquals(tmp, {1,2,3})
+        tmp = table.deepcopy(self.simple_list)
+        table.shift(tmp, 4)
+        assertEquals(tmp, {2,3,1})
     end
 
     function TestUtils:test_table_tostring()

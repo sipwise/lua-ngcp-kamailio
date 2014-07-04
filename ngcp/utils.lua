@@ -142,10 +142,13 @@ range = function (i, to, inc)
   return function () if i == to then return nil end i = i + inc return i, i end
 end
 
-function table.shift(t, positions)
+function table.shift(t, position)
   local k, v
   local res = {}
-  for k in range(1, positions % #t) do
+  local p = position % #t
+
+  if p == 0 then return end
+  for k in range(1, p) do
     v = table.remove(t, k-#res)
     table.insert(res, v)
   end
