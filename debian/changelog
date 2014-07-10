@@ -1,3 +1,26 @@
+lua-ngcp-kamailio (0.4.0.0+0~mr3.5.0.0) unstable; urgency=low
+
+  [ Andreas Granig ]
+  * [471aa9a] MT#7471 Implement contract pref loading.
+  * [2aafd9d] MT#7471 Try to fix mysterious test.
+  * [173a85a] MT#7471 Another test fix.
+  * [11e14af] MT#7471 Fix loading contract prefs.
+
+  [ Victor Seva ]
+  * [1766211] MT#7497 Add RPC call in order to reload LUA scripts
+  * [65dba89] MT#7679 avp: allow tables values in set. utils: add table.suffle() function.
+  * [e607914] MT#7679 xavp: allow clean only a key
+  * [16cc950] MT#7679 fix MockSR. default behaviour of sr.xavp.get is get all values.
+  * [60e271a] MT#7679 xavp:get() function
+  * [abf5742] MT#7679 fix mock, allow [*] at kindx
+  * [2667ef5] MT#7679 Fix xavp:clean(key)
+  * [c4ab43e] MT#7679 utils: add table.shift()
+  * [20222e7] MT#7679 fix table.shift()
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 10 Jul 2014 15:26:31 +0200
+
 lua-ngcp-kamailio (0.3.0.0+0~mr3.4.0.0) unstable; urgency=low
 
   [ Victor Seva ]
