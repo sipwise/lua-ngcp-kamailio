@@ -1,3 +1,15 @@
+lua-ngcp-kamailio (0.2.3.0+0~mr3.3.3.0) unstable; urgency=low
+
+  [ Andreas Granig ]
+  * [dc2e517] MT#7471 Implement contract pref loading.
+  * [daf5ee3] MT#7471 Try to fix mysterious test.
+  * [fd26e5a] MT#7471 Another test fix.
+  * [f493c33] MT#7471 Fix loading contract prefs.
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 14 Jul 2014 17:05:58 +0200
+
 lua-ngcp-kamailio (0.2.2.0+0~mr3.3.2.0) unstable; urgency=low
 
   * New release.
