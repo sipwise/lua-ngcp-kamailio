@@ -58,6 +58,34 @@ TestUtils = {} --class
         assertEquals(self.simple_list, {1,2,3,5,4})
     end
 
+    function TestUtils:test_table_del()
+        assertEquals(self.simple_list, {1,2,3})
+        table.del(self.simple_list, 1)
+        assertEquals(self.simple_list, {2,3})
+        table.del(self.simple_list, 3)
+        assertEquals(self.simple_list, {2})
+        table.del(self.simple_list, 2)
+        assertEquals(self.simple_list, {})
+    end
+
+    function TestUtils:test_table_del_multy()
+        assertEquals(self.simple_list, {1,2,3})
+        table.insert(self.simple_list, 2)
+        assertEquals(self.simple_list, {1,2,3,2})
+        table.del(self.simple_list, 1)
+        assertEquals(self.simple_list, {2,3,2})
+        table.del(self.simple_list, 2)
+        assertEquals(self.simple_list, {3})
+        table.del(self.simple_list, 3)
+        assertEquals(self.simple_list, {})
+    end
+
+    function TestUtils:test_table_del_empty()
+        local t = {}
+        table.del(t, 4)
+        assertEquals(t, {})
+    end
+
     function TestUtils:test_table_shuffle()
         assertEquals(self.simple_list, {1,2,3})
         table.add(self.simple_list, 4)
@@ -102,7 +130,7 @@ TestUtils = {} --class
     end
 
     function TestUtils:test_table_tostring()
-        assertError(table.tostring,nil)
+        assertError(table.tostring, "nil")
         assertEquals(table.tostring(self.simple_list), "{1,2,3}")
         assertTrue(table.tostring(self.simple_hash))
         --print(table.tostring(self.simple_hash) .. "\n")

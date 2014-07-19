@@ -57,9 +57,9 @@ function table.deepcopy(object)
     return _copy(object)
 end
 
-function table.contains(table, element)
-    if table then
-      for _, value in pairs(table) do
+function table.contains(t, element)
+    if t then
+      for _, value in pairs(t) do
         if value == element then
           return true
         end
@@ -73,6 +73,26 @@ function table.add(t, element)
   if not table.contains(t, element) then
     table.insert(t, element)
   end
+end
+
+function table.del(t, element)
+    local _,v,i
+    local pos = {}
+
+    if t then
+      i = 1
+      for _, v in pairs(t) do
+        if v == element then
+          table.insert(pos, i)
+        end
+        i = i + 1
+      end
+      i = 0
+      for _,v in ipairs(pos) do
+        table.remove(t, v-i)
+        i = i + 1
+      end
+    end
 end
 
 function table.val_to_str ( v )
@@ -98,6 +118,7 @@ end
 
 function table.tostring( tbl )
   local result, done = {}, {}
+  if not tbl then return "nil" end
   for k, v in ipairs( tbl ) do
     table.insert( result, table.val_to_str( v ) )
     done[ k ] = true

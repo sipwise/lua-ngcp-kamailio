@@ -11,7 +11,8 @@ Package: lua-ngcp-kamailio
 Section: libs
 Architecture: any
 Pre-Depends: ngcp-system-tools
-Depends: lua-sql-mysql,
+Depends: lua-redis,
+         lua-sql-mysql,
          ${misc:Depends},
          ${shlibs:Depends}
 Provides: ${lua:Provides}
