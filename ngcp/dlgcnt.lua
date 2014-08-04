@@ -79,12 +79,12 @@ end
             self.central = self._connect(self.config.central);
         end
         local res = self.central:incr(key);
-        sr.log("dbg", string.format("central:incr[%s]=>%s\n", key, res));
+        sr.log("dbg", string.format("central:incr[%s]=>%s\n", key, tostring(res)));
         if not self._test_connection(self.pair) then
             self.pair = self._connect(self.config.pair);
         end
         local pos = self.pair:lpush(callid, key);
-        sr.log("dbg", string.format("pair:lpush[%s]=>[%s] %s\n", callid, key, pos));
+        sr.log("dbg", string.format("pair:lpush[%s]=>[%s] %s\n", callid, key, tostring(pos)));
     end
 
     function NGCPDlgCounters:del_key(callid, key)
@@ -97,7 +97,7 @@ end
             self.central = self._connect(self.config.central);
         end
         local res = self.central:decr(key);
-        sr.log("dbg", string.format("central:decr[%s]=>[%s]\n", key, res));
+        sr.log("dbg", string.format("central:decr[%s]=>[%s]\n", key, tostring(res)));
     end
 
     function NGCPDlgCounters:del(callid)
@@ -114,7 +114,7 @@ end
         local res;
         while key do
             res = self.central:decr(key);
-            sr.log("dbg", string.format("central:decr[%s]=>[%s]\n", key, res));
+            sr.log("dbg", string.format("central:decr[%s]=>[%s]\n", key, tostring(res)));
             sr.log("dbg", string.format("pair:lpop[%s]=>[%s]\n", callid, key));
             key = self.pair:lpop(callid);
         end
@@ -125,7 +125,7 @@ end
             self.central = self._connect(self.config.central);
         end
         local res = self.central:get(key);
-        sr.log("dbg", string.format("central:get[%s]=>%s\n", key, res));
+        sr.log("dbg", string.format("central:get[%s]=>%s\n", key, tostring(res)));
         return res;
     end
 -- class
