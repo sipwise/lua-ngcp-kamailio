@@ -101,7 +101,6 @@ TestNGCPDomainPrefs = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
-        con:close()
 
         mc:replay()
         local keys = self.d:caller_load("192.168.51.56")
@@ -119,7 +118,6 @@ TestNGCPDomainPrefs = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
-        con:close()
 
         mc:replay()
         local keys = self.d:callee_load("192.168.51.56")

@@ -113,7 +113,6 @@ TestNGCPUserPrefs = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
-        con:close()
 
         mc:replay()
         local keys = self.d:caller_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c")
@@ -136,7 +135,6 @@ TestNGCPUserPrefs = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
-        con:close()
 
         mc:replay()
         local keys = self.d:callee_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c")

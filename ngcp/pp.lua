@@ -99,7 +99,6 @@ NGCPPeerPrefs_MT.__tostring = function ()
             sr.log("dbg", string.format("no results for query:%s", query))
         end
         cur:close()
-        con:close()
 
         xavp = self:xavp(level, result)
         for k,v in pairs(defaults) do

@@ -111,7 +111,6 @@ TestNGCPPeerPrefs = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
-        con:close()
 
         mc:replay()
         local keys = self.d:caller_load("2")
@@ -131,7 +130,6 @@ TestNGCPPeerPrefs = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
-        con:close()
 
         mc:replay()
         local keys = self.d:callee_load("2")
