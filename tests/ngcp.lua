@@ -31,7 +31,12 @@ else
     argv = {}
 end
 
+require 'ngcp.ngcp'
+
 local mc,env
+local dp_vars = DPFetch:new()
+local pp_vars = PPFetch:new()
+local up_vars = UPFetch:new()
 
 TestNGCP = {} --class
 
@@ -41,20 +46,12 @@ TestNGCP = {} --class
         self.con  = mc:mock()
         self.cur  = mc:mock()
 
-        package.loaded.luasql = nil
-        package.preload['luasql.mysql'] = function ()
-            luasql = {}
-            luasql.mysql = function ()
-                return env
-            end
-        end
-
-        require 'ngcp.ngcp'
-
         self.ngcp = NGCP:new()
-        self.dp_vars = DPFetch:new()
-        self.pp_vars = PPFetch:new()
-        self.up_vars = UPFetch:new()
+        self.ngcp.config.env = env
+        self.ngcp.config.con = nil
+        dp_vars:reset()
+        pp_vars:reset()
+        up_vars:reset()
     end
 
     function TestNGCP:tearDown()
@@ -66,11 +63,13 @@ TestNGCP = {} --class
         sr.pv.unset("$xavp(callee_usr_prefs)")
         sr.pv.unset("$xavp(caller_real_prefs)")
         sr.pv.unset("$xavp(callee_real_prefs)")
-        sr.log("info", "---cleaned---")
+        self.ngcp = nil
     end
 
     function TestNGCP:test_config()
         assertTrue(self.ngcp.config)
+        assert(self.ngcp.config.env)
+        assertIsNil(self.ngcp.config.con)
     end
 
     function TestNGCP:test_config_get_defaults_all()
@@ -82,6 +81,11 @@ TestNGCP = {} --class
         local defaults = NGCPConfig.get_defaults(self.ngcp.config, 'usr')
         local usr_defaults = table.deepcopy(self.ngcp.config.default.usr)
         assertItemsEquals(defaults, usr_defaults)
+    end
+
+    function TestNGCP:test_config_get_defaults_dom()
+        local defaults = NGCPConfig.get_defaults(self.ngcp.config, 'dom')
+        assertItemsEquals(defaults, self.ngcp.config.default.dom)
     end
 
     function TestNGCP:test_prefs_init()
@@ -123,11 +127,11 @@ TestNGCP = {} --class
         local c = self.ngcp.config
         env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
         self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
 
@@ -147,8 +151,8 @@ TestNGCP = {} --class
         local c = self.ngcp.config
         env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
         self.con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.56'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars:val("d_192_168_51_56"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
 
@@ -171,18 +175,23 @@ TestNGCP = {} --class
         local c = self.ngcp.config
         env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
         self.con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.56'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars:val("d_192_168_51_56"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
-
+        -- connection check
+        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
+        self.cur:fetch()              ;mc :returns({})
+        self.cur:numrows()            ;mc :returns(1)
+        self.cur:close()
+        --
         self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
 
@@ -207,17 +216,22 @@ TestNGCP = {} --class
         local c = self.ngcp.config
         env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
         self.con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.56'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars:val("d_192_168_51_56"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
-
-        self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        -- connection check
+        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
+        self.cur:fetch()              ;mc :returns({})
+        self.cur:numrows()            ;mc :returns(1)
+        self.cur:close()
+        --
+        self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'") ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
 
@@ -240,9 +254,9 @@ TestNGCP = {} --class
     function TestNGCP:test_caller_peer_load()
         local c = self.ngcp.config
         env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
-        self.con:execute(mc.ANYARGS)  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2")) --sst_enable: "no"
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2")) --sst_refresh_method: "UPDATE_FALLBACK_INVITE"
+        self.con:execute("SELECT * FROM peer_preferences WHERE uuid = '2'")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(pp_vars:val("p_2")) --sst_enable: "no"
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(pp_vars:val("p_2")) --sst_refresh_method: "UPDATE_FALLBACK_INVITE"
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
 
@@ -262,9 +276,9 @@ TestNGCP = {} --class
     function TestNGCP:test_callee_peer_load()
         local c = self.ngcp.config
         env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
-        self.con:execute(mc.ANYARGS)  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2")) --sst_enable: "no"
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2")) --sst_refresh_method: "UPDATE_FALLBACK_INVITE"
+        self.con:execute("SELECT * FROM peer_preferences WHERE uuid = '2'")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(pp_vars:val("p_2")) --sst_enable: "no"
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(pp_vars:val("p_2")) --sst_refresh_method: "UPDATE_FALLBACK_INVITE"
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
 

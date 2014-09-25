@@ -28,7 +28,11 @@ if not sr then
 else
     argv = {}
 end
+
+require 'ngcp.dp'
+
 local mc,env,con
+local dp_vars = DPFetch:new()
 
 TestNGCPDomainPrefs = {} --class
 
@@ -38,22 +42,13 @@ TestNGCPDomainPrefs = {} --class
         con = mc:mock()
         self.cur = mc:mock()
 
-        package.loaded.luasql = nil
-        package.preload['luasql.mysql'] = function ()
-            luasql = {}
-            luasql.mysql = function ()
-                return env
-            end
-        end
-
-        require 'ngcp.dp'
-
         self.config = NGCPConfig:new()
+        self.config.env = env
         self.config.getDBConnection = function ()
             return con
         end
         self.d = NGCPDomainPrefs:new(self.config)
-        self.dp_vars = DPFetch:new()
+        dp_vars:reset()
     end
 
     function TestNGCPDomainPrefs:tearDown()
@@ -97,8 +92,8 @@ TestNGCPDomainPrefs = {} --class
     function TestNGCPDomainPrefs:test_caller_load()
         assertTrue(self.d.config)
         con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.56'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars:val("d_192_168_51_56"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
 
@@ -114,8 +109,8 @@ TestNGCPDomainPrefs = {} --class
     function TestNGCPDomainPrefs:test_callee_load()
         assertTrue(self.d.config)
         con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.56'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars:val("d_192_168_51_56"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
 

@@ -28,7 +28,11 @@ if not sr then
 else
     argv = {}
 end
+
+require 'ngcp.dp'
+
 local mc,env,con
+local pp_vars = PPFetch:new()
 
 TestNGCPPeerPrefs = {} --class
 
@@ -46,15 +50,14 @@ TestNGCPPeerPrefs = {} --class
             end
         end
 
-        require 'ngcp.dp'
-
         self.config = NGCPConfig:new()
+        self.config.env = env
         self.config.getDBConnection = function ()
             return con
         end
 
         self.d = NGCPPeerPrefs:new(self.config)
-        self.pp_vars = PPFetch:new()
+        pp_vars:reset()
     end
 
     function TestNGCPPeerPrefs:tearDown()
@@ -107,8 +110,8 @@ TestNGCPPeerPrefs = {} --class
     function TestNGCPPeerPrefs:test_caller_load()
         assertTrue(self.d.config)
         con:execute("SELECT * FROM peer_preferences WHERE uuid = '2'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(pp_vars:val("p_2"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(pp_vars:val("p_2"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
 
@@ -126,8 +129,8 @@ TestNGCPPeerPrefs = {} --class
     function TestNGCPPeerPrefs:test_callee_load()
         assertTrue(self.d.config)
         con:execute("SELECT * FROM peer_preferences WHERE uuid = '2'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2"))
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(self.pp_vars:val("p_2"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(pp_vars:val("p_2"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(pp_vars:val("p_2"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
 
