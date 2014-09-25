@@ -79,9 +79,29 @@ NGCPConfig_MT = { __index = NGCPConfig }
         return t
     end
 
+    local function check_connection(c)
+        local cur = c:execute("SELECT 1")
+        local row = cur:fetch()
+        local result = false
+        if cur:numrows() == 1 then
+            result = true
+        end
+        cur:close()
+        return result
+    end
+
     function NGCPConfig:getDBConnection()
-        if not self.con then
+        if not self.env then
             self.env = assert (luasql.mysql())
+        end
+        if self.con then
+            local ok,err = pcall(check_connection, self.con)
+            if not ok then
+                self.con = nil
+                sr.log("warn", "connection check error")
+            end
+        end
+        if not self.con then
             sr.log("dbg","connecting to mysql")
             self.con = self.env:connect( self.db_database,
                 self.db_username, self.db_pass, self.db_host, self.db_port)
