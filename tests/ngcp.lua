@@ -31,12 +31,20 @@ else
     argv = {}
 end
 
-require 'ngcp.ngcp'
-
 local mc,env
 local dp_vars = DPFetch:new()
 local pp_vars = PPFetch:new()
 local up_vars = UPFetch:new()
+
+package.loaded.luasql = nil
+package.preload['luasql.mysql'] = function ()
+    luasql = {}
+    luasql.mysql = function ()
+        return env
+    end
+end
+
+require 'ngcp.ngcp'
 
 TestNGCP = {} --class
 

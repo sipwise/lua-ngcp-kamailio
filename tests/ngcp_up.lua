@@ -29,10 +29,18 @@ else
     argv = {}
 end
 
-require 'ngcp.up'
-
 local mc,env,con
 local up_vars = UPFetch:new()
+
+package.loaded.luasql = nil
+package.preload['luasql.mysql'] = function ()
+    luasql = {}
+    luasql.mysql = function ()
+        return env
+    end
+end
+
+require 'ngcp.up'
 
 TestNGCPUserPrefs = {} --class
 

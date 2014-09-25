@@ -29,10 +29,17 @@ else
     argv = {}
 end
 
-require 'ngcp.dp'
-
 local mc,env,con
 local pp_vars = PPFetch:new()
+
+package.loaded.luasql = nil
+package.preload['luasql.mysql'] = function ()
+    luasql = {}
+    luasql.mysql = function ()
+        return env
+    end
+end
+require 'ngcp.dp'
 
 TestNGCPPeerPrefs = {} --class
 
