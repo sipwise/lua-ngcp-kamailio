@@ -98,7 +98,7 @@ NGCPConfig_MT = { __index = NGCPConfig }
             local ok,err = pcall(check_connection, self.con)
             if not ok then
                 self.con = nil
-                sr.log("warn", "connection check error")
+                sr.log("warn", "lost database connection. Reconnecting")
             end
         end
         if not self.con then
