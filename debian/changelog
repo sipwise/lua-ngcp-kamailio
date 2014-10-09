@@ -1,3 +1,18 @@
+lua-ngcp-kamailio (0.5.0.0+0~mr3.6.0.0) unstable; urgency=low
+
+  [ Victor Seva ]
+  * [3a60d1b] MT#8243 add NGCPDlgCounters class.
+  * [1ff1867] MT#8243 add tostring() to sr.log on possible nil results
+  * [6f8b67f] MT#9067 use one MySQL connection only on NGCP
+  * [e9be088] MT#9067 NGCPConfig: check connection before
+  * [e0d2b5b] MT#9067 update tests
+  * [530a07f] MT#9067 fix tests
+  * [cd32667] MT#9067 change warn message on reconnection
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 09 Oct 2014 16:32:34 +0200
+
 lua-ngcp-kamailio (0.4.0.0+0~mr3.5.0.0) unstable; urgency=low
 
   [ Andreas Granig ]
