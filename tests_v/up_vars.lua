@@ -121,6 +121,18 @@ up_vars = {
           value = "4311002",
           last_modified = "1900-01-01 00:00:01"
         }
+    },
+    ah736f72_21d1_4ea6_a3ea_4d7f56b3887c = {
+        {
+          id = 1,
+          uuid = "ah736f72-21d1-4ea6-a3ea-4d7f56b3887c",
+          username = "testuser1",
+          domain = "192.168.51.56",
+          attribute = "sst_enable",
+          type = 0,
+          value = "no",
+          last_modified = "1900-01-01 00:00:01"
+        },
     }
 }
 

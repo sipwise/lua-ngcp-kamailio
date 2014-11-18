@@ -101,22 +101,27 @@ NGCPRealPrefs_MT.__tostring = function ()
     function NGCPRealPrefs:_usr_load(level, keys)
         local _,v,k
         local xavp = {
-            real = NGCPRealPrefs:xavp(level),  
+            real = NGCPRealPrefs:xavp(level),
             dom  = NGCPDomainPrefs:xavp(level),
+            prof = NGCPProfilePrefs:xavp(level),
             usr  = NGCPUserPrefs:xavp(level)
         }
         local real_values = {}
         local dom_values = sr.xavp.get(xavp.dom.name, 0, 0)
+        local prof_values = sr.xavp.get(xavp.prof.name, 0, 0)
         local usr_values = sr.xavp.get(xavp.usr.name, 0, 0)
         for _,v in pairs(keys) do
             local value = usr_values[v]
             if not value then
-                value = dom_values[v]
+                value = prof_values[v]
+                if not value then
+                    value = dom_values[v]
+                end
             end
             if value then
                 real_values[v] = value
             else
-                sr.log("err", string.format("key:%s not in user or domain", v))
+                sr.log("err", string.format("key:%s not in user, profile or domain", v))
             end
         end
         local real_keys = {}

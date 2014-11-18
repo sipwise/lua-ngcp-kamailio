@@ -22,6 +22,7 @@ require 'tests.mocks'
 require 'tests.ngcp_avp'
 require 'tests.ngcp_xavp'
 require 'tests.ngcp_pref'
+--require 'tests.ngcp_pprof'
 require 'tests.ngcp_dp'
 require 'tests.ngcp_up'
 require 'tests.ngcp_pp'
@@ -29,6 +30,6 @@ require 'tests.ngcp_rp'
 require 'tests.ngcp'
 ---- Control test output:
 lu = LuaUnit
-lu:setOutputType( "TAP" )
+lu:setOutputType( "TEXT" )
 lu:setVerbosity( 1 )
 lu:run()

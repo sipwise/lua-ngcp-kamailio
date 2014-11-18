@@ -22,6 +22,7 @@ require('lemock')
 require 'ngcp.utils'
 require 'tests_v.dp_vars'
 require 'tests_v.pp_vars'
+require 'tests_v.pprof_vars'
 require 'tests_v.up_vars'
 
 if not sr then
@@ -35,6 +36,7 @@ local mc,env
 local dp_vars = DPFetch:new()
 local pp_vars = PPFetch:new()
 local up_vars = UPFetch:new()
+local pprof_vars = PProfFetch:new()
 
 package.loaded.luasql = nil
 package.preload['luasql.mysql'] = function ()
@@ -59,12 +61,15 @@ TestNGCP = {} --class
         self.ngcp.config.con = nil
         dp_vars:reset()
         pp_vars:reset()
+        pprof_vars:reset()
         up_vars:reset()
     end
 
     function TestNGCP:tearDown()
         sr.pv.unset("$xavp(caller_dom_prefs)")
         sr.pv.unset("$xavp(callee_dom_prefs)")
+        sr.pv.unset("$xavp(caller_prof_prefs)")
+        sr.pv.unset("$xavp(callee_prof_prefs)")
         sr.pv.unset("$xavp(caller_peer_prefs)")
         sr.pv.unset("$xavp(callee_peer_prefs)")
         sr.pv.unset("$xavp(caller_usr_prefs)")
@@ -112,6 +117,9 @@ TestNGCP = {} --class
         assertTrue(self.ngcp.prefs.real)
         assertEquals(sr.pv.get("$xavp(caller_real_prefs=>dummy)"),"caller")
         assertEquals(sr.pv.get("$xavp(callee_real_prefs=>dummy)"),"callee")
+        assertTrue(self.ngcp.prefs.prof)
+        assertEquals(sr.pv.get("$xavp(caller_prof_prefs=>dummy)"),"caller")
+        assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>dummy)"),"callee")
     end
 
     function TestNGCP:test_log_pref()
@@ -134,6 +142,16 @@ TestNGCP = {} --class
     function TestNGCP:test_caller_usr_load_empty_dom()
         local c = self.ngcp.config
         env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
+        -- connection check
+        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
+        self.cur:fetch()              ;mc :returns({})
+        self.cur:numrows()            ;mc :returns(1)
+        self.cur:close()
+        --
+        self.con:execute("SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN prof_preferences AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+        --
         self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
@@ -193,6 +211,15 @@ TestNGCP = {} --class
         self.cur:numrows()            ;mc :returns(1)
         self.cur:close()
         --
+        self.con:execute("SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN prof_preferences AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+        -- connection check
+        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
+        self.cur:fetch()              ;mc :returns({})
+        self.cur:numrows()            ;mc :returns(1)
+        self.cur:close()
+        --
         self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
@@ -234,6 +261,16 @@ TestNGCP = {} --class
         self.cur:numrows()            ;mc :returns(1)
         self.cur:close()
         --
+        self.con:execute("SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN prof_preferences AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(pprof_vars:val("prof_1"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+        -- connection check
+        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
+        self.cur:fetch()              ;mc :returns({})
+        self.cur:numrows()            ;mc :returns(1)
+        self.cur:close()
+        --
         self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'") ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
@@ -253,6 +290,93 @@ TestNGCP = {} --class
         assertIsNil(sr.pv.get("$xavp(callee_usr_prefs=>sst_enable)"))
         assertEquals(sr.pv.get("$xavp(callee_real_prefs=>sst_enable)"), "no")
         assertEquals(sr.pv.get("$xavp(callee_real_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+    end
+
+    function TestNGCP:test_callee_usr_load_prof()
+        local c = self.ngcp.config
+        env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
+        self.con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.56'")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+        -- connection check
+        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
+        self.cur:fetch()              ;mc :returns({})
+        self.cur:numrows()            ;mc :returns(1)
+        self.cur:close()
+        --
+        self.con:execute("SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN prof_preferences AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(pprof_vars:val("prof_2"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+        -- connection check
+        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
+        self.cur:fetch()              ;mc :returns({})
+        self.cur:numrows()            ;mc :returns(1)
+        self.cur:close()
+        --
+        self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'") ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+
+        mc:replay()
+        local keys = self.ngcp:callee_usr_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c", "192.168.51.56")
+        mc:verify()
+
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"), "callee")
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>sst_enable)"), "no")
+        assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>sst_enable)"), "yes")
+        --- the default is on real NOT in usr
+        assertIsNil(sr.pv.get("$xavp(callee_usr_prefs=>sst_enable)"))
+        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>sst_enable)"), "yes")
+        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+    end
+
+    function TestNGCP:test_callee_usr_load_prof_usr()
+        local c = self.ngcp.config
+        env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
+        self.con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.56'")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars:val("d_192_168_51_56"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+        -- connection check
+        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
+        self.cur:fetch()              ;mc :returns({})
+        self.cur:numrows()            ;mc :returns(1)
+        self.cur:close()
+        --
+        self.con:execute("SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN prof_preferences AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = 'ah736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(pprof_vars:val("prof_2"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+        -- connection check
+        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
+        self.cur:fetch()              ;mc :returns({})
+        self.cur:numrows()            ;mc :returns(1)
+        self.cur:close()
+        --
+        self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ah736f72-21d1-4ea6-a3ea-4d7f56b3887c'") ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ah736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+
+        mc:replay()
+        local keys = self.ngcp:callee_usr_load("ah736f72-21d1-4ea6-a3ea-4d7f56b3887c", "192.168.51.56")
+        mc:verify()
+
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"), "callee")
+        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>sst_enable)"), "no")
+        assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>sst_enable)"), "yes")
+        --- the default is on real NOT in usr
+        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>sst_enable)"), "no")
+        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>sst_enable)"), "no")
     end
 
     function TestNGCP:test_caller_peer_load_empty()
@@ -314,7 +438,7 @@ TestNGCP = {} --class
     end
 
     function TestNGCP:test_clean_caller_groups()
-        local groups = {"peer", "usr", "dom", "real"}
+        local groups = {"peer", "usr", "dom", "real", "prof"}
         local _,v
 
         for _,v in pairs(groups) do
@@ -330,7 +454,7 @@ TestNGCP = {} --class
 
 
     function TestNGCP:test_clean_callee_groups()
-        local groups = {"peer", "usr", "dom", "real"}
+        local groups = {"peer", "usr", "dom", "real", "prof"}
         local _,v, xavp
 
         for _,v in pairs(groups) do
@@ -389,7 +513,7 @@ TestNGCP = {} --class
     end
 
     function TestNGCP:test_tostring()
-        assertEquals(tostring(self.ngcp), 'caller_contract_prefs:{dummy={"caller"}}\ncallee_contract_prefs:{dummy={"callee"}}\ncaller_peer_prefs:{dummy={"caller"}}\ncallee_peer_prefs:{dummy={"callee"}}\ncaller_dom_prefs:{dummy={"caller"}}\ncallee_dom_prefs:{dummy={"callee"}}\ncaller_usr_prefs:{dummy={"caller"}}\ncallee_usr_prefs:{dummy={"callee"}}\ncaller_real_prefs:{dummy={"caller"}}\ncallee_real_prefs:{dummy={"callee"}}\n')
+        assertEquals(tostring(self.ngcp), 'caller_contract_prefs:{dummy={"caller"}}\ncallee_contract_prefs:{dummy={"callee"}}\ncaller_peer_prefs:{dummy={"caller"}}\ncallee_peer_prefs:{dummy={"callee"}}\ncaller_dom_prefs:{dummy={"caller"}}\ncallee_dom_prefs:{dummy={"callee"}}\ncaller_prof_prefs:{dummy={"caller"}}\ncallee_prof_prefs:{dummy={"callee"}}\ncaller_usr_prefs:{dummy={"caller"}}\ncallee_usr_prefs:{dummy={"callee"}}\ncaller_real_prefs:{dummy={"caller"}}\ncallee_real_prefs:{dummy={"callee"}}\n')
     end
 -- class TestNGCP
 --EOF

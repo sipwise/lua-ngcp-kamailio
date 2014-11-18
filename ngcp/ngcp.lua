@@ -18,6 +18,7 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 require 'ngcp.cp'
+require 'ngcp.pprof'
 require 'ngcp.pp'
 require 'ngcp.dp'
 require 'ngcp.up'
@@ -41,6 +42,8 @@ NGCPConfig_MT = { __index = NGCPConfig }
             db_pass = "somepasswd",
             db_database = "kamailio",
             default = {
+                prof = {
+                },
                 contract = {
                 },
                 peer = {
@@ -149,6 +152,7 @@ end
         }
         t.prefs = {
             dom      = NGCPDomainPrefs:new(t.config),
+            prof     = NGCPProfilePrefs:new(t.config),
             usr      = NGCPUserPrefs:new(t.config),
             peer     = NGCPPeerPrefs:new(t.config),
             real     = NGCPRealPrefs:new(t.config),
@@ -193,13 +197,13 @@ end
         local _,v
         local keys = {
             domain = self.prefs.dom:caller_load(domain),
+            prof   = self.prefs.prof:caller_load(uuid),
             user   = self.prefs.usr:caller_load(uuid)
         }
         local unique_keys = table.deepcopy(keys.domain)
+        table.merge(unique_keys, keys.prof)
+        table.merge(unique_keys, keys.user)
 
-        for _,v in pairs(keys.user) do
-            table.add(unique_keys, v)
-        end
         self.prefs.real:caller_usr_load(unique_keys)
         local xavp = NGCPXAvp:new('caller', 'dom')
 
@@ -210,13 +214,13 @@ end
         local _,v
         local keys = {
             domain = self.prefs.dom:callee_load(domain),
+            prof   = self.prefs.prof:callee_load(uuid),
             user   = self.prefs.usr:callee_load(uuid)
         }
         local unique_keys = table.deepcopy(keys.domain)
+        table.merge(unique_keys, keys.prof)
+        table.merge(unique_keys, keys.user)
 
-        for _,v in pairs(keys.user) do
-            table.add(unique_keys, v)
-        end
         self.prefs.real:callee_usr_load(unique_keys)
 
         return unique_keys
