@@ -95,6 +95,15 @@ function table.del(t, element)
     end
 end
 
+function table.merge(t, other)
+  if t and other then
+    for _, value in ipairs(other) do
+      table.add(t, value)
+    end
+  end
+  return t;
+end
+
 function table.val_to_str ( v )
   if "string" == type( v ) then
     v = string.gsub( v, "\n", "\\n" )

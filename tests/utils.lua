@@ -170,6 +170,21 @@ TestUtils = {} --class
         assertFalse(string.ends("goga", "f"))
         assertError(string.ends, "goga", nil)
     end
+
+    function TestUtils:test_table_merge()
+        assertEquals(self.simple_list, {1,2,3})
+        table.merge(self.simple_list, {1})
+        assertEquals(self.simple_list, {1,2,3})
+        table.merge(self.simple_list, {5})
+        assertEquals(self.simple_list, {1,2,3,5})
+        table.merge(self.simple_list, {5,4})
+        assertEquals(self.simple_list, {1,2,3,5,4})
+        table.merge(nil, nil)
+        table.merge(nil, {})
+        local tmp = {}
+        table.merge(tmp, {1,2,3,5,4})
+        assertEquals(tmp, {1,2,3,5,4})
+    end
 -- class TestUtils
 
 TestStack = {}
