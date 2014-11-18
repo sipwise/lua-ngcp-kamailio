@@ -30,6 +30,6 @@ require 'tests.ngcp_rp'
 require 'tests.ngcp'
 ---- Control test output:
 lu = LuaUnit
-lu:setOutputType( "TEXT" )
+lu:setOutputType( "TAP" )
 lu:setVerbosity( 1 )
 lu:run()
