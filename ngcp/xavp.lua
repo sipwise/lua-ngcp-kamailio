@@ -112,7 +112,8 @@ NGCPXAvp_MT = {
             end
             sr.pv.seti(id, value)
         else
-            sr.log("err",string.format("can't set value:%s of type:%d", value, vtype))
+            sr.log("err",string.format("can't set value:%s of type:%s",
+                tostring(value), tostring(vtype)))
         end
         if value and id then
             check = sr.pv.get(id)
@@ -135,7 +136,7 @@ NGCPXAvp_MT = {
             sr.log("dbg",string.format("%s created with dummy value:%s", name, self.level))
         end
         for i=1,#l do
-            name = string.format("$xavp(%s[0]=>%s)", self.name, l[i].attribute)
+            name = string.format("$xavp(%s[0]=>%s)", tostring(self.name), tostring(l[i].attribute))
             table.add(self.keys, l[i].attribute)
             NGCPXAvp._setvalue(name, l[i].type, l[i].value)
         end

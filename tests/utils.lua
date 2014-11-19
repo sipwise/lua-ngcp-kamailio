@@ -86,6 +86,17 @@ TestUtils = {} --class
         assertEquals(t, {})
     end
 
+    function TestUtils:test_table_size()
+        local t = table.size(nil)
+        assertEquals(t, 0)
+        t = table.size({1,2})
+        assertEquals(t, 2)
+        t = table.size({})
+        assertEquals(t, 0)
+        t = table.size({hola={1,2},adios=2})
+        assertEquals(t, 2)
+    end
+
     function TestUtils:test_table_shuffle()
         assertEquals(self.simple_list, {1,2,3})
         table.add(self.simple_list, 4)

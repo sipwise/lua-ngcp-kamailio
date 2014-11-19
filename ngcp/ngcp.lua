@@ -42,8 +42,6 @@ NGCPConfig_MT = { __index = NGCPConfig }
             db_pass = "somepasswd",
             db_database = "kamailio",
             default = {
-                prof = {
-                },
                 contract = {
                 },
                 peer = {

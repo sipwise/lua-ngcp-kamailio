@@ -212,7 +212,7 @@ TestNGCP = {} --class
         self.cur:close()
         --
         self.con:execute("SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN prof_preferences AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
-        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns({}) -- this is what I got on real mysql
         self.cur:close()
         -- connection check
         self.con:execute("SELECT 1")  ;mc :returns(self.cur)

@@ -61,50 +61,30 @@ NGCPProfilePrefs_MT.__tostring = function ()
         end
     end
 
-    function NGCPProfilePrefs:_defaults(level)
-        local defaults = self.config:get_defaults('prof')
-        local keys = {}
-        local k,_
-
-        if defaults then
-            for k,v in pairs(defaults) do
-                table.insert(keys, k)
-            end
-        end
-        return keys, defaults
-    end
-
     function NGCPProfilePrefs:_load(level, uuid)
         local con = assert (self.config:getDBConnection())
         local query = "SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN "..
          self.db_table .." AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = '".. uuid .. "'"
         local cur = assert (con:execute(query))
-        local defaults
-        local keys
+        local keys = {}
         local result = {}
         local row = cur:fetch({}, "a")
         local k,v
         local xavp
 
-        keys, defaults = self:_defaults(level)
-
-        if row then
-            while row do
-                --sr.log("info", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
+        if table.size(row) > 0 then
+            while table.size(row) > 0 do
+                --sr.log("debug", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
                 table.insert(result, row)
                 table.add(keys, row.attribute)
-                defaults[row.attribute] = nil
                 row = cur:fetch({}, "a")
             end
         else
             sr.log("dbg", string.format("no results for query:%s", query))
         end
         cur:close()
-
-        xavp = self:xavp(level, result)
-        for k,v in pairs(defaults) do
-            sr.log("dbg", string.format("setting default[%s]:%s", k, tostring(v)))
-            xavp(k, v)
+        if table.size(result) > 0 then
+            xavp = self:xavp(level, result)
         end
         return keys
     end

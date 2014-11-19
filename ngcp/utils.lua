@@ -104,6 +104,18 @@ function table.merge(t, other)
   return t;
 end
 
+function table.size(t)
+  if t then
+    local c = 0
+    local _,v
+    for _,v in pairs(t) do
+      c = c + 1
+    end
+    return c
+  end
+  return 0
+end
+
 function table.val_to_str ( v )
   if "string" == type( v ) then
     v = string.gsub( v, "\n", "\\n" )
