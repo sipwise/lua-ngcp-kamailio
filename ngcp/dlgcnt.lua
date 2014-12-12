@@ -74,6 +74,17 @@ end
         return client;
     end
 
+    function NGCPDlgCounters._decr(self, key)
+        local res = self.central:decr(key);
+        if res == 0 then
+            self.central:del(key);
+            sr.log("dbg", string.format("central:del[%s] counter is 0\n", key));
+        else
+            sr.log("dbg", string.format("central:decr[%s]=>[%s]\n", key, tostring(res)));
+        end
+        return res;
+    end
+
     function NGCPDlgCounters:set(callid, key)
         if not self._test_connection(self.central) then
             self.central = self._connect(self.config.central);
@@ -96,8 +107,7 @@ end
         if not self._test_connection(self.central) then
             self.central = self._connect(self.config.central);
         end
-        local res = self.central:decr(key);
-        sr.log("dbg", string.format("central:decr[%s]=>[%s]\n", key, tostring(res)));
+        self:_decr(key);
     end
 
     function NGCPDlgCounters:del(callid)
@@ -111,10 +121,8 @@ end
         if not self._test_connection(self.central) then
             self.central = self._connect(self.config.central);
         end
-        local res;
         while key do
-            res = self.central:decr(key);
-            sr.log("dbg", string.format("central:decr[%s]=>[%s]\n", key, tostring(res)));
+            self:_decr(key);
             sr.log("dbg", string.format("pair:lpop[%s]=>[%s]\n", callid, key));
             key = self.pair:lpop(callid);
         end
