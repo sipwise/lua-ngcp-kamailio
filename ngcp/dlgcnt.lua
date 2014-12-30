@@ -52,7 +52,8 @@ end
                     host = '127.0.0.1',
                     port = 6379,
                     db = "4"
-                }
+                },
+                check_pair_dup = false
             },
             central = {},
             pair = {}
@@ -85,6 +86,14 @@ end
         return res;
     end
 
+    function NGCPDlgCounters:is_in_set(callid, key)
+        if not self._test_connection(self.pair) then
+            self.pair = self._connect(self.config.pair);
+        end
+        local res = self.pair:lrange(callid, 0, -1);
+        return table.contains(res, key);
+    end
+
     function NGCPDlgCounters:set(callid, key)
         if not self._test_connection(self.central) then
             self.central = self._connect(self.config.central);
@@ -93,6 +102,9 @@ end
         sr.log("dbg", string.format("central:incr[%s]=>%s\n", key, tostring(res)));
         if not self._test_connection(self.pair) then
             self.pair = self._connect(self.config.pair);
+        end
+        if self.config.check_pair_dup and self:is_in_set(callid, key) then
+            sr.log("warn", string.format("pair:check_pair_dup[%s]=>[%s] already there!\n", callid, key));
         end
         local pos = self.pair:lpush(callid, key);
         sr.log("dbg", string.format("pair:lpush[%s]=>[%s] %s\n", callid, key, tostring(pos)));
