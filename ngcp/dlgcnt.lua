@@ -86,6 +86,18 @@ end
         return res;
     end
 
+    function NGCPDlgCounters:exists(callid)
+        if not self._test_connection(self.pair) then
+            self.pair = self._connect(self.config.pair);
+        end
+        local res = self.pair:llen(callid)
+        if res > 0 then
+            return true
+        else
+            return false
+        end
+    end
+
     function NGCPDlgCounters:is_in_set(callid, key)
         if not self._test_connection(self.pair) then
             self.pair = self._connect(self.config.pair);
