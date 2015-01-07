@@ -1,3 +1,22 @@
+lua-ngcp-kamailio (0.6.1.0+0~mr3.7.1.0) unstable; urgency=low
+
+  [ Victor Seva ]
+  * [6c341f9] MT#10199 add table.merge function
+  * [3cb2ea7] MT#10199 add prof_preferences
+  * [78cb22c] MT#10199 select tap output
+  * [555326a] MT#10199 remove defaults from profile. Fix empty results on profile load
+  * [e6d69e0] MT#9067 set message of reconnection to debug level
+  * [b59bf13] MT#10601 dlgcnt: remove central counters when it reaches to 0
+  * [d414356] MT#10749 dlgcnt: add check_pair_dup option and is_in_set()
+  * [c2cb6e6] MT#10521 dlgcnt: add exists function
+
+  [ Alexander Lutay ]
+  * [c225239] MT#7505 Add .gitreview file for lua-ngcp-kamailio
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 07 Jan 2015 21:28:26 +0100
+
 lua-ngcp-kamailio (0.6.0.0+0~mr3.7.0.0) unstable; urgency=low
 
   * New release.
