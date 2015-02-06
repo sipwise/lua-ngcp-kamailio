@@ -10,7 +10,7 @@ Homepage: git://git.mgm.sipwise.com/kamailio-conf-lua
 Package: lua-ngcp-kamailio
 Section: libs
 Architecture: any
-Pre-Depends: ngcp-system-tools
+Pre-Depends: ngcp-system-tools | ngcp-system-tools-ce
 Depends: lua-redis,
          lua-sql-mysql,
          ${misc:Depends},
