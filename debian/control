@@ -5,7 +5,7 @@ Build-Depends: debhelper (>= 8~),
                dh-lua (>= 16~)
 Standards-Version: 3.9.4
 Section: libs
-Homepage: git://git.mgm.sipwise.com/kamailio-conf-lua
+Homepage: http://sipwise.com/
 
 Package: lua-ngcp-kamailio
 Section: libs
