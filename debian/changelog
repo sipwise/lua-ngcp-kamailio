@@ -1,3 +1,12 @@
+lua-ngcp-kamailio (0.6.3.0+0~mr3.7.3.0) unstable; urgency=low
+
+  [ Victor Seva ]
+  * [82b13ad] MT#11005 add dlglist class
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 03 Mar 2015 16:42:13 +0100
+
 lua-ngcp-kamailio (0.6.2.0+0~mr3.7.2.0) unstable; urgency=low
 
   * New release.
