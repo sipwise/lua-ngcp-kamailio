@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2015 SipWise Team <development@sipwise.com>
+-- Copyright 2013 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,18 +17,25 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
--- luacheck: ignore assertEquals
+-- luacheck: ignore assertEquals assertTrue assertItemsEquals assertFalse assertError
 require('luaunit')
 local srMock = require 'mocks.sr'
--- luacheck: globals sr
-sr = srMock.new()
-local NGCPPrefs = require 'ngcp.pref'
 
--- luacheck: ignore TestNGCPPrefs
-TestNGCPPrefs = {} --class
--- class TestNGCP
-function TestNGCPPrefs.test_init()
-	NGCPPrefs.init('test')
-	assertEquals(sr.pv.get("$xavp(caller_test[0]=>dummy)"),"caller")
-	assertEquals(sr.pv.get("$xavp(callee_test[0]=>dummy)"),"callee")
-end
+-- luacheck: ignore TestSRMock
+TestSRMock = {}
+    function TestSRMock:setUp()
+        self.sr = srMock.new()
+    end
+
+    function TestSRMock:test_hdr_get()
+        self.sr.hdr.insert("From: hola\r\n")
+        assertEquals(self.sr.hdr.headers, {"From: hola\r\n"})
+        assertEquals(self.sr.pv.get("$hdr(From)"), "hola")
+    end
+
+    function TestSRMock:test_log()
+        assertTrue(self.sr.log)
+        self.sr.log("dbg", "Hi dude!")
+        assertError(self.sr.log, "debug", "Hi dude!")
+    end
+-- end class

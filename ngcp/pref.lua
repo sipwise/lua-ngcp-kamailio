@@ -1,5 +1,5 @@
 --
--- Copyright 2013 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2015 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,21 +17,18 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require 'ngcp.avp'
-require 'ngcp.xavp'
+local NGCPXAvp = require 'ngcp.xavp'
 
 -- class NGCPPrefs
-NGCPPrefs = {
+local NGCPPrefs = {
      __class__ = 'NGCPPrefs'
 }
-NGCPPrefs_MT = { __index = NGCPPrefs }
 
-    function NGCPPrefs.init(group)
-        local _,v, xavp
-        local levels = {"caller", "callee"}
-        for _,v in pairs(levels) do
-            xavp = NGCPXAvp.init(v,group)
-        end
+function NGCPPrefs.init(group)
+    local levels = {"caller", "callee"}
+    for _,v in pairs(levels) do
+        NGCPXAvp.init(v, group)
     end
+end
 -- class
---EOF
+return NGCPPrefs

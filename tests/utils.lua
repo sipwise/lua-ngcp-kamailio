@@ -18,7 +18,8 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 require('luaunit')
-require 'ngcp.utils'
+local utils = require 'ngcp.utils'
+local Stack = utils.Stack
 
 TestUtils = {} --class
 
@@ -36,35 +37,35 @@ TestUtils = {} --class
     end
 
     function TestUtils:test_table_deepcopy()
-        assertNotIs(table.deepcopy(self.simple_hash), self.simple_hash)
+        assertNotIs(utils.table.deepcopy(self.simple_hash), self.simple_hash)
         -- if the parameter is not a table... it has te be the same
-        assertIs(table.deepcopy("hola"), "hola")
+        assertIs(utils.table.deepcopy("hola"), "hola")
     end
 
     function TestUtils:test_table_contains()
-        assertTrue(table.contains(self.simple_hash, 3))
-        assertFalse(table.contains(self.simple_hash, 4))
-        assertFalse(table.contains(nil))
-        assertError(table.contains, "hola",1)
+        assertTrue(utils.table.contains(self.simple_hash, 3))
+        assertFalse(utils.table.contains(self.simple_hash, 4))
+        assertFalse(utils.table.contains(nil))
+        assertError(utils.table.contains, "hola",1)
     end
 
     function TestUtils:test_table_add()
         assertEquals(self.simple_list, {1,2,3})
-        table.add(self.simple_list, 1)
+        utils.table.add(self.simple_list, 1)
         assertEquals(self.simple_list, {1,2,3})
-        table.add(self.simple_list, 5)
+        utils.table.add(self.simple_list, 5)
         assertEquals(self.simple_list, {1,2,3,5})
-        table.add(self.simple_list, 4)
+        utils.table.add(self.simple_list, 4)
         assertEquals(self.simple_list, {1,2,3,5,4})
     end
 
     function TestUtils:test_table_del()
         assertEquals(self.simple_list, {1,2,3})
-        table.del(self.simple_list, 1)
+        utils.table.del(self.simple_list, 1)
         assertEquals(self.simple_list, {2,3})
-        table.del(self.simple_list, 3)
+        utils.table.del(self.simple_list, 3)
         assertEquals(self.simple_list, {2})
-        table.del(self.simple_list, 2)
+        utils.table.del(self.simple_list, 2)
         assertEquals(self.simple_list, {})
     end
 
@@ -72,40 +73,40 @@ TestUtils = {} --class
         assertEquals(self.simple_list, {1,2,3})
         table.insert(self.simple_list, 2)
         assertEquals(self.simple_list, {1,2,3,2})
-        table.del(self.simple_list, 1)
+        utils.table.del(self.simple_list, 1)
         assertEquals(self.simple_list, {2,3,2})
-        table.del(self.simple_list, 2)
+        utils.table.del(self.simple_list, 2)
         assertEquals(self.simple_list, {3})
-        table.del(self.simple_list, 3)
+        utils.table.del(self.simple_list, 3)
         assertEquals(self.simple_list, {})
     end
 
     function TestUtils:test_table_del_empty()
         local t = {}
-        table.del(t, 4)
+        utils.table.del(t, 4)
         assertEquals(t, {})
     end
 
     function TestUtils:test_table_size()
-        local t = table.size(nil)
+        local t = utils.table.size(nil)
         assertEquals(t, 0)
-        t = table.size({1,2})
+        t = utils.table.size({1,2})
         assertEquals(t, 2)
-        t = table.size({})
+        t = utils.table.size({})
         assertEquals(t, 0)
-        t = table.size({hola={1,2},adios=2})
+        t = utils.table.size({hola={1,2},adios=2})
         assertEquals(t, 2)
     end
 
     function TestUtils:test_table_shuffle()
         assertEquals(self.simple_list, {1,2,3})
-        table.add(self.simple_list, 4)
-        table.add(self.simple_list, 5)
-        table.add(self.simple_list, 6)
-        local tmp = table.shuffle(self.simple_list)
+        utils.table.add(self.simple_list, 4)
+        utils.table.add(self.simple_list, 5)
+        utils.table.add(self.simple_list, 6)
+        local tmp = utils.table.shuffle(self.simple_list)
         assertItemsEquals(self.simple_list, tmp)
         assertNotEquals(self.simple_list, tmp)
-        local tmp2 = table.shuffle(self.simple_list)
+        local tmp2 = utils.table.shuffle(self.simple_list)
         assertItemsEquals(self.simple_list, tmp2)
         --print(table.tostring(tmp))
         --print(table.tostring(tmp2))
@@ -114,93 +115,93 @@ TestUtils = {} --class
 
     function TestUtils:test_table_shift()
         assertEquals(self.simple_list, {1,2,3})
-        table.add(self.simple_list, 4)
-        table.add(self.simple_list, 5)
-        table.add(self.simple_list, 6)
-        table.shift(self.simple_list, 2)
+        utils.table.add(self.simple_list, 4)
+        utils.table.add(self.simple_list, 5)
+        utils.table.add(self.simple_list, 6)
+        utils.table.shift(self.simple_list, 2)
         assertEquals(self.simple_list, {3,4,5,6,1,2})
     end
 
     function TestUtils:test_table_shift2()
-        local tmp = table.deepcopy(self.simple_list)
+        local tmp = utils.table.deepcopy(self.simple_list)
         assertEquals(tmp, {1,2,3})
-        table.shift(tmp, 0)
+        utils.table.shift(tmp, 0)
         assertEquals(tmp, {1,2,3})
-        tmp = table.deepcopy(self.simple_list)
-        table.shift(tmp, 1)
+        tmp = utils.table.deepcopy(self.simple_list)
+        utils.table.shift(tmp, 1)
         assertEquals(tmp, {2,3,1})
-        tmp = table.deepcopy(self.simple_list)
-        table.shift(tmp, 2)
+        tmp = utils.table.deepcopy(self.simple_list)
+        utils.table.shift(tmp, 2)
         assertEquals(tmp, {3,1,2})
-        tmp = table.deepcopy(self.simple_list)
-        table.shift(tmp, 3)
+        tmp = utils.table.deepcopy(self.simple_list)
+        utils.table.shift(tmp, 3)
         assertEquals(tmp, {1,2,3})
-        tmp = table.deepcopy(self.simple_list)
-        table.shift(tmp, 4)
+        tmp = utils.table.deepcopy(self.simple_list)
+        utils.table.shift(tmp, 4)
         assertEquals(tmp, {2,3,1})
     end
 
     function TestUtils:test_table_tostring()
-        assertError(table.tostring, "nil")
-        assertEquals(table.tostring(self.simple_list), "{1,2,3}")
-        assertTrue(table.tostring(self.simple_hash))
+        assertError(utils.table.tostring, "nil")
+        assertEquals(utils.table.tostring(self.simple_list), "{1,2,3}")
+        assertTrue(utils.table.tostring(self.simple_hash))
         --print(table.tostring(self.simple_hash) .. "\n")
-        assertTrue(table.tostring(self.complex_hash))
+        assertTrue(utils.table.tostring(self.complex_hash))
         --print(table.tostring(self.complex_hash))
     end
 
     function TestUtils:test_implode()
-        assertEquals(implode(',', self.simple_list, "'"), "'1','2','3'")
-        assertError(implode, nil, self.simple_list, "'")
-        assertError(implode, ',', nil, "'")
+        assertEquals(utils.implode(',', self.simple_list, "'"), "'1','2','3'")
+        assertError(utils.implode, nil, self.simple_list, "'")
+        assertError(utils.implode, ',', nil, "'")
     end
 
     function TestUtils:test_explode()
-        assertItemsEquals(explode(',',"1,2,3"), {'1','2','3'})
-        assertItemsEquals(explode('=>',"1=>2=>3"), {'1','2','3'})
+        assertItemsEquals(utils.explode(',',"1,2,3"), {'1','2','3'})
+        assertItemsEquals(utils.explode('=>',"1=>2=>3"), {'1','2','3'})
     end
 
     function TestUtils:test_starts()
-        assertError(string.stats, nil, "g")
-        assertTrue(string.starts("goga", "g"))
-        assertTrue(string.starts("goga", "go"))
-        assertTrue(string.starts("goga", "gog"))
-        assertTrue(string.starts("goga", "goga"))
-        assertFalse(string.starts("goga", "a"))
-        assertError(string.starts, "goga", nil)
-        assertTrue(string.starts("$goga", "$"))
-        assertTrue(string.starts("(goga)", "("))
+        assertError(utils.string.stats, nil, "g")
+        assertTrue(utils.string.starts("goga", "g"))
+        assertTrue(utils.string.starts("goga", "go"))
+        assertTrue(utils.string.starts("goga", "gog"))
+        assertTrue(utils.string.starts("goga", "goga"))
+        assertFalse(utils.string.starts("goga", "a"))
+        assertError(utils.string.starts, "goga", nil)
+        assertTrue(utils.string.starts("$goga", "$"))
+        assertTrue(utils.string.starts("(goga)", "("))
     end
 
     function TestUtils:test_ends()
-        assertError(string.ends, nil, "g")
-        assertTrue(string.ends("goga", "a"))
-        assertTrue(string.ends("goga", "ga"))
-        assertTrue(string.ends("goga", "oga"))
-        assertTrue(string.ends("goga", "goga"))
-        assertFalse(string.ends("goga", "f"))
-        assertError(string.ends, "goga", nil)
+        assertError(utils.string.ends, nil, "g")
+        assertTrue(utils.string.ends("goga", "a"))
+        assertTrue(utils.string.ends("goga", "ga"))
+        assertTrue(utils.string.ends("goga", "oga"))
+        assertTrue(utils.string.ends("goga", "goga"))
+        assertFalse(utils.string.ends("goga", "f"))
+        assertError(utils.string.ends, "goga", nil)
     end
 
     function TestUtils:test_table_merge()
         assertEquals(self.simple_list, {1,2,3})
-        table.merge(self.simple_list, {1})
+        utils.table.merge(self.simple_list, {1})
         assertEquals(self.simple_list, {1,2,3})
-        table.merge(self.simple_list, {5})
+        utils.table.merge(self.simple_list, {5})
         assertEquals(self.simple_list, {1,2,3,5})
-        table.merge(self.simple_list, {5,4})
+        utils.table.merge(self.simple_list, {5,4})
         assertEquals(self.simple_list, {1,2,3,5,4})
-        table.merge(nil, nil)
-        table.merge(nil, {})
+        utils.table.merge(nil, nil)
+        utils.table.merge(nil, {})
         local tmp = {}
-        table.merge(tmp, {1,2,3,5,4})
+        utils.table.merge(tmp, {1,2,3,5,4})
         assertEquals(tmp, {1,2,3,5,4})
     end
 -- class TestUtils
 
 TestStack = {}
     function TestStack:test()
-        local s = Stack:new()
+        local s = Stack.new()
         assertEquals(type(s), 'table')
         assertEquals(s.__class__, 'Stack')
     end
