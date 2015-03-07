@@ -1,27 +1,54 @@
 #!/bin/bash
 
+if [ -z "${FORMAT}" ] ; then
+	FORMAT=TAP
+fi
+
+case ${FORMAT} in
+	"TAP") EXT=tap; OUT_FORCE=true ;;
+	"JUNIT") EXT=xml; OUT_FORCE=false ;;
+	"TEXT") EXT=txt; OUT_FORCE=true ;;
+	*) echo "ERROR: Unknown format ${FORMAT}"; exit 1 ;;
+esac
+
 mkdir -p reports
 rm -rf reports/*
 
-if [[ ! -z "$@" ]]; then
-	for i in $@; do
-		f="tests/$i.lua"
-		if [ ! -f $f ]; then
-			echo "No $f found"
-		else
-			echo "testing $f -> reports/${i}.tap"
-			cat<<EOF|lua5.1 - > reports/${i}.tap
-require "tests/$i"
+function  do_test() {
+	echo "testing $1 -> reports/${1}.${EXT}"
+if ${OUT_FORCE} ; then
+		cat<<EOF|lua5.1 - > reports/${1}.${EXT}
+require "tests/${1}"
 ---- Control test output:
-lu = LuaUnit
-lu:setOutputType('TAP')
+local lu = LuaUnit
+lu:setOutputType('${FORMAT}')
 lu:setVerbosity(1)
 lu:run()
 EOF
+else
+	cat<<EOF|lua5.1 -
+require "tests/${1}"
+---- Control test output:
+local lu = LuaUnit
+lu:setOutputType('${FORMAT}')
+lu:setFname('reports/${1}.${EXT}')
+lu:setVerbosity(1)
+lu:run()
+EOF
+fi
+}
+
+if [[ ! -z "$@" ]]; then
+	for i in $@; do
+		if [ ! -f $i ]; then
+			echo "No $f found"
+		else
+			do_test $(basename $i .lua)
 		fi
 	done
 	exit 0
 fi
 
-lua5.1 tests/test_all.lua > reports/test_all.tap
-#EOF
+for i in $(find tests -name '*.lua' | grep -v test_) ; do
+	do_test $(basename $i .lua)
+done
