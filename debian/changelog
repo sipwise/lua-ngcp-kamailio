@@ -1,3 +1,17 @@
+lua-ngcp-kamailio (0.8.0.0+0~mr4.0.0.0) unstable; urgency=low
+
+  [ Victor Seva ]
+  * [4c5b94b] MT#11005 add dlglist class
+
+  [ Michael Prokop ]
+  * [0790c3c] MT#11387 Switch from Pre-Dependency on ngcp-system-tools* to Depends
+  * [14223ad] MT#11513 Debian packaging: update Homepage header
+  * [acc17ba] MT#9127 Bump Standards-Version to 3.9.6
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 18 Mar 2015 14:03:21 +0100
+
 lua-ngcp-kamailio (0.7.0.0+0~mr3.8.0.0) unstable; urgency=low
 
   [ Victor Seva ]
