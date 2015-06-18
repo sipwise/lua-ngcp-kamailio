@@ -39,6 +39,7 @@ package.preload['luasql.mysql'] = function ()
         return env
     end
 end
+require 'ngcp.config'
 require 'ngcp.pprof'
 
 TestNGCPProfilePrefs = {} --class
