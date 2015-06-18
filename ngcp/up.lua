@@ -74,7 +74,8 @@ NGCPUserPrefs_MT.__tostring = function ()
 
     function NGCPUserPrefs:_load(level, uuid)
         local con = assert (self.config:getDBConnection())
-        local query = "SELECT * FROM " .. self.db_table .. " WHERE uuid ='" .. uuid .. "'"
+        local query = "SELECT * FROM " .. self.db_table .. " WHERE uuid ='" ..
+            uuid .. "' ORDER BY id"
         local cur = assert (con:execute(query))
         local defaults
         local keys
