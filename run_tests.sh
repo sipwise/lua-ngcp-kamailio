@@ -18,6 +18,7 @@ function  do_test() {
 	echo "testing $1 -> reports/${1}.${EXT}"
 	if ${OUT_FORCE} ; then
 		cat<<EOF|lua5.1 - > reports/${1}.${EXT}
+EXPORT_ASSERT_TO_GLOBALS = true
 require "tests/${1}"
 ---- Control test output:
 local lu = LuaUnit
@@ -27,6 +28,7 @@ lu:run()
 EOF
 	else
 		cat<<EOF|lua5.1 -
+EXPORT_ASSERT_TO_GLOBALS = true
 require "tests/${1}"
 ---- Control test output:
 local lu = LuaUnit
