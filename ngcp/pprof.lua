@@ -19,6 +19,7 @@
 --
 require 'ngcp.utils'
 require 'ngcp.xavp'
+require 'ngcp.pref'
 
 -- class NGCPProfilePrefs
 NGCPProfilePrefs = {
