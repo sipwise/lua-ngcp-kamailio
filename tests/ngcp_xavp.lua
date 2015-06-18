@@ -87,7 +87,7 @@ TestNGCPXAvp = {} --class
         xavp = NGCPXAvp:new("caller", "peer", vals)
         sr.pv.sets("$xavp(caller_peer=>testid)", "value")
         assertEquals(xavp("testid"), "value")
-        sr.pv.sets("$xavp(caller_peer=>testid)", "1")
+        sr.pv.sets("$xavp(caller_peer[0]=>testid)", "1")
         assertItemsEquals(xavp:all("testid"), {"1", "value"})
     end
 
