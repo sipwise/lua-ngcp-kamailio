@@ -19,6 +19,10 @@
 --
 require 'ngcp.utils'
 require 'ngcp.pref'
+require 'ngcp.dp'
+require 'ngcp.pp'
+require 'ngcp.up'
+require 'ngcp.pprof'
 
 -- class NGCPRealPrefs
 NGCPRealPrefs = {
