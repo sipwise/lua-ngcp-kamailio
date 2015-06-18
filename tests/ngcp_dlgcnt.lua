@@ -85,14 +85,10 @@ TestNGCPDlgCnt = {} --class
 
     function TestNGCPDlgCnt:test_set_1()
         local c = self.dlg.config
-        self.central:ping() ;mc :error("error")
-        self.fake_redis.connect(c.central.host,c.central.port) ;mc :returns(self.central)
-        self.central:select(c.central.db) ;mc :returns(true)
+        self.central:ping() ;mc :returns(true)
         self.central:incr("total")  ;mc :returns(1)
 
-        self.pair:ping() ;mc :error("error")
-        self.fake_redis.connect(c.pair.host,c.pair.port) ;mc :returns(self.pair)
-        self.pair:select(c.pair.db) ;mc :returns(true)
+        self.pair:ping() ;mc :returns(true)
         self.pair:lpush("callid0", "total")  ;mc :returns(1)
 
         mc:replay()
@@ -102,14 +98,10 @@ TestNGCPDlgCnt = {} --class
 
     function TestNGCPDlgCnt:test_set_2()
         local c = self.dlg.config
-        self.central:ping() ;mc :error("error")
-        self.fake_redis.connect(c.central.host,c.central.port) ;mc :returns(self.central)
-        self.central:select(c.central.db) ;mc :returns(true)
+        self.central:ping() ;mc :returns(true)
         self.central:incr("total")  ;mc :returns(1)
 
-        self.pair:ping() ;mc :error("error")
-        self.fake_redis.connect(c.pair.host,c.pair.port) ;mc :returns(self.pair)
-        self.pair:select(c.pair.db) ;mc :returns(true)
+        self.pair:ping() ;mc :returns(true)
         self.pair:lpush("callid0", "total")  ;mc :returns(1)
 
         self.central.ping(self.central) ;mc :returns(true)
@@ -125,15 +117,11 @@ TestNGCPDlgCnt = {} --class
 
     function TestNGCPDlgCnt:test_del()
         local c = self.dlg.config
-        self.pair:ping() ;mc :error("error")
-        self.fake_redis.connect(c.pair.host,c.pair.port) ;mc :returns(self.pair)
-        self.pair:select(c.pair.db) ;mc :returns(true)
+        self.pair:ping() ;mc :returns(true)
         self.pair:lpop("callid0") ;mc :returns("total")
         self.pair:lpop("callid0") ;mc :returns(nil)
 
-        self.central:ping() ;mc :error("error")
-        self.fake_redis.connect(c.central.host,c.central.port) ;mc :returns(self.central)
-        self.central:select(c.central.db) ;mc :returns(true)
+        self.central:ping() ;mc :returns(true)
         self.central:decr("total")  ;mc :returns(1)
 
         mc:replay()
@@ -146,21 +134,20 @@ TestNGCPDlgCnt = {} --class
 
     function TestNGCPDlgCnt:test_del_multy()
         local c = self.dlg.config
-        self.pair:ping() ;mc :error("error")
-        self.fake_redis.connect(c.pair.host,c.pair.port) ;mc :returns(self.pair)
-        self.pair:select(c.pair.db) ;mc :returns(true)
+        self.pair:ping() ;mc :returns(true)
         self.pair:lpop("callid0") ;mc :returns("total")
 
-        self.central:ping() ;mc :error("error")
-        self.fake_redis.connect(c.central.host,c.central.port) ;mc :returns(self.central)
-        self.central:select(c.central.db) ;mc :returns(true)
+        self.central:ping() ;mc :returns(true)
         self.central:decr("total")  ;mc :returns(0)
+        self.central:del("total") ;mc :returns(true)
 
         self.pair:lpop("callid0") ;mc :returns("whatever:gogo")
         self.central:decr("whatever:gogo")  ;mc :returns(0)
+        self.central:del("whatever:gogo") ;mc :returns(true)
 
         self.pair:lpop("callid0") ;mc :returns("whatever:go")
         self.central:decr("whatever:go") ;mc :returns(0)
+        self.central:del("whatever:go") ;mc :returns(true)
 
         self.pair:lpop("callid0") ;mc :returns(nil)
 
