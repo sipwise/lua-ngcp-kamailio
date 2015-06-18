@@ -40,6 +40,7 @@ package.preload['luasql.mysql'] = function ()
     end
 end
 
+require 'ngcp.config'
 require 'ngcp.up'
 
 TestNGCPUserPrefs = {} --class
