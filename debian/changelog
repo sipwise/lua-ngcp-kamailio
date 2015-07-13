@@ -1,3 +1,18 @@
+lua-ngcp-kamailio (0.8.1.0+0~mr4.0.1.0) unstable; urgency=low
+
+  [ Victor Seva ]
+  * [9870438] MT#11921 run_test: select by FORMAT envVar
+  * [484aed2] fix xavp test
+  * [c1c4236] MT#12937 order by id when selecting user preferences
+  * [9afb709] MT#12025 move NGCPConfig to new config.lua file
+  * [1e181e0] MT#12025 fix includes
+  * [6b86ab9] MT#12025 fix dlgcnt test
+  * [f04eed6] MT#12025 fix for lua-unit 3.1
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 13 Jul 2015 15:16:43 +0200
+
 lua-ngcp-kamailio (0.8.0.0+0~mr4.0.0.0) unstable; urgency=low
 
   [ Victor Seva ]
