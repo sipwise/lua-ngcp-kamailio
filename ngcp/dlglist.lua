@@ -63,7 +63,7 @@ end
 
     local function _test_connection(client)
         if not client then return nil end
-        local ok, err = pcall(client.ping, client);
+        local ok, _ = pcall(client.ping, client);
         return ok
     end
 

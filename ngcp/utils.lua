@@ -19,6 +19,7 @@
 --
 -- Lua utils
 
+-- luacheck: globals math table string
 -- improving the built-in pseudorandom generator
 -- http://lua-users.org/wiki/MathLibraryTutorial
 do
@@ -41,18 +42,18 @@ end
 -- copy a table
 function table.deepcopy(object)
     local lookup_table = {}
-    local function _copy(object)
-        if type(object) ~= "table" then
-            return object
-        elseif lookup_table[object] then
-            return lookup_table[object]
+    local function _copy(obj)
+        if type(obj) ~= "table" then
+            return obj
+        elseif lookup_table[obj] then
+            return lookup_table[obj]
         end
         local new_table = {}
-        lookup_table[object] = new_table
-        for index, value in pairs(object) do
+        lookup_table[obj] = new_table
+        for index, value in pairs(obj) do
             new_table[_copy(index)] = _copy(value)
         end
-        return setmetatable(new_table, getmetatable(object))
+        return setmetatable(new_table, getmetatable(obj))
     end
     return _copy(object)
 end
@@ -76,7 +77,7 @@ function table.add(t, element)
 end
 
 function table.del(t, element)
-    local _,v,i
+    local i
     local pos = {}
 
     if t then
@@ -107,8 +108,7 @@ end
 function table.size(t)
   if t then
     local c = 0
-    local _,v
-    for _,v in pairs(t) do
+    for _ in pairs(t) do
       c = c + 1
     end
     return c
@@ -162,6 +162,7 @@ function table.shuffle(tab)
   return res
 end
 
+-- luacheck: ignore range
 -- range(start)             returns an iterator from 1 to a (step = 1)
 -- range(start, stop)       returns an iterator from a to b (step = 1)
 -- range(start, stop, step) returns an iterator from a to b, counting by step.
@@ -185,17 +186,16 @@ range = function (i, to, inc)
 end
 
 function table.shift(t, position)
-  local k, v
   local res = {}
   local p = position % #t
 
   if p == 0 then return end
   for k in range(1, p) do
-    v = table.remove(t, k-#res)
+    local v = table.remove(t, k-#res)
     table.insert(res, v)
   end
-  for _,v in ipairs(res) do
-    table.insert(t, v)
+  for _,_v in ipairs(res) do
+    table.insert(t, _v)
   end
 end
 
@@ -205,6 +205,7 @@ end
 -- "'a','b'"
 -- implode("#",t)
 -- "a#b"
+-- luacheck: ignore implode explode
 function implode(delimiter, list, quoter)
     local len = #list
     if not delimiter then
@@ -265,6 +266,7 @@ end
 -- Lua 5.1 compatible
 
 -- GLOBAL
+-- luacheck: ignore Stack.*
 Stack = {
   __class__ = 'Stack'
 }
@@ -308,14 +310,15 @@ Stack_MT = {
   end
 
   -- pop a value from the stack
-  function Stack:pop(num)
+  function Stack:pop(n)
     -- get num values from stack
-    local num = num or 1
+    local num = n or 1
 
     -- return table
     local entries = {}
 
     -- get values into entries
+    -- luacheck: ignore i
     for i = 1, num do
       -- get last entry
       if #self._et ~= 0 then

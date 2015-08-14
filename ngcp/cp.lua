@@ -27,7 +27,7 @@ NGCPContractPrefs = {
 NGCPContractPrefs_MT = { __index = NGCPContractPrefs }
 
 NGCPContractPrefs_MT.__tostring = function ()
-        local output = ''
+        local output
         local xavp = NGCPXAvp:new('caller','contract_prefs')
         output = string.format("caller_contract_prefs:%s\n", tostring(xavp))
         xavp = NGCPXAvp:new('callee','contract_prefs')
@@ -59,10 +59,9 @@ NGCPContractPrefs_MT.__tostring = function ()
         return NGCPContractPrefs._load(self,"callee",contract)
     end
 
-    function NGCPContractPrefs:_defaults(level)
+    function NGCPContractPrefs:_defaults(_)
         local defaults = self.config:get_defaults('contract')
         local keys = {}
-        local k,_
 
         if defaults then
             for k,_ in pairs(defaults) do
@@ -80,7 +79,6 @@ NGCPContractPrefs_MT.__tostring = function ()
         local keys
         local result = {}
         local row = cur:fetch({}, "a")
-        local k,v
         local xavp
 
         keys, defaults = self:_defaults(level)

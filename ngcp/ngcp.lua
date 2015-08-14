@@ -32,9 +32,8 @@ NGCP = {
 NGCP_MT = { __index = NGCP }
 
 NGCP_MT.__tostring = function (t)
-    local k,v
-    output = ''
-    for k,v in pairs(t.prefs) do
+    local output = ''
+    for _,v in pairs(t.prefs) do
         output = output .. tostring(v)
     end
     return output
@@ -62,7 +61,6 @@ end
     end
 
     function NGCP:caller_contract_load(contract)
-        local _,v, xvap
         local keys = self.prefs.contract:caller_load(contract)
 
         self.prefs.real:caller_contract_load(keys)
@@ -70,7 +68,6 @@ end
     end
 
     function NGCP:callee_contract_load(contract)
-        local _,v, xvap
         local keys = self.prefs.contract:callee_load(contract)
 
         self.prefs.real:callee_contract_load(keys)
@@ -78,7 +75,6 @@ end
     end
 
     function NGCP:caller_peer_load(peer)
-        local _,v, xvap
         local keys = self.prefs.peer:caller_load(peer)
 
         self.prefs.real:caller_peer_load(keys)
@@ -86,7 +82,6 @@ end
     end
 
     function NGCP:callee_peer_load(peer)
-        local _,v, xvap
         local keys = self.prefs.peer:callee_load(peer)
 
         self.prefs.real:callee_peer_load(keys)
@@ -94,7 +89,6 @@ end
     end
 
     function NGCP:caller_usr_load(uuid, domain)
-        local _,v
         local keys = {
             domain = self.prefs.dom:caller_load(domain),
             prof   = self.prefs.prof:caller_load(uuid),
@@ -105,13 +99,12 @@ end
         table.merge(unique_keys, keys.user)
 
         self.prefs.real:caller_usr_load(unique_keys)
-        local xavp = NGCPXAvp:new('caller', 'dom')
+        NGCPXAvp:new('caller', 'dom')
 
         return unique_keys
     end
 
     function NGCP:callee_usr_load(uuid, domain)
-        local _,v
         local keys = {
             domain = self.prefs.dom:callee_load(domain),
             prof   = self.prefs.prof:callee_load(uuid),
@@ -127,7 +120,7 @@ end
     end
 
     function NGCP:log_pref(level, vtype)
-        local _,pref,xavp,xavp_log
+        local xavp,xavp_log
 
         if not level then
             level = "dbg"
@@ -157,9 +150,8 @@ end
     end
 
     function NGCP:clean(vtype, group)
-        local _,k,v
         if not group then
-            for k,v in pairs(self.prefs) do
+            for _,v in pairs(self.prefs) do
                 v:clean(vtype)
             end
         else

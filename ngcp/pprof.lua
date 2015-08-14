@@ -28,9 +28,8 @@ NGCPProfilePrefs = {
 NGCPProfilePrefs_MT = { __index = NGCPProfilePrefs }
 
 NGCPProfilePrefs_MT.__tostring = function ()
-        local output = ''
         local xavp = NGCPXAvp:new('caller','prof_prefs')
-        output = string.format("caller_prof_prefs:%s\n", tostring(xavp))
+        local output = string.format("caller_prof_prefs:%s\n", tostring(xavp))
         xavp = NGCPXAvp:new('callee','prof_prefs')
         output = output .. string.format("callee_prof_prefs:%s\n", tostring(xavp))
         return output
@@ -70,8 +69,6 @@ NGCPProfilePrefs_MT.__tostring = function ()
         local keys = {}
         local result = {}
         local row = cur:fetch({}, "a")
-        local k,v
-        local xavp
 
         if table.size(row) > 0 then
             while table.size(row) > 0 do
@@ -85,7 +82,7 @@ NGCPProfilePrefs_MT.__tostring = function ()
         end
         cur:close()
         if table.size(result) > 0 then
-            xavp = self:xavp(level, result)
+            self:xavp(level, result)
         end
         return keys
     end
