@@ -31,9 +31,8 @@ NGCPRealPrefs = {
 NGCPRealPrefs_MT = { __index = NGCPRealPrefs }
 
 NGCPRealPrefs_MT.__tostring = function ()
-        local output = ''
         local xavp = NGCPXAvp:new('caller','real_prefs')
-        output = string.format("caller_real_prefs:%s\n", tostring(xavp))
+        local output = string.format("caller_real_prefs:%s\n", tostring(xavp))
         xavp = NGCPXAvp:new('callee','real_prefs')
         output = output .. string.format("callee_real_prefs:%s\n", tostring(xavp))
         return output
@@ -71,7 +70,6 @@ NGCPRealPrefs_MT.__tostring = function ()
     end
 
     function NGCPRealPrefs:_contract_load(level, keys)
-        local _,v
         local xavp = {
             contract  = NGCPContractPrefs:xavp(level),
         }
@@ -87,7 +85,6 @@ NGCPRealPrefs_MT.__tostring = function ()
     end
 
     function NGCPRealPrefs:_peer_load(level, keys)
-        local _,v
         local xavp = {
             peer  = NGCPPeerPrefs:xavp(level),
         }
@@ -103,7 +100,6 @@ NGCPRealPrefs_MT.__tostring = function ()
     end
 
     function NGCPRealPrefs:_usr_load(level, keys)
-        local _,v,k
         local xavp = {
             real = NGCPRealPrefs:xavp(level),
             dom  = NGCPDomainPrefs:xavp(level),

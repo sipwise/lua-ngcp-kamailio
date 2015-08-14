@@ -27,9 +27,8 @@ NGCPPeerPrefs = {
 NGCPPeerPrefs_MT = { __index = NGCPPeerPrefs }
 
 NGCPPeerPrefs_MT.__tostring = function ()
-        local output = ''
         local xavp = NGCPXAvp:new('caller','peer_prefs')
-        output = string.format("caller_peer_prefs:%s\n", tostring(xavp))
+        local output = string.format("caller_peer_prefs:%s\n", tostring(xavp))
         xavp = NGCPXAvp:new('callee','peer_prefs')
         output = output .. string.format("callee_peer_prefs:%s\n", tostring(xavp))
         return output
@@ -64,10 +63,9 @@ NGCPPeerPrefs_MT.__tostring = function ()
     function NGCPPeerPrefs:_defaults(level)
         local defaults = self.config:get_defaults('peer')
         local keys = {}
-        local k,_
 
         if defaults then
-            for k,v in pairs(defaults) do
+            for k,_ in pairs(defaults) do
                 table.insert(keys, k)
             end
         end
@@ -82,7 +80,6 @@ NGCPPeerPrefs_MT.__tostring = function ()
         local keys
         local result = {}
         local row = cur:fetch({}, "a")
-        local k,v
         local xavp
 
         keys, defaults = self:_defaults(level)

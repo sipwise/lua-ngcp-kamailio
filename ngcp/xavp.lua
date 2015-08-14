@@ -28,27 +28,26 @@ NGCPXAvp_MT = {
 }
     function NGCPXAvp:new(level,group,l)
         local t = NGCPXAvp.init(level,group,l)
-        NGCPXAvp_MT.__call = function(t, key, value)
+        NGCPXAvp_MT.__call = function(s, key, value)
             if not key then
                 error("key is empty")
             end
-            local id = string.format("$xavp(%s[0]=>%s)", t.name, key)
+            local id = string.format("$xavp(%s[0]=>%s)", s.name, key)
             --print(string.format("id:%s", id))
             if not value then
                 return sr.pv.get(id)
             elseif type(value) == "number" then
-                table.add(t.keys, key)
+                table.add(s.keys, key)
                 --sr.log("dbg", string.format("seti: [%s]:%d", id, value))
                 sr.pv.seti(id, value)
             elseif type(value) == "string" then
-                table.add(t.keys, key)
+                table.add(s.keys, key)
                 --sr.log("dbg", string.format("sets: [%s]:%s", id, value))
                 sr.pv.sets(id, value)
             elseif type(value) == "table" then
-                table.add(t.keys, key)
-                local i, v
+                table.add(s.keys, key)
                 for i = #value, 1, -1 do
-                    v = value[i]
+                    local v = value[i]
                     if type(v) == "number" then
                         sr.pv.seti(id, v)
                     elseif type(v) == "string" then
@@ -61,13 +60,12 @@ NGCPXAvp_MT = {
                 error("value is not a number or string")
             end
         end
-        NGCPXAvp_MT.__tostring = function (t)
-            local l,k,v
+        NGCPXAvp_MT.__tostring = function (s)
             local output
 
-            l = sr.xavp.get(t.name, 0)
-            if l then
-                output = table.tostring(l)
+            local ll = sr.xavp.get(s.name, 0)
+            if ll then
+                output = table.tostring(ll)
             end
             sr.log("dbg", string.format("output:%s", output))
             return output
@@ -95,7 +93,7 @@ NGCPXAvp_MT = {
     end
 
     function NGCPXAvp._setvalue(id, vtype, value)
-        local check = nil
+        local check
     	-- sr.log("info", string.format("vtype:[%s]:%d", type(vtype), vtype))
     	if type(vtype) == "string" then
     		vtype = tonumber(vtype)
@@ -119,7 +117,7 @@ NGCPXAvp_MT = {
             check = sr.pv.get(id)
             if check then
                 if type(check) == 'table' then
-                    check = table.tostring(check)
+                    table.tostring(check)
                 end
 	        else
                 --error(string.format("%s:nil", id))
@@ -129,7 +127,6 @@ NGCPXAvp_MT = {
     end
 
     function NGCPXAvp:_create(l)
-        local i
         local name = string.format("$xavp(%s=>dummy)", self.name)
         if not sr.pv.get(name) then
             NGCPXAvp._setvalue(name, 0, self.level)

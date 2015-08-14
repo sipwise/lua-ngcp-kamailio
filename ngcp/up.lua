@@ -27,9 +27,8 @@ NGCPUserPrefs = {
 NGCPUserPrefs_MT = { __index = NGCPUserPrefs }
 
 NGCPUserPrefs_MT.__tostring = function ()
-        local output = ''
         local xavp = NGCPXAvp:new('caller','usr_prefs')
-        output = string.format("caller_usr_prefs:%s\n", tostring(xavp))
+        local output = string.format("caller_usr_prefs:%s\n", tostring(xavp))
         xavp = NGCPXAvp:new('callee','usr_prefs')
         output = output .. string.format("callee_usr_prefs:%s\n", tostring(xavp))
         return output
@@ -62,10 +61,9 @@ NGCPUserPrefs_MT.__tostring = function ()
     function NGCPUserPrefs:_defaults(level)
         local defaults = self.config:get_defaults('usr')
         local keys = {}
-        local k,_
 
         if defaults then
-            for k,v in pairs(defaults) do
+            for k,_ in pairs(defaults) do
                 table.insert(keys, k)
             end
         end
@@ -81,7 +79,6 @@ NGCPUserPrefs_MT.__tostring = function ()
         local keys
         local result = {}
         local row = cur:fetch({}, "a")
-        local k,v
         local xavp
 
         keys, defaults = self:_defaults(level)

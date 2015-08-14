@@ -27,9 +27,8 @@ NGCPDomainPrefs = {
 NGCPDomainPrefs_MT = { __index = NGCPDomainPrefs }
 
 NGCPDomainPrefs_MT.__tostring = function ()
-        local output = ''
         local xavp = NGCPXAvp:new('caller','dom_prefs')
-        output = string.format("caller_dom_prefs:%s\n", tostring(xavp))
+        local output = string.format("caller_dom_prefs:%s\n", tostring(xavp))
         xavp = NGCPXAvp:new('callee','dom_prefs')
         output = output .. string.format("callee_dom_prefs:%s\n", tostring(xavp))
         return output
@@ -62,7 +61,6 @@ NGCPDomainPrefs_MT.__tostring = function ()
     function NGCPDomainPrefs:_defaults(level)
         local defaults = self.config:get_defaults('dom')
         local keys = {}
-        local k,_
 
         if defaults then
             for k,_ in pairs(defaults) do
@@ -80,7 +78,6 @@ NGCPDomainPrefs_MT.__tostring = function ()
         local keys
         local result = {}
         local row = cur:fetch({}, "a")
-        local k,v
         local xavp
 
         keys, defaults = self:_defaults(level)

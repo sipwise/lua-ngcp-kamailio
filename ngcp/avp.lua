@@ -27,20 +27,17 @@ NGCPAvp_MT = {
 
     function NGCPAvp:new(id)
         local t = { id = "$avp(s:" .. id .. ")" }
-        NGCPAvp_MT.__call = function(t, value)
+        NGCPAvp_MT.__call = function(s, value)
             if not value then
-                --print(table.tostring(sr.pv.vars))
-                --print(t.id)
-                return sr.pv.get(t.id)
+                return sr.pv.get(s.id)
             elseif type(value) == "table" then
-                local i, v
                 for i = #value, 1, -1 do
-                    t(value[i])
+                    s(value[i])
                 end
             elseif type(value) == "number" then
-                sr.pv.seti(t.id, value)
+                sr.pv.seti(s.id, value)
             elseif type(value) == "string" then
-                sr.pv.sets(t.id, value)
+                sr.pv.sets(s.id, value)
             else
                 error("value is not a number or string")
             end
@@ -48,9 +45,9 @@ NGCPAvp_MT = {
         function t.all()
             return sr.pv.get("$(avp(" .. id .. ")[*])")
         end
-        NGCPAvp_MT.__tostring = function(t)
-            local value = sr.pv.get(t.id)
-            return string.format("%s:%s", t.id, tostring(value))
+        NGCPAvp_MT.__tostring = function(s)
+            local value = sr.pv.get(s.id)
+            return string.format("%s:%s", s.id, tostring(value))
         end
         return setmetatable( t, NGCPAvp_MT )
     end

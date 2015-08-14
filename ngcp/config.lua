@@ -20,6 +20,7 @@
 
 -- load drivers
 local driver = require "luasql.mysql"
+-- luacheck: ignore luasql
 if not luasql then
     luasql = driver
 end
@@ -77,8 +78,8 @@ NGCPConfig_MT = { __index = NGCPConfig }
 
     local function check_connection(c)
         local cur = c:execute("SELECT 1")
-        local row = cur:fetch()
         local result = false
+        cur:fetch()
         if cur:numrows() == 1 then
             result = true
         end
@@ -91,7 +92,7 @@ NGCPConfig_MT = { __index = NGCPConfig }
             self.env = assert (luasql.mysql())
         end
         if self.con then
-            local ok,err = pcall(check_connection, self.con)
+            local ok,_ = pcall(check_connection, self.con)
             if not ok then
                 self.con = nil
                 sr.log("dbg", "lost database connection. Reconnecting")
@@ -106,7 +107,6 @@ NGCPConfig_MT = { __index = NGCPConfig }
     end
 
     function NGCPConfig:get_defaults(vtype)
-        local k,v
         local defs = {}
 
         if self.default[vtype] then
