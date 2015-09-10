@@ -69,7 +69,8 @@ end
     end
 
     function NGCPRecentCalls:set_by_uuid(uuid, callid, start_time,
-                                            duration, caller, callee)
+                                            duration, caller, callee,
+                                            caller_id, callee_id)
         if not self._test_connection(self.central) then
             self.central = self._connect(self.config.central)
         end
@@ -77,15 +78,18 @@ end
                                         "start_time", start_time,
                                         "duration", duration,
                                         "caller", caller,
-                                        "callee", callee)
+                                        "callee", callee,
+                                        "caller_id", caller_id,
+                                        "callee_id", callee_id)
         if res then
             self.central:expire(uuid, self.config.expire)
         end
-        sr.log("info", string.format("central:hset[%s]=>[%s] callid: %s start_time: %s duration: %d caller: %s callee: %s expire: %d\n",
+        sr.log("info", string.format("central:hset[%s]=>[%s] callid: %s start_time: %s duration: %d caller: %s callee: %s caller_id: %s callee_id: %s expire: %d\n",
                                     uuid, tostring(res),
                                     callid,
                                     start_time, duration,
                                     caller, callee,
+                                    caller_id, callee_id,
                                     self.config.expire))
         return res
     end
