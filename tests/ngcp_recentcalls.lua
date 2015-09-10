@@ -79,19 +79,22 @@ TestNGCPRecentCalls = {} --class
         local duration   = 11
         local caller     = "437712345"
         local callee     = "437754321"
+        local source     = "SIPWISE_1"
 
         self.central:ping() ;mc :returns(true)
         self.central:hmset(uuid, "callid", callid,
                                  "start_time", start_time,
                                  "duration", duration,
                                  "caller", caller,
-                                 "callee", callee) ;mc :returns(true)
+                                 "callee", callee,
+                                 "source", source) ;mc :returns(true)
         self.central:expire(uuid, ttl) ;mc :returns(1)
 
         mc:replay()
         local res = self.rcalls:set_by_uuid(uuid, callid,
                                             start_time, duration,
-                                            caller, callee)
+                                            caller, callee,
+                                            source)
         mc:verify()
 
         assertTrue(res)
