@@ -196,6 +196,18 @@ pvMock = {
             end
         end
 
+        function t._is_dlg_var(id)
+            local patterns = {
+                '%$dlg_var%(([%w_]+)%)$',
+                '%$%(dlg_var%(([%w_]+)%)%)$',
+            }
+            for _,v in pairs(patterns) do
+                for key in string.gmatch(id, v) do
+                    return { id=key, clean=false, type='dlg_var' }
+                end
+            end
+        end
+
         function t._is_hdr(id)
             local key, _, v
             local patterns = {
@@ -237,6 +249,9 @@ pvMock = {
                 result = t._is_var(id)
             end
             if not result then
+                result = t._is_dlg_var(id)
+            end
+            if not result then
                 result = t._is_hdr(id)
             end
             if not result then
@@ -255,7 +270,7 @@ pvMock = {
                 return
             end
 
-            if result.type == 'var' then
+            if result.type == 'var' or result.type == 'dlg_var' then
                 return t.vars[result.private_id]
             elseif result.type == 'xavp' then
                 if not t.vars[result.private_id] then
@@ -302,7 +317,7 @@ pvMock = {
 
         function t._addvalue_new(result, value)
             local temp
-            if result.type == 'var' then
+            if result.type == 'var' or result.type == 'dlg_var' then
                 t.vars[result.private_id] = value
             elseif result.type == 'xavp' then
                 if not result.indx then
@@ -329,7 +344,7 @@ pvMock = {
 
         function t._addvalue_with_value(result, value)
             local temp
-            if result.type == 'var' then
+            if result.type == 'var' or result.type == 'dlg_var' then
                 t.vars[result.private_id] = value
             elseif result.type == 'xavp' then
                 if not result.indx then
@@ -415,7 +430,7 @@ pvMock = {
                 end
             elseif result.type == 'avp' then
                 t.vars[result.private_id] = nil
-            elseif result.type == 'var' then
+            elseif result.type == 'var' or result.type == 'dlg_var' then
                 t.vars[result.private_id] = nil
             end
             t.log("dbg", string.format("sr.pv vars:%s", table.tostring(t.vars)))
