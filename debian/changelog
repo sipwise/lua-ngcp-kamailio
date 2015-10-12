@@ -1,3 +1,20 @@
+lua-ngcp-kamailio (0.9.1.0+0~mr4.1.1.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [203896e] .luacheckrc files for known globals
+  * [7a52fc6] MT#12025 clean luacheck error
+  * [9a28c04] MT#12937 fix c1c423688e order by id when selecting user preferences
+  * [cf06436] MT#15389 $dlg_var support
+
+  [ Kirill Solomko ]
+  * [2bfe436] MT#12707 - add recentcalls lua (store in redis)
+  * [fd5d1e9] MT#12707 - recentcalls: add source field
+  * [07c995b] MT#12707 - fix log string format
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 12 Oct 2015 15:34:02 +0200
+
 lua-ngcp-kamailio (0.9.0.0+0~mr4.1.0.0) unstable; urgency=low
 
   [ Victor Seva ]
