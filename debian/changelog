@@ -1,3 +1,13 @@
+lua-ngcp-kamailio (0.7.4.1+0~mr3.8.4.1) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [f89043b] MT#12937 fix c1c423688e order by id when selecting user preferences
+  * [8df5623] MT#15389 $dlg_var support
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 16 Nov 2015 17:16:37 +0100
+
 lua-ngcp-kamailio (0.7.4.0+0~mr3.8.4.0) unstable; urgency=medium
 
   [ Victor Seva ]
