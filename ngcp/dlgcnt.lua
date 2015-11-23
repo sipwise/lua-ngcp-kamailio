@@ -76,14 +76,20 @@ end
     end
 
     function NGCPDlgCounters._decr(self, key)
-        local res = self.central:decr(key);
-        if res == 0 then
-            self.central:del(key);
-            sr.log("dbg", string.format("central:del[%s] counter is 0\n", key));
+        local i = self.central:exists(key);
+        sr.log("dbg", string.format("central:exists[%s]: %s\n", key, tostring(i)));
+        if i then
+            local res = self.central:decr(key);
+            if res == 0 then
+                self.central:del(key);
+                sr.log("dbg", string.format("central:del[%s] counter is 0\n", key));
+            else
+                sr.log("dbg", string.format("central:decr[%s]=>[%s]\n", key, tostring(res)));
+            end
+            return res;
         else
-            sr.log("dbg", string.format("central:decr[%s]=>[%s]\n", key, tostring(res)));
+            return 0;
         end
-        return res;
     end
 
     function NGCPDlgCounters:exists(callid)
@@ -106,12 +112,26 @@ end
         return table.contains(res, key);
     end
 
+    function NGCPDlgCounters._refresh(self, key, expires)
+        local res = self.central:expire(key, expires);
+        sr.log("dbg", string.format("central:expire[%s]=>%s\n", key, tostring(res)));
+        return res;
+    end
+
     function NGCPDlgCounters:set(callid, key)
         if not self._test_connection(self.central) then
             self.central = self._connect(self.config.central);
         end
         local res = self.central:incr(key);
         sr.log("dbg", string.format("central:incr[%s]=>%s\n", key, tostring(res)));
+        local ttl = self.central:ttl(key);
+        sr.log("dbg", string.format("central:ttl[%s]=>%d\n", key, ttl));
+        if ttl > 0 then
+            sr.log("dbg", string.format("record %s already has expires, nothing to do\n", key));
+        else
+            local res = self.central:expire(key,300);
+            sr.log("dbg", string.format("central:expire[%s]=>%s\n", key, tostring(res)));
+        end
         if not self._test_connection(self.pair) then
             self.pair = self._connect(self.config.pair);
         end
@@ -120,6 +140,23 @@ end
         end
         local pos = self.pair:lpush(callid, key);
         sr.log("dbg", string.format("pair:lpush[%s]=>[%s] %s\n", callid, key, tostring(pos)));
+    end
+
+    function NGCPDlgCounters:refresh(callid, expires)
+        if not self._test_connection(self.pair) then
+            self.pair = self._connect(self.config.pair);
+        end
+        local array = self.pair:lrange(callid, 0, -1);
+        if not array then
+            error(string.format("callid:%s list empty", callid));
+        end
+        if not self._test_connection(self.central) then
+            self.central = self._connect(self.config.central);
+        end
+        for index, value in pairs(array) do
+            sr.log("dbg", string.format("pair:requested ttl update for value at pos[%d]=>[%s]\n", index, value));
+            self:_refresh(value, expires);
+        end
     end
 
     function NGCPDlgCounters:del_key(callid, key)
