@@ -1,3 +1,12 @@
+lua-ngcp-kamailio (0.9.1.2+0~mr4.1.1.2) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [a9bb3bf] MT#16773 dlgcnt: don't allow negative counters by default
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 02 Dec 2015 11:44:16 +0100
+
 lua-ngcp-kamailio (0.9.1.1+0~mr4.1.1.1) unstable; urgency=medium
 
   * New release.
