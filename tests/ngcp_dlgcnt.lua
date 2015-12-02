@@ -132,6 +132,61 @@ TestNGCPDlgCnt = {} --class
         assertIs(self.dlg.pair, self.pair)
     end
 
+    function TestNGCPDlgCnt:test_del_zero()
+        local c = self.dlg.config
+        self.pair:ping() ;mc :returns(true)
+        self.pair:lpop("callid0") ;mc :returns("total")
+        self.pair:lpop("callid0") ;mc :returns(nil)
+        self.central:del("total") ;mc :returns(true)
+
+        self.central:ping() ;mc :returns(true)
+        self.central:decr("total")  ;mc :returns(0)
+
+        mc:replay()
+        self.dlg:del("callid0")
+        mc:verify()
+
+        assertIs(self.dlg.central, self.central)
+        assertIs(self.dlg.pair, self.pair)
+    end
+
+    function TestNGCPDlgCnt:test_del_negative()
+        local c = self.dlg.config
+        c.allow_negative = false
+        self.pair:ping() ;mc :returns(true)
+        self.pair:lpop("callid0") ;mc :returns("total")
+        self.pair:lpop("callid0") ;mc :returns(nil)
+
+        self.central:ping() ;mc :returns(true)
+        self.central:decr("total")  ;mc :returns(-1)
+        self.central:del("total") ;mc :returns(true)
+
+        mc:replay()
+        self.dlg:del("callid0")
+        mc:verify()
+
+        assertIs(self.dlg.central, self.central)
+        assertIs(self.dlg.pair, self.pair)
+    end
+
+    function TestNGCPDlgCnt:test_del_negative_ok()
+        local c = self.dlg.config
+        c.allow_negative = true
+        self.pair:ping() ;mc :returns(true)
+        self.pair:lpop("callid0") ;mc :returns("total")
+        self.pair:lpop("callid0") ;mc :returns(nil)
+
+        self.central:ping() ;mc :returns(true)
+        self.central:decr("total")  ;mc :returns(-1)
+
+        mc:replay()
+        self.dlg:del("callid0")
+        mc:verify()
+
+        assertIs(self.dlg.central, self.central)
+        assertIs(self.dlg.pair, self.pair)
+    end
+
     function TestNGCPDlgCnt:test_del_multy()
         local c = self.dlg.config
         self.pair:ping() ;mc :returns(true)

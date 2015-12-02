@@ -53,7 +53,8 @@ end
                     port = 6379,
                     db = "4"
                 },
-                check_pair_dup = false
+                check_pair_dup = false,
+                allow_negative = false
             },
             central = {},
             pair = {}
@@ -80,6 +81,9 @@ end
         if res == 0 then
             self.central:del(key);
             sr.log("dbg", string.format("central:del[%s] counter is 0\n", key));
+        elseif res < 0 and not self.config.allow_negative then
+            self.central:del(key);
+            sr.log("warn", string.format("central:del[%s] counter was %s\n", key, tostring(res)));
         else
             sr.log("dbg", string.format("central:decr[%s]=>[%s]\n", key, tostring(res)));
         end
