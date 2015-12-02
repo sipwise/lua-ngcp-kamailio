@@ -1,5 +1,7 @@
 #!/bin/bash
 
+RESULTS=${RESULTS:-.}
+
 if [ -z "${FORMAT}" ] ; then
 	FORMAT=TAP
 fi
@@ -11,13 +13,13 @@ case ${FORMAT} in
 	*) echo "ERROR: Unknown format ${FORMAT}"; exit 1 ;;
 esac
 
-mkdir -p reports
-rm -rf reports/*
+mkdir -p "${RESULTS}"/reports
+rm -rf "${RESULTS}"/reports/*
 
 function  do_test() {
-	echo "testing $1 -> reports/${1}.${EXT}"
+	echo "testing $1 -> ${RESULTS}/reports/${1}.${EXT}"
 	if ${OUT_FORCE} ; then
-		cat<<EOF|lua5.1 - > reports/${1}.${EXT}
+		cat<<EOF|lua5.1 - > ${RESULTS}/reports/${1}.${EXT}
 EXPORT_ASSERT_TO_GLOBALS = true
 require "tests/${1}"
 ---- Control test output:
@@ -33,7 +35,7 @@ require "tests/${1}"
 ---- Control test output:
 local lu = LuaUnit
 lu:setOutputType('${FORMAT}')
-lu:setFname('reports/${1}.${EXT}')
+lu:setFname('${RESULTS}/reports/${1}.${EXT}')
 lu:setVerbosity(1)
 lu:run()
 EOF
