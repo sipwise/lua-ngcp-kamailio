@@ -18,19 +18,17 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 require('luaunit')
-require('lemock')
-require 'ngcp.utils'
-require 'tests_v.dp_vars'
-require 'tests_v.pp_vars'
-require 'tests_v.pprof_vars'
-require 'tests_v.up_vars'
+local lemock = require('lemock')
+local NGCPXAvp = require 'ngcp.xavp'
+local DPFetch = require 'tests_v.dp_vars'
+local PPFetch = require 'tests_v.pp_vars'
+local PProfFetch = require 'tests_v.pprof_vars'
+local UPFetch = require 'tests_v.up_vars'
+local utils = require 'ngcp.utils'
+local utable = utils.table
 
-if not sr then
-    require 'mocks.sr'
-    sr = srMock:new()
-else
-    argv = {}
-end
+local srMock = require 'mocks.sr'
+sr = srMock:new()
 
 local mc,env
 local dp_vars = DPFetch:new()
@@ -40,14 +38,16 @@ local pprof_vars = PProfFetch:new()
 
 package.loaded.luasql = nil
 package.preload['luasql.mysql'] = function ()
-    luasql = {}
+    local luasql = {}
     luasql.mysql = function ()
         return env
     end
 end
 
-require 'ngcp.ngcp'
-
+local NGCP = require 'ngcp.ngcp'
+local NGCPConfig = require 'ngcp.config'
+local NGCPDomainPrefs = require 'ngcp.dp'
+-- luacheck: ignore TestNGCP
 TestNGCP = {} --class
 
     function TestNGCP:setUp()
@@ -92,7 +92,7 @@ TestNGCP = {} --class
 
     function TestNGCP:test_config_get_defaults_real()
         local defaults = NGCPConfig.get_defaults(self.ngcp.config, 'usr')
-        local usr_defaults = table.deepcopy(self.ngcp.config.default.usr)
+        local usr_defaults = utable.deepcopy(self.ngcp.config.default.usr)
         assertItemsEquals(defaults, usr_defaults)
     end
 
@@ -165,6 +165,18 @@ TestNGCP = {} --class
         local keys = self.ngcp:caller_usr_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c")
         mc:verify()
 
+        local lkeys = {
+            "ext_subscriber_id",
+            "ringtimeout",
+            "account_id",
+            "ext_contract_id",
+            "cli",
+            "cc",
+            "ac",
+            "no_nat_sipping"
+        }
+
+        assertItemsEquals(keys, lkeys)
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"), "caller")
         assertEquals(sr.pv.get("$xavp(caller_real_prefs=>account_id)"), 2)
         assertEquals(sr.pv.get("$xavp(caller_real_prefs=>cli)"), "4311001")
@@ -186,6 +198,18 @@ TestNGCP = {} --class
         local keys = self.ngcp:caller_usr_load(nil, "192.168.51.56")
         mc:verify()
 
+        local lkeys = {
+          "ip_header",
+          "sst_enable",
+          "outbound_from_user",
+          "inbound_upn",
+          "sst_expires",
+          "sst_max_timer",
+          "sst_min_timer",
+          "sst_refresh_method",
+          "inbound_uprn"
+        }
+        assertItemsEquals(keys, lkeys)
         assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"), "caller")
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"), "caller")
         --- the default is on real and dom NOT in usr
@@ -234,6 +258,28 @@ TestNGCP = {} --class
         local keys = self.ngcp:caller_usr_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c", "192.168.51.56")
         mc:verify()
 
+        local lkeys = {
+            "ip_header",
+            "sst_enable",
+            "outbound_from_user",
+            "inbound_upn",
+            "sst_expires",
+            "sst_max_timer",
+            "sst_min_timer",
+            "sst_refresh_method",
+            "inbound_uprn",
+            "ext_subscriber_id",
+            "ringtimeout",
+            "account_id",
+            "ext_contract_id",
+            "cli",
+            "cc",
+            "ac",
+            "no_nat_sipping",
+            "force_outbound_calls_to_peer"
+        }
+
+        assertItemsEquals(keys, lkeys)
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs[0]=>dummy)"), "caller")
         --- the default is on real NOT in usr
         assertIsNil(sr.pv.get("$xavp(caller_usr_prefs[0]=>sst_enable)"))
@@ -284,6 +330,27 @@ TestNGCP = {} --class
         local keys = self.ngcp:callee_usr_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c", "192.168.51.56")
         mc:verify()
 
+        local lkeys = {
+            "ip_header",
+            "sst_enable",
+            "outbound_from_user",
+            "inbound_upn",
+            "sst_expires",
+            "sst_max_timer",
+            "sst_min_timer",
+            "sst_refresh_method",
+            "inbound_uprn",
+            "ext_subscriber_id",
+            "ringtimeout",
+            "account_id",
+            "ext_contract_id",
+            "cli",
+            "cc",
+            "ac",
+            "no_nat_sipping"
+        }
+
+        assertItemsEquals(keys, lkeys)
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"), "callee")
         assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>sst_enable)"), "no")
         --- the default is on real NOT in usr
@@ -329,6 +396,27 @@ TestNGCP = {} --class
         local keys = self.ngcp:callee_usr_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c", "192.168.51.56")
         mc:verify()
 
+        local lkeys = {
+            "ip_header",
+            "sst_enable",
+            "outbound_from_user",
+            "inbound_upn",
+            "sst_expires",
+            "sst_max_timer",
+            "sst_min_timer",
+            "sst_refresh_method",
+            "inbound_uprn",
+            "ext_subscriber_id",
+            "ringtimeout",
+            "account_id",
+            "ext_contract_id",
+            "cli",
+            "cc",
+            "ac",
+            "no_nat_sipping"
+        }
+
+        assertItemsEquals(keys, lkeys)
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"), "callee")
         assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>sst_enable)"), "no")
         assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>sst_enable)"), "yes")
@@ -371,6 +459,23 @@ TestNGCP = {} --class
         local keys = self.ngcp:callee_usr_load("ah736f72-21d1-4ea6-a3ea-4d7f56b3887c", "192.168.51.56")
         mc:verify()
 
+        local lkeys = {
+            "ip_header",
+            "sst_enable",
+            "outbound_from_user",
+            "inbound_upn",
+            "sst_expires",
+            "sst_max_timer",
+            "sst_min_timer",
+            "sst_refresh_method",
+            "inbound_uprn",
+            "ext_subscriber_id",
+            "ringtimeout",
+            "account_id",
+            "ext_contract_id"
+        }
+
+        assertItemsEquals(keys, lkeys)
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dummy)"), "callee")
         assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>sst_enable)"), "no")
         assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>sst_enable)"), "yes")
@@ -396,6 +501,20 @@ TestNGCP = {} --class
         local keys = self.ngcp:caller_peer_load("2")
         mc:verify()
 
+        local lkeys = {
+            "ip_header",
+            "sst_enable",
+            "outbound_from_user",
+            "inbound_upn",
+            "sst_expires",
+            "sst_max_timer",
+            "inbound_npn",
+            "sst_min_timer",
+            "sst_refresh_method",
+            "inbound_uprn"
+        }
+
+        assertItemsEquals(keys, lkeys)
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"), "caller")
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_enable)"), "no")
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
@@ -418,6 +537,20 @@ TestNGCP = {} --class
         local keys = self.ngcp:callee_peer_load("2")
         mc:verify()
 
+        local lkeys = {
+            "ip_header",
+            "sst_enable",
+            "outbound_from_user",
+            "inbound_upn",
+            "sst_expires",
+            "sst_max_timer",
+            "inbound_npn",
+            "sst_min_timer",
+            "sst_refresh_method",
+            "inbound_uprn"
+        }
+
+        assertItemsEquals(keys, lkeys)
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"), "callee")
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_enable)"), "no")
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
@@ -439,10 +572,9 @@ TestNGCP = {} --class
 
     function TestNGCP:test_clean_caller_groups()
         local groups = {"peer", "usr", "dom", "real", "prof"}
-        local _,v
 
         for _,v in pairs(groups) do
-            xavp = self.ngcp.prefs[v]:xavp("caller")
+            local xavp = self.ngcp.prefs[v]:xavp("caller")
             xavp(string.format("test_%s", v), v)
             assertEquals(sr.pv.get(string.format("$xavp(caller_%s_prefs=>test_%s)", v, v)), v)
             assertEquals(sr.pv.get(string.format("$xavp(caller_%s_prefs=>dummy)", v)), "caller")
@@ -455,10 +587,9 @@ TestNGCP = {} --class
 
     function TestNGCP:test_clean_callee_groups()
         local groups = {"peer", "usr", "dom", "real", "prof"}
-        local _,v, xavp
 
         for _,v in pairs(groups) do
-            xavp = self.ngcp.prefs[v]:xavp("callee")
+            local xavp = self.ngcp.prefs[v]:xavp("callee")
             xavp(string.format("test_%s", v), v)
             assertEquals(sr.pv.get(string.format("$xavp(callee_%s_prefs=>test_%s)", v, v)), v)
             assertEquals(sr.pv.get(string.format("$xavp(callee_%s_prefs=>dummy)", v)), "callee")

@@ -1,5 +1,5 @@
 --
--- Copyright 2013 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2015 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,14 +17,16 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require 'ngcp.utils'
-require 'ngcp.pref'
+local utils = require 'ngcp.utils'
+local utable = utils.table
+local NGCPXAvp = require 'ngcp.xavp'
+local NGCPPrefs = require 'ngcp.pref'
 
 -- class NGCPContractPrefs
-NGCPContractPrefs = {
+local NGCPContractPrefs = {
      __class__ = 'NGCPContractPrefs'
 }
-NGCPContractPrefs_MT = { __index = NGCPContractPrefs }
+local NGCPContractPrefs_MT = { __index = NGCPContractPrefs }
 
 NGCPContractPrefs_MT.__tostring = function ()
         local output
@@ -85,9 +87,8 @@ NGCPContractPrefs_MT.__tostring = function ()
 
         if row then
             while row do
-                --sr.log("info", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
                 table.insert(result, row)
-                table.add(keys, row.attribute)
+                utable.add(keys, row.attribute)
                 defaults[row.attribute] = nil
                 row = cur:fetch({}, "a")
             end
@@ -120,4 +121,4 @@ NGCPContractPrefs_MT.__tostring = function ()
         end
     end
 -- class
---EOF
+return NGCPContractPrefs

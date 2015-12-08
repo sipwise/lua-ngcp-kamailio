@@ -18,31 +18,28 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 require('luaunit')
-require('lemock')
-require 'ngcp.utils'
-require 'tests_v.up_vars'
+local lemock = require('lemock')
+local utils = require 'ngcp.utils'
+local utable = utils.table
+local UPFetch = require 'tests_v.up_vars'
 
-if not sr then
-    require 'mocks.sr'
-    sr = srMock:new()
-else
-    argv = {}
-end
+local srMock = require 'mocks.sr'
+sr = srMock:new()
 
 local mc,env,con
 local up_vars = UPFetch:new()
 
 package.loaded.luasql = nil
 package.preload['luasql.mysql'] = function ()
-    luasql = {}
+    local luasql = {}
     luasql.mysql = function ()
         return env
     end
 end
 
-require 'ngcp.config'
-require 'ngcp.up'
-
+local NGCPConfig = require 'ngcp.config'
+local NGCPUserPrefs = require 'ngcp.up'
+-- luacheck: ignore TestNGCPUserPrefs
 TestNGCPUserPrefs = {} --class
 
     function TestNGCPUserPrefs:setUp()
@@ -53,7 +50,7 @@ TestNGCPUserPrefs = {} --class
 
         package.loaded.luasql = nil
         package.preload['luasql.mysql'] = function ()
-            luasql = {}
+            local luasql = {}
             luasql.mysql = function ()
                 return env
             end
@@ -99,18 +96,17 @@ TestNGCPUserPrefs = {} --class
     function TestNGCPUserPrefs:get_defaults(level, set)
         local keys_expected = {}
         local defaults = self.d.config:get_defaults('usr')
-        local k,v
 
         if set then
-            keys_expected = table.deepcopy(set)
-            for k,v in pairs(keys_expected) do
+            keys_expected = utable.deepcopy(set)
+            for _,v in pairs(keys_expected) do
                 sr.log("dbg", string.format("removed key:%s is been loaded.", v))
                 defaults[v] = nil
             end
         end
 
         for k,v in pairs(defaults) do
-            table.add(keys_expected, k)
+            utable.add(keys_expected, k)
             assertEquals(sr.pv.get("$xavp("..level.."_usr_prefs=>"..k..")"), v)
         end
         return keys_expected
@@ -130,6 +126,17 @@ TestNGCPUserPrefs = {} --class
         local keys = self.d:caller_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c")
         mc:verify()
 
+        local lkeys = {
+            "ext_subscriber_id",
+            "ringtimeout",
+            "account_id",
+            "ext_contract_id",
+            "cli",
+            "cc",
+            "ac"
+        }
+
+        assertItemsEquals(keys, lkeys)
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>account_id)"),2)
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>cli)"),"4311001")
         assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>cc)"),"43")
@@ -152,6 +159,17 @@ TestNGCPUserPrefs = {} --class
         local keys = self.d:callee_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c")
         mc:verify()
 
+        local lkeys = {
+            "ext_subscriber_id",
+            "ringtimeout",
+            "account_id",
+            "ext_contract_id",
+            "cli",
+            "cc",
+            "ac"
+        }
+
+        assertItemsEquals(keys, lkeys)
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>account_id)"),2)
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>cli)"),"4311001")
         assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>cc)"),"43")
@@ -226,4 +244,3 @@ TestNGCPUserPrefs = {} --class
         assertEquals(tostring(self.d), 'caller_usr_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_usr_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n')
     end
 -- class TestNGCPUserPrefs
---EOF

@@ -17,19 +17,23 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require 'ngcp.cp'
-require 'ngcp.pprof'
-require 'ngcp.pp'
-require 'ngcp.dp'
-require 'ngcp.up'
-require 'ngcp.rp'
-require 'ngcp.config'
+
+local NGCPXAvp = require 'ngcp.xavp'
+local NGCPContractPrefs = require 'ngcp.cp'
+local NGCPProfilePrefs = require 'ngcp.pprof'
+local NGCPPeerPrefs = require 'ngcp.pp'
+local NGCPDomainPrefs = require 'ngcp.dp'
+local NGCPUserPrefs = require 'ngcp.up'
+local NGCPRealPrefs = require 'ngcp.rp'
+local NGCPConfig = require 'ngcp.config'
+local utils = require 'ngcp.utils'
+local utable = utils.table
 
 -- class NGCP
-NGCP = {
+local NGCP = {
      __class__ = 'NGCP'
 }
-NGCP_MT = { __index = NGCP }
+local NGCP_MT = { __index = NGCP }
 
 NGCP_MT.__tostring = function (t)
     local output = ''
@@ -94,9 +98,9 @@ end
             prof   = self.prefs.prof:caller_load(uuid),
             user   = self.prefs.usr:caller_load(uuid)
         }
-        local unique_keys = table.deepcopy(keys.domain)
-        table.merge(unique_keys, keys.prof)
-        table.merge(unique_keys, keys.user)
+        local unique_keys = utable.deepcopy(keys.domain)
+        utable.merge(unique_keys, keys.prof)
+        utable.merge(unique_keys, keys.user)
 
         self.prefs.real:caller_usr_load(unique_keys)
         NGCPXAvp:new('caller', 'dom')
@@ -110,9 +114,9 @@ end
             prof   = self.prefs.prof:callee_load(uuid),
             user   = self.prefs.usr:callee_load(uuid)
         }
-        local unique_keys = table.deepcopy(keys.domain)
-        table.merge(unique_keys, keys.prof)
-        table.merge(unique_keys, keys.user)
+        local unique_keys = utable.deepcopy(keys.domain)
+        utable.merge(unique_keys, keys.prof)
+        utable.merge(unique_keys, keys.user)
 
         self.prefs.real:callee_usr_load(unique_keys)
 
@@ -163,4 +167,4 @@ end
         end
     end
 -- class
---EOF
+return NGCP
