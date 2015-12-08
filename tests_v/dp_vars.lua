@@ -17,7 +17,8 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-dp_vars = {
+
+local dp_vars = {
     voip_sipwise_local = {
       {
         id = 1,
@@ -154,12 +155,12 @@ dp_vars = {
     }
 }
 
-DPFetch = {
+local DPFetch = {
     __class__ = 'DPFetch',
     _i = 1
 }
-    function DPFetch:new()
-        t = {}
+    function DPFetch.new()
+        local t = {}
         return setmetatable(t, { __index = DPFetch })
     end
 
@@ -171,4 +172,4 @@ DPFetch = {
     function DPFetch:reset()
         self._i = 1
     end
---EOF
+return DPFetch

@@ -18,18 +18,31 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 
-local NGCPXAvp = require 'ngcp.xavp'
+local lemock = require('lemock')
+require('luaunit')
 
--- class NGCPPrefs
-local NGCPPrefs = {
-     __class__ = 'NGCPPrefs'
-}
+local srMock = require 'mocks.sr'
+sr = srMock:new()
 
-    function NGCPPrefs.init(group)
-        local levels = {"caller", "callee"}
-        for _,v in pairs(levels) do
-            NGCPXAvp.init(v,group)
-        end
-    end
+local mc
+
+-- luacheck: ignore TestNGCPDlgList
+TestNGCPDlgList = {} --class
+
+function TestNGCPDlgList:setUp()
+    mc = lemock.controller()
+    self.fake_redis = mc:mock()
+    self.central = mc:mock()
+    self.pair = mc:mock()
+
+    package.loaded.redis = self.fake_redis
+    local NGCPDlgList = require 'ngcp.dlglist'
+
+    self.dlg = NGCPDlgList.new()
+    assertTrue(self.dlg)
+
+    self.dlg.central = self.central;
+    self.dlg.pair = self.pair
+end
+
 -- class
-return NGCPPrefs

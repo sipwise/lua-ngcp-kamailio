@@ -17,18 +17,21 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require 'ngcp.utils'
-require 'ngcp.pref'
-require 'ngcp.dp'
-require 'ngcp.pp'
-require 'ngcp.up'
-require 'ngcp.pprof'
+local utils = require 'ngcp.utils'
+local utable = utils.table
+local NGCPPrefs = require 'ngcp.pref'
+local NGCPDomainPrefs = require 'ngcp.dp'
+local NGCPPeerPrefs = require 'ngcp.pp'
+local NGCPUserPrefs = require 'ngcp.up'
+local NGCPProfilePrefs = require 'ngcp.pprof'
+local NGCPContractPrefs = require 'ngcp.cp'
+local NGCPXAvp = require 'ngcp.xavp'
 
 -- class NGCPRealPrefs
-NGCPRealPrefs = {
+local NGCPRealPrefs = {
      __class__ = 'NGCPRealPrefs'
  }
-NGCPRealPrefs_MT = { __index = NGCPRealPrefs }
+local NGCPRealPrefs_MT = { __index = NGCPRealPrefs }
 
 NGCPRealPrefs_MT.__tostring = function ()
         local xavp = NGCPXAvp:new('caller','real_prefs')
@@ -78,7 +81,7 @@ NGCPRealPrefs_MT.__tostring = function ()
         for _,v in pairs(keys) do
             local value = values[v]
             if value then
-                table.add(contract_keys, v)
+                utable.add(contract_keys, v)
             end
         end
         return contract_keys
@@ -93,7 +96,7 @@ NGCPRealPrefs_MT.__tostring = function ()
         for _,v in pairs(keys) do
             local value = values[v]
             if value then
-                table.add(peer_keys, v)
+                utable.add(peer_keys, v)
             end
         end
         return peer_keys
@@ -148,4 +151,4 @@ NGCPRealPrefs_MT.__tostring = function ()
         end
     end
 -- class
---EOF
+return NGCPRealPrefs

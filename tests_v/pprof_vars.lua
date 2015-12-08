@@ -1,5 +1,5 @@
 --
--- Copyright 2013 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2015 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-pprof_vars = {
+local pprof_vars = {
     prof_1 = {
         {
           id = 1,
@@ -174,12 +174,12 @@ pprof_vars = {
     }
 }
 
-PProfFetch = {
+local PProfFetch = {
     __class__ = 'PProfFetch',
     _i = 1
 }
-    function PProfFetch:new()
-        t = {}
+    function PProfFetch.new()
+        local t = {}
         return setmetatable(t, { __index = PProfFetch })
     end
 
@@ -191,4 +191,5 @@ PProfFetch = {
     function PProfFetch:reset()
         self._i = 1
     end
---EOF
+
+return PProfFetch

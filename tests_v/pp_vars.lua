@@ -17,7 +17,7 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-pp_vars = {
+local pp_vars = {
     p_1 = {
         {
           id = 1,
@@ -174,12 +174,12 @@ pp_vars = {
     }
 }
 
-PPFetch = {
+local PPFetch = {
     __class__ = 'PPFetch',
     _i = 1
 }
-    function PPFetch:new()
-        t = {}
+    function PPFetch.new()
+        local t = {}
         return setmetatable(t, { __index = PPFetch })
     end
 
@@ -191,4 +191,5 @@ PPFetch = {
     function PPFetch:reset()
         self._i = 1
     end
---EOF
+
+return PPFetch
