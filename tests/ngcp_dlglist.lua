@@ -17,19 +17,9 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
+require('luaunit')
+local NGCPDlgList = require 'ngcp.dlglist'
 
-local NGCPXAvp = require 'ngcp.xavp'
-
--- class NGCPPrefs
-local NGCPPrefs = {
-     __class__ = 'NGCPPrefs'
-}
-
-    function NGCPPrefs.init(group)
-        local levels = {"caller", "callee"}
-        for _,v in pairs(levels) do
-            NGCPXAvp.init(v,group)
-        end
-    end
--- class
-return NGCPPrefs
+-- luacheck: ignore TestNGCPContractPrefs
+TestNGCPDlgList = {} --class
+-- class TestNGCP

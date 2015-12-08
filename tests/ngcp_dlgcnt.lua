@@ -1,5 +1,5 @@
 --
--- Copyright 2014 SipWise Team <development@sipwise.com>
+-- Copyright 2014-2015 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -19,17 +19,12 @@
 --
 local lemock = require('lemock')
 require('luaunit')
-require 'ngcp.utils'
 
-if not sr then
-    require 'mocks.sr'
-    sr = srMock:new()
-else
-    argv = {}
-end
+local srMock = require 'mocks.sr'
+sr = srMock:new()
 
 local mc
-
+-- luacheck: ignore TestNGCPDlgCnt
 TestNGCPDlgCnt = {} --class
 
     function TestNGCPDlgCnt:setUp()
@@ -84,7 +79,6 @@ TestNGCPDlgCnt = {} --class
     end
 
     function TestNGCPDlgCnt:test_set_1()
-        local c = self.dlg.config
         self.central:ping() ;mc :returns(true)
         self.central:incr("total")  ;mc :returns(1)
 
@@ -97,7 +91,6 @@ TestNGCPDlgCnt = {} --class
     end
 
     function TestNGCPDlgCnt:test_set_2()
-        local c = self.dlg.config
         self.central:ping() ;mc :returns(true)
         self.central:incr("total")  ;mc :returns(1)
 
@@ -116,7 +109,6 @@ TestNGCPDlgCnt = {} --class
     end
 
     function TestNGCPDlgCnt:test_del()
-        local c = self.dlg.config
         self.pair:ping() ;mc :returns(true)
         self.pair:lpop("callid0") ;mc :returns("total")
         self.pair:lpop("callid0") ;mc :returns(nil)
@@ -133,7 +125,6 @@ TestNGCPDlgCnt = {} --class
     end
 
     function TestNGCPDlgCnt:test_del_zero()
-        local c = self.dlg.config
         self.pair:ping() ;mc :returns(true)
         self.pair:lpop("callid0") ;mc :returns("total")
         self.pair:lpop("callid0") ;mc :returns(nil)
@@ -188,7 +179,6 @@ TestNGCPDlgCnt = {} --class
     end
 
     function TestNGCPDlgCnt:test_del_multy()
-        local c = self.dlg.config
         self.pair:ping() ;mc :returns(true)
         self.pair:lpop("callid0") ;mc :returns("total")
 

@@ -17,16 +17,9 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require 'tests.utils'
-require 'tests.ngcp_avp'
-require 'tests.ngcp_xavp'
-require 'tests.ngcp_pref'
-require 'tests.ngcp_dp'
-require 'tests.ngcp_up'
-require 'tests.ngcp_pp'
-require 'tests.ngcp_rp'
----- Control test output:
-lu = LuaUnit
-lu:setOutputType( "TAP" )
-lu:setVerbosity( 1 )
-lu:run()
+require('luaunit')
+local NGCPContractPrefs = require 'ngcp.cp'
+
+-- luacheck: ignore TestNGCPContractPrefs
+TestNGCPContractPrefs = {} --class
+-- class TestNGCP
