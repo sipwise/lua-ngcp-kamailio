@@ -17,7 +17,7 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-up_vars = {
+local up_vars = {
     ae736f72_21d1_4ea6_a3ea_4d7f56b3887c = {
         {
           id = 1,
@@ -136,12 +136,12 @@ up_vars = {
     }
 }
 
-UPFetch = {
+local UPFetch = {
     __class__ = 'UPFetch',
     _i = 1
 }
-    function UPFetch:new()
-        t = {}
+    function UPFetch.new()
+        local t = {}
         return setmetatable(t, { __index = UPFetch })
     end
 
@@ -153,4 +153,5 @@ UPFetch = {
     function UPFetch:reset()
         self._i = 1
     end
---EOF
+
+return UPFetch
