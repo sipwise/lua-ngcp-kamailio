@@ -21,8 +21,8 @@ local NGCPRecentCalls = {
      __class__ = 'NGCPRecentCalls'
 }
 local redis = require 'redis';
-require 'ngcp.utils';
-
+local utils = require 'ngcp.utils';
+local utable = utils.table
 _ENV = NGCPRecentCalls
 
 -- class NGCPRecentCalls
@@ -30,7 +30,7 @@ local NGCPRecentCalls_MT = { __index = NGCPRecentCalls }
 
 NGCPRecentCalls_MT.__tostring = function (t)
     return string.format("config:%s central:%s",
-        table.tostring(t.config), table.tostring(t.central))
+        utable.tostring(t.config), utable.tostring(t.central))
 end
 
     function NGCPRecentCalls.new()

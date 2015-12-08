@@ -1,5 +1,5 @@
 --
--- Copyright 2013 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2015 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,14 +17,16 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require 'ngcp.utils'
-require 'ngcp.xavp'
+local utils = require 'ngcp.utils'
+local utable = utils.table
+local NGCPXAvp = require 'ngcp.xavp'
+local NGCPPrefs = require 'ngcp.pref'
 
 -- class NGCPPeerPrefs
-NGCPPeerPrefs = {
+local NGCPPeerPrefs = {
      __class__ = 'NGCPPeerPrefs'
 }
-NGCPPeerPrefs_MT = { __index = NGCPPeerPrefs }
+local NGCPPeerPrefs_MT = { __index = NGCPPeerPrefs }
 
 NGCPPeerPrefs_MT.__tostring = function ()
         local xavp = NGCPXAvp:new('caller','peer_prefs')
@@ -86,9 +88,8 @@ NGCPPeerPrefs_MT.__tostring = function ()
 
         if row then
             while row do
-                --sr.log("info", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
                 table.insert(result, row)
-                table.add(keys, row.attribute)
+                utable.add(keys, row.attribute)
                 defaults[row.attribute] = nil
                 row = cur:fetch({}, "a")
             end
@@ -121,4 +122,4 @@ NGCPPeerPrefs_MT.__tostring = function ()
         end
     end
 -- class
---EOF
+return NGCPPeerPrefs

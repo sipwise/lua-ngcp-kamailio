@@ -1,5 +1,5 @@
 --
--- Copyright 2014 SipWise Team <development@sipwise.com>
+-- Copyright 2014-2015 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,15 +17,16 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require 'ngcp.utils'
-require 'ngcp.xavp'
-require 'ngcp.pref'
+local utils = require 'ngcp.utils'
+local utable = utils.table
+local NGCPXAvp = require 'ngcp.xavp'
+local NGCPPrefs = require 'ngcp.pref'
 
 -- class NGCPProfilePrefs
-NGCPProfilePrefs = {
+local NGCPProfilePrefs = {
      __class__ = 'NGCPProfilePrefs'
 }
-NGCPProfilePrefs_MT = { __index = NGCPProfilePrefs }
+local NGCPProfilePrefs_MT = { __index = NGCPProfilePrefs }
 
 NGCPProfilePrefs_MT.__tostring = function ()
         local xavp = NGCPXAvp:new('caller','prof_prefs')
@@ -70,18 +71,18 @@ NGCPProfilePrefs_MT.__tostring = function ()
         local result = {}
         local row = cur:fetch({}, "a")
 
-        if table.size(row) > 0 then
-            while table.size(row) > 0 do
+        if utable.size(row) > 0 then
+            while utable.size(row) > 0 do
                 --sr.log("debug", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
                 table.insert(result, row)
-                table.add(keys, row.attribute)
+                utable.add(keys, row.attribute)
                 row = cur:fetch({}, "a")
             end
         else
             sr.log("dbg", string.format("no results for query:%s", query))
         end
         cur:close()
-        if table.size(result) > 0 then
+        if utable.size(result) > 0 then
             self:xavp(level, result)
         end
         return keys
@@ -103,4 +104,4 @@ NGCPProfilePrefs_MT.__tostring = function ()
         end
     end
 -- class
---EOF
+return NGCPProfilePrefs
