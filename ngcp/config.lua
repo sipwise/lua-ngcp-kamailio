@@ -25,10 +25,10 @@ if not luasql then
     luasql = driver
 end
 -- class NGCPConfig
-NGCPConfig = {
+local NGCPConfig = {
      __class__ = 'NGCPConfig'
 }
-NGCPConfig_MT = { __index = NGCPConfig }
+local NGCPConfig_MT = { __index = NGCPConfig }
 
     function NGCPConfig:new()
         local t = {
@@ -117,3 +117,4 @@ NGCPConfig_MT = { __index = NGCPConfig }
         return defs
     end
 -- class
+return NGCPConfig

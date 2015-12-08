@@ -18,8 +18,8 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 require('luaunit')
-require 'ngcp.pref'
+local NGCPPrefs = require 'ngcp.pref'
 
+-- luacheck: ignore TestNGCPPrefs
 TestNGCPPrefs = {} --class
 -- class TestNGCP
---EOF

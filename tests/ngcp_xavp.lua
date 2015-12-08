@@ -1,5 +1,5 @@
 --
--- Copyright 2013 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2015 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -18,16 +18,12 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 require('luaunit')
-require 'ngcp.xavp'
+local NGCPXAvp = require 'ngcp.xavp'
 
-if not sr then
-    require 'mocks.sr'
-    sr = srMock:new()
-else
-    argv = {}
-end
+local srMock = require 'mocks.sr'
+sr = srMock:new()
 
-vals = {
+local vals = {
     {
         id = 1,
         uuid = "ae736f72-21d1-4ea6-a3ea-4d7f56b3887c",
@@ -59,6 +55,7 @@ vals = {
         last_modified = "1900-01-01 00:00:01"
     }
 }
+-- luacheck: ignore TestNGCPXAvp
 TestNGCPXAvp = {} --class
     function TestNGCPXAvp:test_create()
         local xavp = NGCPXAvp:new("caller", "peer", {})
@@ -76,7 +73,7 @@ TestNGCPXAvp = {} --class
     end
 
     function TestNGCPXAvp:test_xavp_get()
-        xavp = NGCPXAvp:new("caller", "peer", vals)
+        local xavp = NGCPXAvp:new("caller", "peer", vals)
         sr.pv.sets("$xavp(caller_peer=>testid)", "value")
         assertEquals(xavp("testid"), "value")
         sr.pv.sets("$xavp(caller_peer=>testid)", "1")
@@ -84,7 +81,7 @@ TestNGCPXAvp = {} --class
     end
 
     function TestNGCPXAvp:test_xavp_get_all()
-        xavp = NGCPXAvp:new("caller", "peer", vals)
+        local xavp = NGCPXAvp:new("caller", "peer", vals)
         sr.pv.sets("$xavp(caller_peer=>testid)", "value")
         assertEquals(xavp("testid"), "value")
         sr.pv.sets("$xavp(caller_peer[0]=>testid)", "1")
@@ -93,16 +90,16 @@ TestNGCPXAvp = {} --class
 
     function TestNGCPXAvp:test_xavp_set()
         local xavp = NGCPXAvp:new("caller", "peer", vals)
-        local vals = {1,"2",3,nil}
-        for i=1,#vals do
-            xavp("testid",vals[i])
-            assertEquals(xavp("testid"), vals[i])
-            assertEquals(sr.pv.get("$xavp(caller_peer=>testid)"),vals[i])
+        local lvals = {1,"2",3,nil}
+        for i=1,#lvals do
+            xavp("testid",lvals[i])
+            assertEquals(xavp("testid"), lvals[i])
+            assertEquals(sr.pv.get("$xavp(caller_peer=>testid)"),lvals[i])
         end
     end
 
     function TestNGCPXAvp:test_clean()
-        xavp = NGCPXAvp:new("caller", "peer", vals)
+        local xavp = NGCPXAvp:new("caller", "peer", vals)
         xavp("testid", 1)
         assertEquals(sr.pv.get("$xavp(caller_peer=>testid)"),1)
         assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"),"caller")
@@ -129,11 +126,11 @@ TestNGCPXAvp = {} --class
 
     function TestNGCPXAvp:test_clean_key()
         local xavp = NGCPXAvp:new("caller", "peer", vals)
-        local vals = {1,"2",3,nil}
-        for i=1,#vals do
-            xavp("testid",vals[i])
-            assertEquals(xavp("testid"), vals[i])
-            assertEquals(sr.pv.get("$xavp(caller_peer=>testid)"),vals[i])
+        local lvals = {1,"2",3,nil}
+        for i=1,#lvals do
+            xavp("testid",lvals[i])
+            assertEquals(xavp("testid"), lvals[i])
+            assertEquals(sr.pv.get("$xavp(caller_peer=>testid)"),lvals[i])
         end
         xavp("other", 1)
         xavp("other", 2)
@@ -158,4 +155,3 @@ TestNGCPXAvp = {} --class
     end
 
 -- class TestNGCPXAvp
---EOF

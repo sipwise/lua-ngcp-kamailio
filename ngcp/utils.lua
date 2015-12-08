@@ -19,46 +19,52 @@
 --
 -- Lua utils
 
--- luacheck: globals math table string
+local utils = {}
+utils.table = {}
+utils.string = {}
+utils.math = {}
+local ut = utils.table
+local us = utils.string
+
 -- improving the built-in pseudorandom generator
 -- http://lua-users.org/wiki/MathLibraryTutorial
-do
-   local oldrandom = math.random
-   local randomtable
-   math.random = function ()
-      if randomtable == nil then
-         randomtable = {}
-         for i = 1, 97 do
-            randomtable[i] = oldrandom()
-         end
-      end
-      local x = oldrandom()
-      local i = 1 + math.floor(97*x)
-      x, randomtable[i] = randomtable[i], x
-      return x
-   end
-end
+local oldrandom = math.random
+local randomtable
+function utils.math.random()
+    if randomtable == nil then
+       randomtable = {}
+       for i = 1, 97 do
+          randomtable[i] = oldrandom()
+       end
+    end
+    local x = oldrandom()
+    local i = 1 + math.floor(97*x)
+    x, randomtable[i] = randomtable[i], x
+    return x
+ end
+ -- luacheck: ignore math
+math.random = utils.math.random
 
 -- copy a table
-function table.deepcopy(object)
+function ut.deepcopy(object)
     local lookup_table = {}
-    local function _copy(obj)
-        if type(obj) ~= "table" then
-            return obj
-        elseif lookup_table[obj] then
-            return lookup_table[obj]
+    local function _copy(object)
+        if type(object) ~= "table" then
+            return object
+        elseif lookup_table[object] then
+            return lookup_table[object]
         end
         local new_table = {}
-        lookup_table[obj] = new_table
-        for index, value in pairs(obj) do
+        lookup_table[object] = new_table
+        for index, value in pairs(object) do
             new_table[_copy(index)] = _copy(value)
         end
-        return setmetatable(new_table, getmetatable(obj))
+        return setmetatable(new_table, getmetatable(object))
     end
     return _copy(object)
 end
 
-function table.contains(t, element)
+function ut.contains(t, element)
     if t then
       for _, value in pairs(t) do
         if value == element then
@@ -70,13 +76,13 @@ function table.contains(t, element)
 end
 
 -- add if element is not in table
-function table.add(t, element)
-  if not table.contains(t, element) then
+function ut.add(t, element)
+  if not ut.contains(t, element) then
     table.insert(t, element)
   end
 end
 
-function table.del(t, element)
+function ut.del(t, element)
     local i
     local pos = {}
 
@@ -96,16 +102,16 @@ function table.del(t, element)
     end
 end
 
-function table.merge(t, other)
+function ut.merge(t, other)
   if t and other then
     for _, value in ipairs(other) do
-      table.add(t, value)
+      ut.add(t, value)
     end
   end
   return t;
 end
 
-function table.size(t)
+function ut.size(t)
   if t then
     local c = 0
     for _ in pairs(t) do
@@ -116,7 +122,7 @@ function table.size(t)
   return 0
 end
 
-function table.val_to_str ( v )
+function ut.val_to_str ( v )
   if "string" == type( v ) then
     v = string.gsub( v, "\n", "\\n" )
     if string.match( string.gsub(v,"[^'\"]",""), '^"+$' ) then
@@ -124,36 +130,36 @@ function table.val_to_str ( v )
     end
     return '"' .. string.gsub(v,'"', '\\"' ) .. '"'
   else
-    return "table" == type( v ) and table.tostring( v ) or
+    return "table" == type( v ) and ut.tostring( v ) or
       tostring( v )
   end
 end
 
-function table.key_to_str ( k )
+function ut.key_to_str ( k )
   if "string" == type( k ) and string.match( k, "^[_%a][_%a%d]*$" ) then
     return k
   else
-    return "[" .. table.val_to_str( k ) .. "]"
+    return "[" .. ut.val_to_str( k ) .. "]"
   end
 end
 
-function table.tostring( tbl )
+function ut.tostring( tbl )
   local result, done = {}, {}
   if not tbl then return "nil" end
   for k, v in ipairs( tbl ) do
-    table.insert( result, table.val_to_str( v ) )
+    table.insert( result, ut.val_to_str( v ) )
     done[ k ] = true
   end
   for k, v in pairs( tbl ) do
     if not done[ k ] then
       table.insert( result,
-        table.key_to_str( k ) .. "=" .. table.val_to_str( v ) )
+        ut.key_to_str( k ) .. "=" .. ut.val_to_str( v ) )
     end
   end
   return "{" .. table.concat( result, "," ) .. "}"
 end
 
-function table.shuffle(tab)
+function ut.shuffle(tab)
   local n, order, res = #tab, {}, {}
   math.randomseed( os.time() );
   for i=1,n do order[i] = { rnd = math.random(), idx = i } end
@@ -162,11 +168,10 @@ function table.shuffle(tab)
   return res
 end
 
--- luacheck: ignore range
 -- range(start)             returns an iterator from 1 to a (step = 1)
 -- range(start, stop)       returns an iterator from a to b (step = 1)
 -- range(start, stop, step) returns an iterator from a to b, counting by step.
-range = function (i, to, inc)
+utils.range = function (i, to, inc)
   -- range(--[[ no args ]]) -> return "nothing" to fail the loop in the caller
   if i == nil then return end
 
@@ -185,17 +190,16 @@ range = function (i, to, inc)
   return function () if i == to then return nil end i = i + inc return i, i end
 end
 
-function table.shift(t, position)
+function ut.shift(t, position)
   local res = {}
   local p = position % #t
 
   if p == 0 then return end
-  for k in range(1, p) do
-    local v = table.remove(t, k-#res)
-    table.insert(res, v)
+  for k in utils.range(1, p) do
+    table.insert(res, table.remove(t, k-#res))
   end
-  for _,_v in ipairs(res) do
-    table.insert(t, _v)
+  for _,v in ipairs(res) do
+    table.insert(t, v)
   end
 end
 
@@ -205,8 +209,7 @@ end
 -- "'a','b'"
 -- implode("#",t)
 -- "a#b"
--- luacheck: ignore implode explode
-function implode(delimiter, list, quoter)
+function utils.implode(delimiter, list, quoter)
     local len = #list
     if not delimiter then
         error("delimiter is nil")
@@ -225,7 +228,7 @@ function implode(delimiter, list, quoter)
 end
 
 -- from string to table
-function explode(delimiter, text)
+function utils.explode(delimiter, text)
     local list = {}
     local pos = 1
 
@@ -253,11 +256,11 @@ function explode(delimiter, text)
     return list
 end
 
-function string.starts(String,Start)
+function us.starts(String,Start)
    return string.sub(String,1,string.len(Start))==Start
 end
 
-function string.ends(String,End)
+function us.ends(String,End)
    return End=='' or string.sub(String,-string.len(End))==End
 end
 
@@ -266,13 +269,12 @@ end
 -- Lua 5.1 compatible
 
 -- GLOBAL
--- luacheck: ignore Stack.*
-Stack = {
+local Stack = {
   __class__ = 'Stack'
 }
-Stack_MT = {
+local Stack_MT = {
   __tostring = function(t)
-    return table.tostring(Stack.list(t))
+    return ut.tostring(Stack.list(t))
   end,
   -- this works only on Lua5.2
   __len = function(t)
@@ -291,84 +293,86 @@ Stack_MT = {
   end
 }
 
-  -- Create a Table with stack functions
-  function Stack:new()
-    local t = { _et = {} }
-    setmetatable(t, Stack_MT)
-    return t
-  end
+-- Create a Table with stack functions
+function Stack.new()
+  local t = { _et = {} }
+  setmetatable(t, Stack_MT)
+  return t
+end
 
-  -- push a value on to the stack
-  function Stack:push(...)
-    if ... then
-      local targs = {...}
-      -- add values
-      for _,v in pairs(targs) do
-        table.insert(self._et, v)
-      end
+-- push a value on to the stack
+function Stack:push(...)
+  if ... then
+    local targs = {...}
+    -- add values
+    for _,v in pairs(targs) do
+      table.insert(self._et, v)
     end
   end
+end
 
-  -- pop a value from the stack
-  function Stack:pop(n)
-    -- get num values from stack
-    local num = n or 1
+-- pop a value from the stack
+function Stack:pop(num)
+  -- get num values from stack
+  local n = num or 1
 
-    -- return table
-    local entries = {}
+  -- return table
+  local entries = {}
 
-    -- get values into entries
-    -- luacheck: ignore i
-    for i = 1, num do
-      -- get last entry
-      if #self._et ~= 0 then
-        table.insert(entries, self._et[#self._et])
-        -- remove last value
-        table.remove(self._et)
-      else
-        break
-      end
-    end
-    -- return unpacked entries
-    return unpack(entries)
-  end
-
-  -- get pos ( starts on 0)
-  function Stack:get(pos)
-    assert(pos)
-    assert(pos>=0)
-    local indx = #self._et - pos
-    if indx>0 then
-      return self._et[indx]
+  -- get values into entries
+  for _ = 1, n do
+    -- get last entry
+    if #self._et ~= 0 then
+      table.insert(entries, self._et[#self._et])
+      -- remove last value
+      table.remove(self._et)
+    else
+      break
     end
   end
+  -- return unpacked entries
+  return unpack(entries)
+end
 
-  -- set a value in a pos (stars on 0)
-  function Stack:set(pos, value)
-    assert(pos)
-    assert(pos>=0)
-    local indx = #self._et - pos
-    if indx>0 then
-      if self._et[indx] then
-        self._et[indx] = value
-      else
-        error("No pos:"..pos)
-      end
+-- get pos ( starts on 0)
+function Stack:get(pos)
+  assert(pos)
+  assert(pos>=0)
+  local indx = #self._et - pos
+  if indx>0 then
+    return self._et[indx]
+  end
+end
+
+-- set a value in a pos (stars on 0)
+function Stack:set(pos, value)
+  assert(pos)
+  assert(pos>=0)
+  local indx = #self._et - pos
+  if indx>0 then
+    if self._et[indx] then
+      self._et[indx] = value
+    else
+      error("No pos:"..pos)
     end
   end
+end
 
-  -- get entries
-  function Stack:size()
-    return #self._et
-  end
+-- get entries
+function Stack:size()
+  return #self._et
+end
 
-  -- list values
-  function Stack:list()
-    local entries = {}
-    for i = #self._et, 1, -1 do
-      table.insert(entries, self._et[i])
-    end
-    return entries
+-- list values
+function Stack:list()
+  local entries = {}
+  for i = #self._et, 1, -1 do
+    table.insert(entries, self._et[i])
   end
+  return entries
+end
 -- end class
 --EOF
+
+utils.Stack = Stack
+return utils

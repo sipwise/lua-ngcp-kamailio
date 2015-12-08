@@ -18,11 +18,11 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 require('luaunit')
-require 'mocks.sr'
+local srMock = require 'mocks.sr'
 local NGCPDlgVar = require 'ngcp.dlg_var'
 
 sr = srMock:new()
-
+-- luacheck: ignore TestNGCPDlgVar
 TestNGCPDlgVar = {} --class
     function TestNGCPDlgVar:setUp()
         self.var = NGCPDlgVar:new("testid")
