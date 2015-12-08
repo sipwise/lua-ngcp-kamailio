@@ -21,7 +21,8 @@ local NGCPDlgCounters = {
      __class__ = 'NGCPDlgCounters'
 }
 local redis = require 'redis';
-require 'ngcp.utils';
+local utils = require 'ngcp.utils';
+local utable = utils.table;
 
 _ENV = NGCPDlgCounters
 
@@ -30,8 +31,8 @@ local NGCPDlgCounters_MT = { __index = NGCPDlgCounters }
 
 NGCPDlgCounters_MT.__tostring = function (t)
     return string.format("config:%s central:%s pair:%s",
-        table.tostring(t.config), table.tostring(t.central),
-        table.tostring(t.pair));
+        utable.tostring(t.config), utable.tostring(t.central),
+        utable.tostring(t.pair));
 end
 
     function NGCPDlgCounters.new()
@@ -107,7 +108,7 @@ end
             self.pair = self._connect(self.config.pair);
         end
         local res = self.pair:lrange(callid, 0, -1);
-        return table.contains(res, key);
+        return utable.contains(res, key);
     end
 
     function NGCPDlgCounters:set(callid, key)

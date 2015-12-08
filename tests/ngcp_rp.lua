@@ -1,5 +1,5 @@
 --
--- Copyright 2013 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2015 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -18,45 +18,15 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 require('luaunit')
-require 'ngcp.utils'
-require 'ngcp.rp'
-require 'tests_v.dp_vars'
-require 'tests_v.up_vars'
-require 'lemock'
+local NGCPDomainPrefs = require 'ngcp.dp'
+local NGCPUserPrefs = require 'ngcp.up'
+local NGCPPeerPrefs = require 'ngcp.pp'
+local NGCPRealPrefs = require 'ngcp.rp'
 
-if not sr then
-    require 'mocks.sr'
-    sr = srMock:new()
-else
-    argv = {}
-end
-local mc = nil
+local srMock = require 'mocks.sr'
+sr = srMock:new()
 
-PFetch = {
-    __class__ = 'PFetch',
-    _i = { domain=1, user=1 },
-    _var = { domain=dp_vars, user=up_vars}
-}
-    function PFetch:new()
-        local t = {}
-        return setmetatable(t, { __index = PFetch })
-    end
-
-    function PFetch:val(group, uuid)
-        if not self._i[group] then
-            error(string.format("group:%s unknown", group))
-        end
-        self._i[group] = self._i[group] + 1
-        local temp = self._var[group][uuid][self._i[group]-1]
-        if not temp then
-            print("var nil")
-        end
-    end
-
-    function PFetch:reset(group)
-        self._i[group] = 1
-    end
-
+-- luacheck: ignore TestNGCPRealPrefs
 TestNGCPRealPrefs = {} --class
 
     function TestNGCPRealPrefs:setUp()

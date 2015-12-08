@@ -1,5 +1,5 @@
 --
--- Copyright 2013 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2015 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,11 +17,12 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
+
 -- class NGCPAvp
-NGCPAvp = {
+local NGCPAvp = {
      __class__ = 'NGCPAvp'
 }
-NGCPAvp_MT = {
+local NGCPAvp_MT = {
     __index = NGCPAvp,
 }
 
@@ -60,10 +61,7 @@ NGCPAvp_MT = {
     end
 
     function NGCPAvp:clean()
-        --print("NGCPAvp:clean")
-        --print(table.tostring(getmetatable(self)))
-        --print(table.tostring(self))
         sr.pv.unset(self.id)
     end
 -- class
---EOF
+return NGCPAvp

@@ -18,11 +18,12 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 require('luaunit')
-require 'mocks.sr'
-require 'ngcp.avp'
+local srMock = require 'mocks.sr'
+local NGCPAvp = require 'ngcp.avp'
 
-sr = srMock:new()
+sr = srMock.new()
 
+-- luacheck: ignore TestNGCPAvp
 TestNGCPAvp = {} --class
     function TestNGCPAvp:setUp()
         self.avp = NGCPAvp:new("testid")
@@ -47,7 +48,6 @@ TestNGCPAvp = {} --class
     function TestNGCPAvp:test_avp_set()
         local vals = {1,2,3}
         local okvals = {3,2,1}
-        local i
         for i=1,#vals do
             self.avp(vals[i])
             assertEquals(self.avp(),vals[i])
@@ -58,7 +58,6 @@ TestNGCPAvp = {} --class
     function TestNGCPAvp:test_avp_set2()
         local vals = {1,2,"3"}
         local okvals = {"3",2,1}
-        local i
         for i=1,#vals do
             self.avp(vals[i])
             assertEquals(self.avp(),vals[i])

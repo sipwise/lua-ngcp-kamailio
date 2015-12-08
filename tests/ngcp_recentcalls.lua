@@ -17,19 +17,16 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-local lemock = require('lemock')
-require('luaunit')
-require 'ngcp.utils'
 
-if not sr then
-    require 'mocks.sr'
-    sr = srMock:new()
-else
-    argv = {}
-end
+require('luaunit')
+local lemock = require('lemock')
+local srMock = require 'mocks.sr'
+
+sr = srMock:new()
 
 local mc
 
+-- luacheck: ignore TestNGCPRecentCalls
 TestNGCPRecentCalls = {} --class
 
     function TestNGCPRecentCalls:setUp()

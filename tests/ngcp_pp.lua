@@ -18,30 +18,28 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 require('luaunit')
-require('lemock')
-require 'ngcp.utils'
-require 'tests_v.pp_vars'
+local lemock = require('lemock')
+local utils = require 'ngcp.utils'
+local utable = utils.table
+local PPFetch = require 'tests_v.pp_vars'
 
-if not sr then
-    require 'mocks.sr'
-    sr = srMock:new()
-else
-    argv = {}
-end
+
+local srMock = require 'mocks.sr'
+sr = srMock:new()
 
 local mc,env,con
 local pp_vars = PPFetch:new()
 
 package.loaded.luasql = nil
 package.preload['luasql.mysql'] = function ()
-    luasql = {}
+    local luasql = {}
     luasql.mysql = function ()
         return env
     end
 end
-require 'ngcp.config'
-require 'ngcp.rp'
-
+local NGCPConfig = require 'ngcp.config'
+local NGCPPeerPrefs = require 'ngcp.pp'
+-- luacheck: ignore TestNGCPPeerPrefs
 TestNGCPPeerPrefs = {} --class
 
     function TestNGCPPeerPrefs:setUp()
@@ -52,7 +50,7 @@ TestNGCPPeerPrefs = {} --class
 
         package.loaded.luasql = nil
         package.preload['luasql.mysql'] = function ()
-            luasql = {}
+            local luasql = {}
             luasql.mysql = function ()
                 return env
             end
@@ -88,18 +86,17 @@ TestNGCPPeerPrefs = {} --class
     function TestNGCPPeerPrefs:get_defaults(level, set)
         local keys_expected = {}
         local defaults = self.d.config:get_defaults('peer')
-        local k,v
 
         if set then
-            keys_expected = table.deepcopy(set)
-            for k,v in pairs(keys_expected) do
+            keys_expected = utable.deepcopy(set)
+            for _,v in pairs(keys_expected) do
                 sr.log("dbg", string.format("removed key:%s is been loaded.", v))
                 defaults[v] = nil
             end
         end
 
         for k,v in pairs(defaults) do
-            table.add(keys_expected, k)
+            utable.add(keys_expected, k)
             assertEquals(sr.pv.get("$xavp("..level.."_peer_prefs=>"..k..")"), v)
         end
         return keys_expected
@@ -127,6 +124,20 @@ TestNGCPPeerPrefs = {} --class
         local keys = self.d:caller_load("2")
         mc:verify()
 
+        local lkeys = {
+            "ip_header",
+            "sst_enable",
+            "outbound_from_user",
+            "inbound_upn",
+            "sst_expires",
+            "sst_max_timer",
+            "inbound_npn",
+            "sst_min_timer",
+            "sst_refresh_method",
+            "inbound_uprn"
+        }
+
+        assertItemsEquals(keys, lkeys)
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"), "caller")
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_enable)"),"no")
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
@@ -146,6 +157,20 @@ TestNGCPPeerPrefs = {} --class
         local keys = self.d:callee_load("2")
         mc:verify()
 
+        local lkeys = {
+            "ip_header",
+            "sst_enable",
+            "outbound_from_user",
+            "inbound_upn",
+            "sst_expires",
+            "sst_max_timer",
+            "inbound_npn",
+            "sst_min_timer",
+            "sst_refresh_method",
+            "inbound_uprn"
+        }
+
+        assertItemsEquals(keys, lkeys)
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"), "callee")
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_enable)"),"no")
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")

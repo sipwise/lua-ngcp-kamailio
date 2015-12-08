@@ -1,5 +1,5 @@
 --
--- Copyright 2013 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2015 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,19 +17,24 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require 'tests.utils'
-require 'tests.mocks'
-require 'tests.ngcp_avp'
-require 'tests.ngcp_xavp'
-require 'tests.ngcp_pref'
-require 'tests.ngcp_pprof'
-require 'tests.ngcp_dp'
-require 'tests.ngcp_up'
-require 'tests.ngcp_pp'
-require 'tests.ngcp_rp'
-require 'tests.ngcp'
----- Control test output:
-lu = LuaUnit
-lu:setOutputType( "TAP" )
-lu:setVerbosity( 1 )
-lu:run()
+
+require('luaunit')
+local srMock = require 'mocks.sr'
+
+-- luacheck: ignore TestSRMock
+TestSRMock = {}
+    function TestSRMock:setUp()
+        self.sr = srMock.new()
+    end
+
+    function TestSRMock:test_hdr_get()
+        self.sr.hdr.insert("From: hola\r\n")
+        assertEquals(self.sr.hdr.headers, {"From: hola\r\n"})
+        assertEquals(self.sr.pv.get("$hdr(From)"), "hola")
+    end
+
+    function TestSRMock:test_log()
+        assertTrue(self.sr.log)
+        self.sr.log("dbg", "Hi dude!")
+        assertError(self.sr.log, "debug", "Hi dude!")
+    end

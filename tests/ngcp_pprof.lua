@@ -18,30 +18,25 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 require('luaunit')
-require('lemock')
-require 'ngcp.utils'
-require 'tests_v.pprof_vars'
+local lemock = require('lemock')
+local PProfFetch = require 'tests_v.pprof_vars'
 
-if not sr then
-    require 'mocks.sr'
-    sr = srMock:new()
-else
-    argv = {}
-end
+local srMock = require 'mocks.sr'
+sr = srMock:new()
 
 local mc,env,con
 local pprof_vars = PProfFetch:new()
 
 package.loaded.luasql = nil
 package.preload['luasql.mysql'] = function ()
-    luasql = {}
+    local luasql = {}
     luasql.mysql = function ()
         return env
     end
 end
-require 'ngcp.config'
-require 'ngcp.pprof'
-
+local NGCPConfig = require 'ngcp.config'
+local NGCPProfilePrefs = require 'ngcp.pprof'
+-- luacheck: ignore TestNGCPProfilePrefs
 TestNGCPProfilePrefs = {} --class
 
     function TestNGCPProfilePrefs:setUp()
@@ -52,7 +47,7 @@ TestNGCPProfilePrefs = {} --class
 
         package.loaded.luasql = nil
         package.preload['luasql.mysql'] = function ()
-            luasql = {}
+            local luasql = {}
             luasql.mysql = function ()
                 return env
             end
@@ -110,6 +105,7 @@ TestNGCPProfilePrefs = {} --class
         local keys = self.d:caller_load("ah736f72-21d1-4ea6-a3ea-4d7f56b3887c")
         mc:verify()
 
+        assertItemsEquals(keys, {"sst_enable", "sst_refresh_method", "outbound_from_user"})
         assertEquals(sr.pv.get("$xavp(caller_prof_prefs=>dummy)"), "caller")
         assertEquals(sr.pv.get("$xavp(caller_prof_prefs=>sst_enable)"),"yes")
         assertEquals(sr.pv.get("$xavp(caller_prof_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
@@ -129,6 +125,7 @@ TestNGCPProfilePrefs = {} --class
         local keys = self.d:callee_load("ah736f72-21d1-4ea6-a3ea-4d7f56b3887c")
         mc:verify()
 
+        assertItemsEquals(keys, {"sst_enable", "sst_refresh_method", "outbound_from_user"})
         assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>dummy)"), "callee")
         assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>sst_enable)"),"yes")
         assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")

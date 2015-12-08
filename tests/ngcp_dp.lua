@@ -18,30 +18,28 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 require('luaunit')
-require('lemock')
-require 'ngcp.utils'
-require 'tests_v.dp_vars'
+local utils = require 'ngcp.utils'
+local utable = utils.table
+local lemock = require('lemock')
+local DPFetch = require 'tests_v.dp_vars'
 
-if not sr then
-    require 'mocks.sr'
-    sr = srMock:new()
-else
-    argv = {}
-end
+local srMock = require 'mocks.sr'
+sr = srMock:new()
 
 local mc,env,con
 local dp_vars = DPFetch:new()
 
 package.loaded.luasql = nil
 package.preload['luasql.mysql'] = function ()
-    luasql = {}
+    local luasql = {}
     luasql.mysql = function ()
         return env
     end
 end
-require 'ngcp.config'
-require 'ngcp.dp'
+local NGCPConfig = require 'ngcp.config'
+local NGCPDomainPrefs = require 'ngcp.dp'
 
+-- luacheck: ignore TestNGCPDomainPrefs
 TestNGCPDomainPrefs = {} --class
 
     function TestNGCPDomainPrefs:setUp()
@@ -89,10 +87,9 @@ TestNGCPDomainPrefs = {} --class
     function TestNGCPDomainPrefs:get_defaults()
         local keys_expected = {"sst_enable", "sst_refresh_method"}
         local defaults = NGCPConfig.get_defaults(self.d.config, 'dom')
-        local k,_
 
         for k,_ in pairs(defaults) do
-            table.add(keys_expected, k)
+            utable.add(keys_expected, k)
         end
         return keys_expected
     end
