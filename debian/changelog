@@ -1,3 +1,14 @@
+lua-ngcp-kamailio (0.11.0.0+0~mr4.3.0.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [15163bb] MT#16773 dlgcnt: don't allow negative counters by default
+  * [b8832fd] MT#12937 fix tests after 9a28c0496c7e
+  * [76d9ed5] MT#6259 add docker support for unit testing
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 16 Dec 2015 09:17:26 +0100
+
 lua-ngcp-kamailio (0.10.0.0+0~mr4.2.0.0) unstable; urgency=medium
 
   [ Victor Seva ]
