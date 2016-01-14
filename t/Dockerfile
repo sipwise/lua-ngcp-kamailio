@@ -1,4 +1,4 @@
-# DOCKER_NAME=lua-ngcp-kamailio-jenkins
+# DOCKER_NAME=lua-ngcp-kamailio-jessie
 FROM docker.mgm.sipwise.com/sipwise-jessie:latest
 
 # Important! Update this no-op ENV variable when this Dockerfile
