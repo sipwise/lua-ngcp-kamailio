@@ -1,0 +1,20 @@
+#!/bin/bash
+# This script is used for exec luacheck with proper arguments
+# from within Jenkins
+
+set -e
+set -u
+set -x
+
+if [ -d /results ] ; then
+  # Running from Jenkins (RW)
+  RESULTS="/results"
+
+  cd "/code"
+else
+  # Running locally in Docker
+  RESULTS="./results"
+  mkdir -p "${RESULTS}"
+fi
+
+luacheck --formatter JUnit --config ngcp/.luacheckrc ngcp/*lua > ${RESULTS}/luacheck.xml || true
