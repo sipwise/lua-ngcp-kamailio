@@ -230,5 +230,20 @@ TestNGCPDlgCnt = {} --class
         assertTrue(res)
     end
 
+    function TestNGCPDlgCnt:test_del_key()
+        self.pair:ping() ;mc :returns(true)
+        self.pair:lrem("callid0", 1, "key1") ;mc :returns(1)
+
+        self.central:ping() ;mc :returns(true)
+        self.central:decr("key1")  ;mc :returns(1)
+
+        mc:replay()
+        self.dlg:del_key("callid0", "key1")
+        mc:verify()
+
+        assertIs(self.dlg.central, self.central)
+        assertIs(self.dlg.pair, self.pair)
+    end
+
 -- class TestNGCPDlgCnt
 --EOF
