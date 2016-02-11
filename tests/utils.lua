@@ -161,6 +161,13 @@ TestUtils = {}
         assertItemsEquals(utils.explode('=>',"1=>2=>3"), {'1','2','3'})
     end
 
+    function TestUtils:test_explode_lnp()
+        assertItemsEquals(utils.explode_lnp("123"), {'1','2','3'})
+        assertItemsEquals(utils.explode_lnp("1"), {'1'})
+        assertItemsEquals(utils.explode_lnp(""), {})
+        assertError(utils.explode_lnp, nil)
+    end
+
     function TestUtils:test_starts()
         assertError(utils.string.stats, nil, "g")
         assertTrue(utils.string.starts("goga", "g"))

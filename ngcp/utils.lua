@@ -256,6 +256,23 @@ function utils.explode(delimiter, text)
     return list
 end
 
+-- from string to table with all the values of that string from 1 to len
+-- "123" -> {'1', '12', '123'}
+function us.explode_lnp(s)
+  local list = {}
+  local t = ""
+
+  if not s then
+    error("string is null")
+  end
+
+  for i = 1, #s do
+    t = t..s[i]
+    table.insert(list, s)
+  end
+  return list
+end
+
 function us.starts(String,Start)
    return string.sub(String,1,string.len(Start))==Start
 end
