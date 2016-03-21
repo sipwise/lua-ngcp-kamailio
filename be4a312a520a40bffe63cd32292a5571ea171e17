@@ -1,0 +1,7 @@
+Verified+1: Jenkins Jenkins <jenkins@sipwise.com>
+Code-Review+2: Víctor Seva <vseva@sipwise.com>
+Submitted-by: Víctor Seva <vseva@sipwise.com>
+Submitted-at: Mon, 21 Mar 2016 11:19:59 +0100
+Reviewed-on: http://gerrit.mgm.sipwise.com/5224
+Project: lua-ngcp-kamailio
+Branch: refs/heads/master
