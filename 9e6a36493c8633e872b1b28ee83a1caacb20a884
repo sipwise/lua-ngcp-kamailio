@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dad5f5cf_05da8278",
+        "filename": "ngcp/cp.lua",
+        "patchSetId": 2
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2016-03-21T14:15:10Z",
+      "side": 1,
+      "message": "_ipv5_net_to ?? \u003c\u003d LIMIT 1??",
+      "revId": "9e6a36493c8633e872b1b28ee83a1caacb20a884",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    }
+  ]
+}
