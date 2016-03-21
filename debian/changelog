@@ -1,3 +1,26 @@
+lua-ngcp-kamailio (0.11.1.0+0~mr4.3.1.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [a978706] MT#16891 t/Dockerfile: add DOCKER_NAME
+  * [6e13a2f] MT#17293 Switch Dockerfile to use a sipwise-jessie image
+  * [eb0c0d9] MT#17293 fix DOCKER_NAME
+  * [51a8be0] MT#12025 code refactoring with luacheck help
+  * [34ad538] MT#17841 ngcp/utils.lua: implement utils.string.explode_values()
+  * [be4a312] MT#16079 NGCPLoop class
+
+  [ Andrew Pogrebennyk ]
+  * [da71d44] MT#17709 remove only 1st occurrence of the key from the call-id list
+
+  [ Michael Prokop ]
+  * [ef65184] MT#17699 Bump Standards-Version to 3.9.7
+
+  [ Kirill Solomko ]
+  * [bdbe03b] MT#18499 ngcp contract load by location ip (location_id)
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 21 Mar 2016 22:18:28 +0100
+
 lua-ngcp-kamailio (0.11.0.0+0~mr4.3.0.0) unstable; urgency=medium
 
   [ Victor Seva ]
