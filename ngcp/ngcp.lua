@@ -64,15 +64,15 @@ end
         return t
     end
 
-    function NGCP:caller_contract_load(contract)
-        local keys = self.prefs.contract:caller_load(contract)
+    function NGCP:caller_contract_load(contract, ip)
+        local keys = self.prefs.contract:caller_load(contract, ip)
 
         self.prefs.real:caller_contract_load(keys)
         return keys
     end
 
-    function NGCP:callee_contract_load(contract)
-        local keys = self.prefs.contract:callee_load(contract)
+    function NGCP:callee_contract_load(contract, ip)
+        local keys = self.prefs.contract:callee_load(contract, ip)
 
         self.prefs.real:callee_contract_load(keys)
         return keys

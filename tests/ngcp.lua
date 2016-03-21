@@ -571,7 +571,7 @@ TestNGCP = {} --class
     end
 
     function TestNGCP:test_clean_caller_groups()
-        local groups = {"peer", "usr", "dom", "real", "prof"}
+        local groups = {"peer", "usr", "dom", "real", "prof", "contract"}
 
         for _,v in pairs(groups) do
             local xavp = self.ngcp.prefs[v]:xavp("caller")
@@ -586,7 +586,7 @@ TestNGCP = {} --class
 
 
     function TestNGCP:test_clean_callee_groups()
-        local groups = {"peer", "usr", "dom", "real", "prof"}
+        local groups = {"peer", "usr", "dom", "real", "prof", "contract"}
 
         for _,v in pairs(groups) do
             local xavp = self.ngcp.prefs[v]:xavp("callee")
