@@ -47,18 +47,18 @@ NGCPContractPrefs_MT.__tostring = function ()
         return setmetatable( t, NGCPContractPrefs_MT )
     end
 
-    function NGCPContractPrefs:caller_load(contract)
+    function NGCPContractPrefs:caller_load(contract, ip)
         if not contract then
             return {}
         end
-        return NGCPContractPrefs._load(self,"caller",contract)
+        return NGCPContractPrefs._load(self, "caller", contract, ip)
     end
 
-    function NGCPContractPrefs:callee_load(contract)
+    function NGCPContractPrefs:callee_load(contract, ip)
         if not contract then
             return {}
         end
-        return NGCPContractPrefs._load(self,"callee",contract)
+        return NGCPContractPrefs._load(self, "callee", contract, ip)
     end
 
     function NGCPContractPrefs:_defaults(_)
@@ -73,9 +73,44 @@ NGCPContractPrefs_MT.__tostring = function ()
         return keys, defaults
     end
 
-    function NGCPContractPrefs:_load(level, contract)
+    function NGCPContractPrefs:_get_location_id(contract, ip)
+        if not ip then
+            return nil;
+        end
+
         local con = self.config:getDBConnection()
-        local query = "SELECT * FROM " .. self.db_table .. " WHERE uuid ='" .. contract .."'"
+        local query = string.format("SELECT location_id FROM provisioning.voip_contract_locations cl JOIN provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id WHERE cl.contract_id = %s AND _ipv4_net_from <= UNHEX(HEX(INET_ATON('%s'))) AND _ipv4_net_to >= UNHEX(HEX(INET_ATON('%s'))) LIMIT 1", contract, ip, ip)
+        if string.find(ip, ':') ~= nil then
+            query = string.format("SELECT location_id FROM provisioning.voip_contract_locations cl JOIN provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id WHERE cl.contract_id = %s AND _ipv6_net_from <= UNHEX(HEX(INET_ATON('%s'))) AND _ipv6_net_to >= UNHEX(HEX(INET_ATON('%s'))) LIMIT 1", contract, ip, ip)
+        end
+
+        local cur,err = con:execute(query)
+
+        if err then
+            return nil
+        end
+
+        local row = cur:fetch({}, "a")
+
+        cur:close()
+
+        if row then
+            return row.location_id
+        end
+
+        return nil;
+    end
+
+    function NGCPContractPrefs:_load(level, contract, ip)
+        local con = self.config:getDBConnection()
+        local location_id = nil
+        local query = string.format("SELECT * FROM %s WHERE uuid ='%s' AND location_id IS NULL", self.db_table, contract)
+        if ip then
+            location_id = self:_get_location_id(contract, ip)
+            if location_id then
+                query = string.format("SELECT * FROM %s WHERE uuid ='%s' AND location_id = %d", self.db_table, contract, location_id)
+            end
+        end
         local cur = con:execute(query)
         local defaults
         local keys
@@ -101,6 +136,8 @@ NGCPContractPrefs_MT.__tostring = function ()
         for k,v in pairs(defaults) do
             xavp(k, v)
         end
+
+        xavp("location_id", location_id)
 
         return keys
     end
