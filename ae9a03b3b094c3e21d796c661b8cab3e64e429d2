@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dad5f5cf_a505b615",
+        "filename": "tests/ngcp_cp.lua",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1000004
+      },
+      "writtenOn": "2016-03-21T15:30:31Z",
+      "side": 1,
+      "message": "not sure if we need it as it is for provisioning.voip_preferences where as I can see we use kamailio.contract_preferences",
+      "range": {
+        "startLine": 67,
+        "startChar": 8,
+        "endLine": 78,
+        "endChar": 47
+      },
+      "revId": "ae9a03b3b094c3e21d796c661b8cab3e64e429d2",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    }
+  ]
+}
