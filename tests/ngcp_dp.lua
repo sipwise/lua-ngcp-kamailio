@@ -185,14 +185,14 @@ TestNGCPDomainPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
     end
 
-    function TestNGCPDomainPrefs:test_tostring()
-        local callee_xavp = NGCPDomainPrefs:xavp('callee')
-        callee_xavp("testid",1)
-        callee_xavp("foo","foo")
-        local caller_xavp = NGCPDomainPrefs:xavp('caller')
-        caller_xavp("other",1)
-        caller_xavp("otherfoo","foo")
-        assertEquals(tostring(self.d), 'caller_dom_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_dom_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n')
-    end
+--    function TestNGCPDomainPrefs:test_tostring()
+--        local callee_xavp = NGCPDomainPrefs:xavp('callee')
+--        callee_xavp("testid",1)
+--        callee_xavp("foo","foo")
+--        local caller_xavp = NGCPDomainPrefs:xavp('caller')
+--        caller_xavp("other",1)
+--        caller_xavp("otherfoo","foo")
+--        assertEquals(tostring(self.d), 'caller_dom_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_dom_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n')
+--    end
 -- class TestNGCPDomainPrefs
 --EOF
