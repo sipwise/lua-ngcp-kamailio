@@ -79,9 +79,9 @@ NGCPContractPrefs_MT.__tostring = function ()
         end
 
         local con = self.config:getDBConnection()
-        local query = string.format("SELECT location_id FROM provisioning.voip_contract_locations cl JOIN provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id WHERE cl.contract_id = %s AND _ipv4_net_from <= UNHEX(HEX(INET_ATON('%s'))) AND _ipv4_net_to >= UNHEX(HEX(INET_ATON('%s'))) LIMIT 1", contract, ip, ip)
+        local query = string.format("SELECT location_id FROM provisioning.voip_contract_locations cl JOIN provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id WHERE cl.contract_id = %s AND _ipv4_net_from <= UNHEX(HEX(INET_ATON('%s'))) AND _ipv4_net_to >= UNHEX(HEX(INET_ATON('%s'))) ORDER BY cb.ip DESC, cb.mask DESC LIMIT 1", contract, ip, ip)
         if string.find(ip, ':') ~= nil then
-            query = string.format("SELECT location_id FROM provisioning.voip_contract_locations cl JOIN provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id WHERE cl.contract_id = %s AND _ipv6_net_from <= UNHEX(HEX(INET_ATON('%s'))) AND _ipv6_net_to >= UNHEX(HEX(INET_ATON('%s'))) LIMIT 1", contract, ip, ip)
+            query = string.format("SELECT location_id FROM provisioning.voip_contract_locations cl JOIN provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id WHERE cl.contract_id = %s AND _ipv6_net_from <= UNHEX(HEX(INET_ATON('%s'))) AND _ipv6_net_to >= UNHEX(HEX(INET_ATON('%s'))) ORDER BY cb.ip DESC, cb.mask DESC LIMIT 1", contract, ip, ip)
         end
 
         local cur,err = con:execute(query)
