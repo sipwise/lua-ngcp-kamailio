@@ -112,7 +112,7 @@ TestNGCPContractPrefs = {} --class
 
     function TestNGCPContractPrefs:test_callee_load()
         assertTrue(self.d.config)
-        con:execute("SELECT location_id FROM provisioning.voip_contract_locations cl JOIN provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id WHERE cl.contract_id = 2 AND _ipv4_net_from <= UNHEX(HEX(INET_ATON('172.16.15.1'))) AND _ipv4_net_to >= UNHEX(HEX(INET_ATON('172.16.15.1'))) LIMIT 1")  ;mc :returns(self.cur)
+        con:execute("SELECT location_id FROM provisioning.voip_contract_locations cl JOIN provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id WHERE cl.contract_id = 2 AND _ipv4_net_from <= UNHEX(HEX(INET_ATON('172.16.15.1'))) AND _ipv4_net_to >= UNHEX(HEX(INET_ATON('172.16.15.1'))) ORDER BY cb.ip DESC, cb.mask DESC LIMIT 1")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns({location_id = 1 })
         self.cur:close()
         con:execute("SELECT * FROM contract_preferences WHERE uuid ='2' AND location_id = 1")  ;mc :returns(self.cur)
