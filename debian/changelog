@@ -1,3 +1,12 @@
+lua-ngcp-kamailio (0.7.7.0+0~mr3.8.7.0) unstable; urgency=medium
+
+  [ Andrew Pogrebennyk ]
+  * [9518a66] MT#17709 remove only 1st occurrence of the key from the call-id list
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 25 Apr 2016 13:53:35 +0200
+
 lua-ngcp-kamailio (0.7.6.0+0~mr3.8.6.0) unstable; urgency=medium
 
   [ Victor Seva ]
