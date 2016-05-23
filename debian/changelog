@@ -1,3 +1,12 @@
+lua-ngcp-kamailio (0.12.1.0+0~mr4.4.1.0) unstable; urgency=medium
+
+  [ Kirill Solomko ]
+  * [c991cdd] MT#18499 contract location select non 0.0.0.0/0 blocks first
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 23 May 2016 18:47:49 +0200
+
 lua-ngcp-kamailio (0.12.0.0+0~mr4.4.0.0) unstable; urgency=medium
 
   [ Victor Seva ]
