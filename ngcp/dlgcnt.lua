@@ -1,5 +1,5 @@
 --
--- Copyright 2014 SipWise Team <development@sipwise.com>
+-- Copyright 2014-2016 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -30,9 +30,8 @@ _ENV = NGCPDlgCounters
 local NGCPDlgCounters_MT = { __index = NGCPDlgCounters }
 
 NGCPDlgCounters_MT.__tostring = function (t)
-    return string.format("config:%s central:%s pair:%s",
-        utable.tostring(t.config), utable.tostring(t.central),
-        utable.tostring(t.pair));
+    return string.format("config:%s client:%s",
+        utable.tostring(t.config), utable.tostring(t.client));
 end
 
     function NGCPDlgCounters.new()
@@ -44,126 +43,109 @@ end
     function NGCPDlgCounters.init()
         local t = {
             config = {
-                central = {
-                    host = '127.0.0.1',
-                    port = 6379,
-                    db = "3"
-                },
-                pair = {
-                    host = '127.0.0.1',
-                    port = 6379,
-                    db = "4"
-                },
-                check_pair_dup = false,
-                allow_negative = false
+                host = '127.0.0.1',
+                port = 6379,
+                db = "3",
+                default_expire = 5,
             },
-            central = {},
-            pair = {}
+            client = {}
         };
         return t;
     end
 
-    function NGCPDlgCounters._test_connection(client)
+    local function _test_connection(client)
         if not client then return nil end
         local ok, _ = pcall(client.ping, client);
         return ok
     end
 
-    function NGCPDlgCounters._connect(config)
-        local client = redis.connect(config.host,config.port);
+    local function _connect(config)
+        local client = redis.connect(config.host, config.port);
         client:select(config.db);
         sr.log("dbg", string.format("connected to redis server %s:%d at %s\n",
             config.host, config.port, config.db));
         return client;
     end
 
-    function NGCPDlgCounters._decr(self, key)
-        local res = self.central:decr(key);
-        if res == 0 then
-            self.central:del(key);
-            sr.log("dbg", string.format("central:del[%s] counter is 0\n", key));
-        elseif res < 0 and not self.config.allow_negative then
-            self.central:del(key);
-            sr.log("warn", string.format("central:del[%s] counter was %s\n", key, tostring(res)));
-        else
-            sr.log("dbg", string.format("central:decr[%s]=>[%s]\n", key, tostring(res)));
-        end
-        return res;
+    -- TODO: how to get this without using KEYS??
+    local function _get_keys(client, key)
+        if not client then error("parameter client is null") end
+        if not key then error("parameter key is null") end
+        return client:keys(key)
     end
 
     function NGCPDlgCounters:exists(callid)
-        if not self._test_connection(self.pair) then
-            self.pair = self._connect(self.config.pair);
+        if not callid then error("parameter callid is null") end
+        if not _test_connection(self.client) then
+            self.client = _connect(self.config);
         end
-        local res = self.pair:llen(callid)
-        if res > 0 then
+        local real_key = callid .. ':*'
+        local res = _get_keys(self.client, real_key)
+        if res and utable.size(res) > 0 then
             return true
         else
             return false
         end
     end
 
-    function NGCPDlgCounters:is_in_set(callid, key)
-        if not self._test_connection(self.pair) then
-            self.pair = self._connect(self.config.pair);
+    function NGCPDlgCounters:set(callid, key, expire)
+        if not callid then error("parameter callid is null") end
+        if not key then error("parameter key is null") end
+        if not _test_connection(self.client) then
+            self.client = _connect(self.config);
         end
-        local res = self.pair:lrange(callid, 0, -1);
-        return utable.contains(res, key);
-    end
-
-    function NGCPDlgCounters:set(callid, key)
-        if not self._test_connection(self.central) then
-            self.central = self._connect(self.config.central);
+        if not expire then
+            expire = self.config.default_expire
         end
-        local res = self.central:incr(key);
-        sr.log("dbg", string.format("central:incr[%s]=>%s\n", key, tostring(res)));
-        if not self._test_connection(self.pair) then
-            self.pair = self._connect(self.config.pair);
-        end
-        if self.config.check_pair_dup and self:is_in_set(callid, key) then
-            sr.log("warn", string.format("pair:check_pair_dup[%s]=>[%s] already there!\n", callid, key));
-        end
-        local pos = self.pair:lpush(callid, key);
-        sr.log("dbg", string.format("pair:lpush[%s]=>[%s] %s\n", callid, key, tostring(pos)));
+        local real_key = callid .. ':' .. key
+        self.client:set(real_key, 'OK', expire);
+        sr.log("dbg", string.format("set[%s] %d\n", real_key, expire));
     end
 
     function NGCPDlgCounters:del_key(callid, key)
-        if not self._test_connection(self.pair) then
-            self.pair = self._connect(self.config.pair);
+        if not callid then error("parameter callid is null") end
+        if not key then error("parameter key is null") end
+        if not _test_connection(self.client) then
+            self.client = _connect(self.config);
         end
-        local num = self.pair:lrem(callid, 1, key);
-        sr.log("dbg", string.format("pair:lrem[%s]=>[%s] %d\n", callid, key, num));
-        if not self._test_connection(self.central) then
-            self.central = self._connect(self.config.central);
-        end
-        self:_decr(key);
+        local real_key = callid .. ':' .. key
+        self.client:del(real_key)
+        sr.log("dbg", string.format("del[%s]", real_key))
     end
 
     function NGCPDlgCounters:del(callid)
-        if not self._test_connection(self.pair) then
-            self.pair = self._connect(self.config.pair);
+        if not callid then error("parameter callid is null") end
+        if not _test_connection(self.client) then
+            self.client = _connect(self.config);
         end
-        local key = self.pair:lpop(callid);
-        if not key then
-            error(string.format("callid:%s list empty", callid));
+        local real_key = callid .. ':*'
+        local keys = _get_keys(self.client, real_key)
+        if keys then
+            sr.log("info",
+                string.format("del[%s]=>%s", callid, utable.tostring(keys)))
+        else
+            sr.log("dbg", string.format("no keys found for %s", real_key))
+            return
         end
-        if not self._test_connection(self.central) then
-            self.central = self._connect(self.config.central);
-        end
-        while key do
-            self:_decr(key);
-            sr.log("dbg", string.format("pair:lpop[%s]=>[%s]\n", callid, key));
-            key = self.pair:lpop(callid);
+        for _, key in ipairs(keys) do
+            self.client:del(key)
+            sr.log("dbg", string.format("del[%s]", key))
         end
     end
 
-    function NGCPDlgCounters:get(key)
-        if not self._test_connection(self.central) then
-            self.central = self._connect(self.config.central);
+    function NGCPDlgCounters:get_size(key)
+        if not key then error("parameter key is null") end
+        if not _test_connection(self.client) then
+            self.client = _connect(self.config);
         end
-        local res = self.central:get(key);
-        sr.log("dbg", string.format("central:get[%s]=>%s\n", key, tostring(res)));
-        return res;
+        local real_key = '*:' .. key
+        local res = _get_keys(self.client, real_key)
+        local len = 0
+        if res then
+            len = utable.size(res)
+        end
+        sr.log("dbg", string.format("get_size[%s]=>%d\n", real_key, len));
+        return len;
     end
 -- class
 
