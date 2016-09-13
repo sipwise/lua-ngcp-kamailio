@@ -1,6 +1,6 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: lua-ngcp-kamailio
-Source: git://git.mgm.sipwise.com/lua-ngcp-kamailio
+Source: https://github.com/sipwise/lua-ngcp-kamailio.git
 
 Files: *
 Copyright: 2013-2014 Sipwise GmbH, Austria
