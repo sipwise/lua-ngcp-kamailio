@@ -67,9 +67,10 @@ TestNGCPRecentCalls = {} --class
         assertIs(prev, self.central)
     end
 
-    function TestNGCPRecentCalls:test_set_by_uuid()
+    function TestNGCPRecentCalls:test_set_by_key()
 
         local ttl        = 7200
+        local key        = "431110001"
         local uuid       = "9bcb88b6-541a-43da-8fdc-816f5557ff93"
         local callid     = "12345-67890"
         local start_time = "1439911398"
@@ -79,7 +80,8 @@ TestNGCPRecentCalls = {} --class
         local source     = "SIPWISE_1"
 
         self.central:ping() ;mc :returns(true)
-        self.central:hmset(uuid, "callid", callid,
+        self.central:hmset(key,  "callid", callid,
+                                 "uuid", uuid,
                                  "start_time", start_time,
                                  "duration", duration,
                                  "caller", caller,
@@ -88,7 +90,8 @@ TestNGCPRecentCalls = {} --class
         self.central:expire(uuid, ttl) ;mc :returns(1)
 
         mc:replay()
-        local res = self.rcalls:set_by_uuid(uuid, callid,
+        local res = self.rcalls:set_by_key(key,
+                                            callid, uuid,
                                             start_time, duration,
                                             caller, callee,
                                             source)
