@@ -10,7 +10,7 @@ Homepage: http://sipwise.com/
 Package: lua-ngcp-kamailio
 Section: libs
 Architecture: any
-Depends: lua-redis,
+Depends: lua-redis (>= 2.0.5~),
          lua-sql-mysql,
          ngcp-system-tools-ce | ngcp-system-tools,
          ${misc:Depends},
