@@ -31,6 +31,7 @@ TestNGCPDlgCnt = {} --class
         mc = lemock.controller()
         self.fake_redis = mc:mock()
         self.client = mc:mock()
+        self.scan_param = {match=""}
 
         package.loaded.redis = self.fake_redis
         local NGCPDlg = require 'ngcp.dlgcnt'
@@ -38,7 +39,8 @@ TestNGCPDlgCnt = {} --class
         self.dlg = NGCPDlg.new()
         assertTrue(self.dlg)
 
-        self.dlg.client = self.client;
+        self.dlg.client = self.client
+        self.dlg.scan_param = self.scan_param
     end
 
     function TestNGCPDlgCnt:test_set_1()
@@ -62,8 +64,9 @@ TestNGCPDlgCnt = {} --class
     end
 
     function TestNGCPDlgCnt:test_del()
+        self.scan_param.match = 'callid0:*'
         self.client:ping() ;mc :returns(true)
-        self.client:keys('callid0:*') ;mc :returns({'callid0:total'})
+        self.client:scan(0, self.scan_param) ;mc :returns({"0", {'callid0:total'}})
         self.client:del("callid0:total")  ;mc :returns(1)
 
         mc:replay()
@@ -72,8 +75,9 @@ TestNGCPDlgCnt = {} --class
     end
 
     function TestNGCPDlgCnt:test_del_zero()
+        self.scan_param.match = 'callid0:*'
         self.client:ping() ;mc :returns(true)
-        self.client:keys('callid0:*') ;mc :returns({})
+        self.client:scan(0, self.scan_param) ;mc :returns({"0",{}})
 
         mc:replay()
         self.dlg:del("callid0")
@@ -81,9 +85,11 @@ TestNGCPDlgCnt = {} --class
     end
 
     function TestNGCPDlgCnt:test_del_multy()
+        self.scan_param.match = 'callid0:*'
         local keys = {'callid0:total', 'callid0:totalout'}
         self.client:ping() ;mc :returns(true)
-        self.client:keys('callid0:*') ;mc :returns(keys)
+        self.client:scan(0, self.scan_param) ;mc :returns({"12", {keys[1]}})
+        self.client:scan(12, self.scan_param) ;mc :returns({"0", {keys[2]}})
         self.client:del("callid0:total")  ;mc :returns(1)
         self.client:del("callid0:totalout")  ;mc :returns(1)
 
@@ -101,21 +107,23 @@ TestNGCPDlgCnt = {} --class
         mc:verify()
     end
 
-    function TestNGCPDlgCnt:get_size()
+    function TestNGCPDlgCnt:test_get_size()
+        self.scan_param.match = '*:total'
         local keys = {'callid0:total', 'callid0:totalout'}
         self.client:ping() ;mc :returns(true)
-        self.client:keys('*:total') ;mc :returns(keys)
+        self.client:scan(0, self.scan_param) ;mc :returns({"0", {keys[1]}})
 
         mc:replay()
         local len = self.dlg:get_size("total")
         mc:verify()
-        assertEqual(len, 1)
+        assertEquals(len, 1)
     end
 
-    function TestNGCPDlgCnt:exists_ok()
+    function TestNGCPDlgCnt:test_exists_ok()
+        self.scan_param.match = 'callid0:*'
         local keys = {'callid0:total', 'callid0:totalout'}
         self.client:ping() ;mc :returns(true)
-        self.client:keys('callid0:*') ;mc :returns(keys)
+        self.client:scan(0, self.scan_param) ;mc :returns({"0", keys})
 
         mc:replay()
         local res = self.dlg:exists("callid0")
@@ -123,9 +131,10 @@ TestNGCPDlgCnt = {} --class
         assertTrue(res)
     end
 
-    function TestNGCPDlgCnt:exists_ko()
+    function TestNGCPDlgCnt:test_exists_ko()
+        self.scan_param.match = 'callid1:*'
         self.client:ping() ;mc :returns(true)
-        self.client:keys('callid1:*') ;mc :returns({})
+        self.client:scan(0, self.scan_param) ;mc :returns({"0", {}})
 
         mc:replay()
         local res = self.dlg:exists("callid1")
