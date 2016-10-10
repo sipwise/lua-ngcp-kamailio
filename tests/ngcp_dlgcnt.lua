@@ -63,7 +63,7 @@ TestNGCPDlgCnt = {} --class
 
     function TestNGCPDlgCnt:test_del()
         self.client:ping() ;mc :returns(true)
-        self.client:keys('callid0:*') ;mc :returns({'callid0:total'})
+        self.client:scan(0, {match='callid0:*'}) ;mc :returns({"0", {'callid0:total'}})
         self.client:del("callid0:total")  ;mc :returns(1)
 
         mc:replay()
@@ -73,7 +73,7 @@ TestNGCPDlgCnt = {} --class
 
     function TestNGCPDlgCnt:test_del_zero()
         self.client:ping() ;mc :returns(true)
-        self.client:keys('callid0:*') ;mc :returns({})
+        self.client:scan(0, {match='callid0:*'}) ;mc :returns({"0",{}})
 
         mc:replay()
         self.dlg:del("callid0")
@@ -83,7 +83,8 @@ TestNGCPDlgCnt = {} --class
     function TestNGCPDlgCnt:test_del_multy()
         local keys = {'callid0:total', 'callid0:totalout'}
         self.client:ping() ;mc :returns(true)
-        self.client:keys('callid0:*') ;mc :returns(keys)
+        self.client:scan(0, {match='callid0:*'}) ;mc :returns({"12", {keys[1]}})
+        self.client:scan(12, {match='callid0:*'}) ;mc :returns({"0", {keys[2]}})
         self.client:del("callid0:total")  ;mc :returns(1)
         self.client:del("callid0:totalout")  ;mc :returns(1)
 
@@ -104,7 +105,7 @@ TestNGCPDlgCnt = {} --class
     function TestNGCPDlgCnt:get_size()
         local keys = {'callid0:total', 'callid0:totalout'}
         self.client:ping() ;mc :returns(true)
-        self.client:keys('*:total') ;mc :returns(keys)
+        self.client:scan(0, {match='*:total'}) ;mc :returns({"44", keys})
 
         mc:replay()
         local len = self.dlg:get_size("total")
@@ -115,7 +116,7 @@ TestNGCPDlgCnt = {} --class
     function TestNGCPDlgCnt:exists_ok()
         local keys = {'callid0:total', 'callid0:totalout'}
         self.client:ping() ;mc :returns(true)
-        self.client:keys('callid0:*') ;mc :returns(keys)
+        self.client:scan(0, {match='callid0:*'}) ;mc :returns({"0", keys})
 
         mc:replay()
         local res = self.dlg:exists("callid0")
@@ -125,7 +126,7 @@ TestNGCPDlgCnt = {} --class
 
     function TestNGCPDlgCnt:exists_ko()
         self.client:ping() ;mc :returns(true)
-        self.client:keys('callid1:*') ;mc :returns({})
+        self.client:scan(0, {match='callid1:*'}) ;mc :returns({"0", {}})
 
         mc:replay()
         local res = self.dlg:exists("callid1")
