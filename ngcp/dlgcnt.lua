@@ -48,7 +48,9 @@ end
                 db = "3",
                 default_expire = 5,
             },
-            client = {}
+            client = {},
+            -- this helps when testing
+            scan_param = {match="*"}
         };
         return t;
     end
@@ -67,11 +69,31 @@ end
         return client;
     end
 
-    -- TODO: how to get this without using KEYS??
-    local function _get_keys(client, key)
-        if not client then error("parameter client is null") end
+    local function _scan_key(self, cursor, match, result)
+        if not result then error("parameter result is null") end
+        if not cursor then
+            cursor = 0
+        end
+        self.scan_param.match = match
+        local res = self.client:scan(cursor, self.scan_param)
+        if res[2] then
+            utable.merge(result, res[2])
+        end
+        --[[ sr.log("dbg", string.format(
+            "cursor:%s cursor_next:%s match:[%s] res:%s\n",
+            tostring(cursor) ,tostring(res[1]), tostring(match),
+            utable.tostring(res), utable.tostring(result)))--]]
+        return tonumber(res[1])
+    end
+
+    local function _get_keys(self, key)
         if not key then error("parameter key is null") end
-        return client:keys(key)
+        local result = {}
+        local cursor = nil
+        repeat
+            cursor = _scan_key(self, cursor, key, result)
+        until (cursor == 0)
+        return result
     end
 
     function NGCPDlgCounters:exists(callid)
@@ -80,7 +102,7 @@ end
             self.client = _connect(self.config);
         end
         local real_key = callid .. ':*'
-        local res = _get_keys(self.client, real_key)
+        local res = _get_keys(self, real_key)
         if res and utable.size(res) > 0 then
             return true
         else
@@ -120,7 +142,7 @@ end
             self.client = _connect(self.config);
         end
         local real_key = callid .. ':*'
-        local keys = _get_keys(self.client, real_key)
+        local keys = _get_keys(self, real_key)
         if keys then
             sr.log("info",
                 string.format("del[%s]=>%s", callid, utable.tostring(keys)))
@@ -140,10 +162,10 @@ end
             self.client = _connect(self.config);
         end
         local real_key = '*:' .. key
-        local res = _get_keys(self.client, real_key)
+        local res = _get_keys(self, real_key)
         local len = 0
         if res then
-            len = utable.size(res)
+            len = #res
         end
         sr.log("dbg", string.format("get_size[%s]=>%d\n", real_key, len));
         return len;
