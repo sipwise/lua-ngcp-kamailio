@@ -1,3 +1,12 @@
+lua-ngcp-kamailio (0.13.3.0+0~mr4.5.3.0) unstable; urgency=medium
+
+  [ Kirill Solomko ]
+  * [218eb2b] MT#21751 recentcalls rename set_by_uuid to set_by_key
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 10 Oct 2016 16:13:58 +0200
+
 lua-ngcp-kamailio (0.13.2.0+0~mr4.5.2.0) unstable; urgency=medium
 
   * New release.
