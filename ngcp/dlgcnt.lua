@@ -67,11 +67,32 @@ end
         return client;
     end
 
-    -- TODO: how to get this without using KEYS??
+    local function _scan_key(client, cursor, match, result)
+        if not client then error("parameter client is null") end
+        if not match then error("parameter match is null") end
+        if not result then error("parameter result is null") end
+        if not cursor then
+            cursor = 0
+        end
+
+        local cursor_next, res = client:scan(cursor, match)
+        if res then
+            utable.merge(result, res)
+        end
+        sr.log("dbg", string.format("cursor:%s cursor_next:%s res:%s\n",
+            tostring(cursor) ,tostring(cursor_next), utable.tostring(res), utable.tostring(result)))
+        return cursor_next
+    end
+
     local function _get_keys(client, key)
         if not client then error("parameter client is null") end
         if not key then error("parameter key is null") end
-        return client:keys(key)
+        local result = {}
+        local cursor = nil
+        repeat
+            cursor = _scan_key(client, cursor, key, result)
+        until (cursor == 0)
+        return result
     end
 
     function NGCPDlgCounters:exists(callid)
