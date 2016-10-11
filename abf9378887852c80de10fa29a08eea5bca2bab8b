@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5a3f45e8_529b42c9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2016-10-11T12:06:21Z",
+      "side": 1,
+      "message": "yes, I should do that",
+      "parentUuid": "5a3f45e8_9712dc60",
+      "revId": "abf9378887852c80de10fa29a08eea5bca2bab8b",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a3f45e8_f72b6092",
         "filename": "ngcp/dlgcnt.lua",
         "patchSetId": 5
@@ -30,6 +48,24 @@
       "writtenOn": "2016-10-11T11:40:14Z",
       "side": 1,
       "message": "I\u0027m not sure I entirely understand this comment. Why is SCAN not enough?",
+      "revId": "abf9378887852c80de10fa29a08eea5bca2bab8b",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_d26752e9",
+        "filename": "ngcp/dlgcnt.lua",
+        "patchSetId": 5
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2016-10-11T12:06:21Z",
+      "side": 1,
+      "message": "that was my comment when I didn\u0027t know about SCAN see next commit for my implementation with SCAN",
+      "parentUuid": "5a3f45e8_f72b6092",
       "revId": "abf9378887852c80de10fa29a08eea5bca2bab8b",
       "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
       "unresolved": false
