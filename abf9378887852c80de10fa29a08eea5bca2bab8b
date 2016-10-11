@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a3f45e8_9712dc60",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1000016
+      },
+      "writtenOn": "2016-10-11T11:40:14Z",
+      "side": 1,
+      "message": "It would be nice if the key format used, and its purpose would be documented in the Internal Handbook, in the Redis Keys section. :)",
+      "revId": "abf9378887852c80de10fa29a08eea5bca2bab8b",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_f72b6092",
+        "filename": "ngcp/dlgcnt.lua",
+        "patchSetId": 5
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1000016
+      },
+      "writtenOn": "2016-10-11T11:40:14Z",
+      "side": 1,
+      "message": "I\u0027m not sure I entirely understand this comment. Why is SCAN not enough?",
+      "revId": "abf9378887852c80de10fa29a08eea5bca2bab8b",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    }
+  ]
+}
