@@ -142,5 +142,28 @@ TestNGCPDlgCnt = {} --class
         assertFalse(res)
     end
 
+    function TestNGCPDlgCnt:test_get_ok()
+        self.scan_param.match = 'callid0:*'
+        local keys = {'callid0:total', 'callid0:totalout'}
+        self.client:ping() ;mc :returns(true)
+        self.client:scan(0, self.scan_param) ;mc :returns({"0", keys})
+
+        mc:replay()
+        local res = self.dlg:get("callid0")
+        mc:verify()
+        assertItemsEquals(res, keys)
+    end
+
+    function TestNGCPDlgCnt:test_get_ko()
+        self.scan_param.match = 'callid1:*'
+        self.client:ping() ;mc :returns(true)
+        self.client:scan(0, self.scan_param) ;mc :returns({"0", {}})
+
+        mc:replay()
+        local res = self.dlg:get("callid1")
+        mc:verify()
+        assertItemsEquals(res, {})
+    end
+
 -- class TestNGCPDlgCnt
 --EOF

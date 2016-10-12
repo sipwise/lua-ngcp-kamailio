@@ -156,6 +156,14 @@ end
         end
     end
 
+    function NGCPDlgCounters:get(key)
+        if not key then error("parameter key is null") end
+        if not _test_connection(self.client) then
+            self.client = _connect(self.config);
+        end
+        return _get_keys(self, '*:' .. key)
+    end
+
     function NGCPDlgCounters:get_size(key)
         if not key then error("parameter key is null") end
         if not _test_connection(self.client) then
