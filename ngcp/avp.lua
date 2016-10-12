@@ -60,6 +60,17 @@ local NGCPAvp_MT = {
         sr.log(level, tostring(self))
     end
 
+    function NGCPAvp:del(value)
+        local values = self.all()
+        if not values or not value then return end
+        sr.pv.unset(self.id)
+        for i = #values, 1, -1 do
+            if values[i] ~= value then
+                self(values[i])
+            end
+        end
+    end
+
     function NGCPAvp:clean()
         sr.pv.unset(self.id)
     end
