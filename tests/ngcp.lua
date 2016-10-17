@@ -220,7 +220,7 @@ TestNGCP = {} --class
         self.cur:numrows()            ;mc :returns(1)
         self.cur:close()
         --
-        self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c' ORDER BY id DESC")  ;mc :returns(self.cur)
+        self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c' ORDER BY id")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
@@ -234,13 +234,13 @@ TestNGCP = {} --class
         local keys = self.ngcp:caller_usr_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c", "192.168.51.56")
         mc:verify()
 
-        assertEquals(sr.pv.get("$xavp(caller_usr_prefs[0]=>dummy)"), "caller")
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dummy)"), "caller")
         --- the default is on real NOT in usr
-        assertIsNil(sr.pv.get("$xavp(caller_usr_prefs[0]=>sst_enable)"))
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs[0]=>sst_enable)"), "no")
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs[0]=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
-        assertEquals(sr.pv.get("$xavp(caller_usr_prefs[0]=>force_outbound_calls_to_peer)"), 1)
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs[0]=>force_outbound_calls_to_peer)"), 1)
+        assertIsNil(sr.pv.get("$xavp(caller_usr_prefs=>sst_enable)"))
+        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>sst_enable)"), "no")
+        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>force_outbound_calls_to_peer)"), 1)
+        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>force_outbound_calls_to_peer)"), 1)
     end
 
     function TestNGCP:test_callee_usr_load_empty()
