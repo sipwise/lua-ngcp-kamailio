@@ -1,3 +1,13 @@
+lua-ngcp-kamailio (0.13.2.2+0~mr4.5.2.2) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [53f9662] TT#4590 generate unique id for JUNIT output
+  * [1bb1424] MT#21751 fix test fail introduced at 2d34ec796
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 17 Oct 2016 13:29:33 +0200
+
 lua-ngcp-kamailio (0.13.2.1+0~mr4.5.2.1) unstable; urgency=medium
 
   [ Kirill Solomko ]
