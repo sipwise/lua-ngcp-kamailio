@@ -17,6 +17,4 @@ else
   mkdir -p "${RESULTS}"
 fi
 
-source_path="$(pwd)"
-
 RESULTS=${RESULTS} FORMAT=JUNIT ./run_tests.sh
