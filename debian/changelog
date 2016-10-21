@@ -1,3 +1,18 @@
+lua-ngcp-kamailio (5.0.0.0+0~mr5.0.0.0) unstable; urgency=medium
+
+  [ Alexander Lutay ]
+  * [7150ee8] MT#22619 Switch Debian Source to Sipwise GitHub mirror
+
+  [ Kirill Solomko ]
+  * [2d34ec7] MT#21751 recentcalls rename set_by_uuid to set_by_key
+
+  [ Victor Seva ]
+  * [bf995f3] MT#21751 fix test fail introduced at 2d34ec796
+  * [31dd6f2] TT#4657 avp: add del(value)
+  * [7b6c758] TT#4590 generate unique id for JUNIT output
+
+ -- Alexander Lutay <alutay@sipwise.com>  Fri, 21 Oct 2016 15:32:37 +0200
+
 lua-ngcp-kamailio (0.14.0.0+0~mr5.0.0.0) unstable; urgency=medium
 
   * New release.
