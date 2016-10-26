@@ -27,7 +27,10 @@ local NGCPAvp_MT = {
 }
 
     function NGCPAvp:new(id)
-        local t = { id = "$avp(s:" .. id .. ")" }
+        local t = {
+            id = "$avp(s:" .. id .. ")",
+            id_all = "$(avp(s:" .. id .. ")[*])",
+        }
         NGCPAvp_MT.__call = function(s, value)
             if not value then
                 return sr.pv.get(s.id)
@@ -44,7 +47,7 @@ local NGCPAvp_MT = {
             end
         end
         function t.all()
-            return sr.pv.get("$(avp(" .. id .. ")[*])")
+            return sr.pv.get(t.id_all)
         end
         NGCPAvp_MT.__tostring = function(s)
             local value = sr.pv.get(s.id)
@@ -63,7 +66,7 @@ local NGCPAvp_MT = {
     function NGCPAvp:del(value)
         local values = self.all()
         if not values or not value then return end
-        sr.pv.unset(self.id)
+        sr.pv.unset(self.id_all)
         for i = #values, 1, -1 do
             if values[i] ~= value then
                 self(values[i])
@@ -72,7 +75,7 @@ local NGCPAvp_MT = {
     end
 
     function NGCPAvp:clean()
-        sr.pv.unset(self.id)
+        sr.pv.unset(self.id_all)
     end
 -- class
 return NGCPAvp

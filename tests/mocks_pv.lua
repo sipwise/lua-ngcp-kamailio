@@ -166,8 +166,8 @@ TestPVMock = {}
         local result = self.pv._is_avp("$avp(id2_f)")
         assertTrue(result)
         assertEquals(result.type, 'avp')
-        --print(table.tostring(result))
         assertEquals(result.id, 'id2_f')
+        assertIsNil(result.indx)
         assertFalse(result.clean)
     end
 
@@ -175,8 +175,8 @@ TestPVMock = {}
         local result = self.pv._is_avp("$(avp(s:id))")
         assertTrue(result)
         assertEquals(result.type, 'avp')
-        --print(table.tostring(result))
         assertEquals(result.id, 'id')
+        assertIsNil(result.indx)
         assertFalse(result.clean)
     end
 
@@ -184,8 +184,8 @@ TestPVMock = {}
         local result = self.pv._is_avp("$(avp(id))")
         assertTrue(result)
         assertEquals(result.type, 'avp')
-        --print(table.tostring(result))
         assertEquals(result.id, 'id')
+        assertIsNil(result.indx)
         assertFalse(result.clean)
     end
 
@@ -194,8 +194,17 @@ TestPVMock = {}
         assertTrue(result)
         assertEquals(result.type, 'avp')
         assertEquals(result.id, 'id')
-        --print(table.tostring(result))
+        assertIsNil(result.indx)
         assertTrue(result.clean)
+    end
+
+    function TestPVMock:test_is_avp_simple4()
+        local result = self.pv._is_avp("$(avp(s:id)[1])")
+        assertTrue(result)
+        assertEquals(result.type, 'avp')
+        assertEquals(result.id, 'id')
+        assertEquals(result.indx, 1)
+        assertFalse(result.clean)
     end
 
     function TestPVMock:test_is_var_simple()
@@ -326,6 +335,11 @@ TestPVMock = {}
         assertEquals(self.pv.get("$avp(s:hithere)"), 1)
     end
 
+    function TestPVMock:test_avp_get_simple3()
+        self.pv.seti("$avp(s:hithere)", 1)
+        assertEquals(self.pv.get("$(avp(s:hithere)[0])"), 1)
+    end
+
     function TestPVMock:test_avp_get()
         local vals = {1,2,3}
         for i=1,#vals do
@@ -338,6 +352,19 @@ TestPVMock = {}
         local v = 1
         for i=#vals,1,-1 do
            assertEquals(l[i],vals[v])
+           v = v + 1
+        end
+    end
+
+    function TestPVMock:test_avp_get_2()
+        local vals = {1,2,3}
+        for i=1,#vals do
+            self.pv.seti("$avp(s:hithere)", vals[i])
+        end
+        local l = "$(avp(s:hithere)[%d])"
+        local v = 1
+        for i=#vals,1,-1 do
+           assertEquals(self.pv.get(string.format(l, i-1)), vals[v])
            v = v + 1
         end
     end
@@ -383,6 +410,26 @@ TestPVMock = {}
         assertEquals(self.pv.get("$avp(hithere)"), nil)
         self.pv.unset("$avp(s:hithere)")
         assertEquals(self.pv.get("$avp(s:hithere)"), nil)
+    end
+
+    function TestPVMock:test_unset_avp_2()
+        self.pv.sets("$avp(s:hithere)", "value")
+        self.pv.sets("$avp(s:hithere)", "other")
+        assertEquals(self.pv.get("$avp(hithere)"), "other")
+        self.pv.unset("$avp(s:hithere)")
+        assertEquals(self.pv.get("$avp(hithere)"), "value")
+        self.pv.unset("$(avp(s:hithere)[*])")
+        assertEquals(self.pv.get("$avp(s:hithere)"), nil)
+    end
+
+    function TestPVMock:test_unset_avp_3()
+        self.pv.sets("$avp(s:hithere)", "value")
+        self.pv.sets("$avp(s:hithere)", "other")
+        assertEquals(self.pv.get("$(avp(hithere)[0])"), "other")
+        assertEquals(self.pv.get("$(avp(hithere)[1])"), "value")
+        -- same behavior than kamailio!!
+        self.pv.unset("$(avp(s:hithere)[1])")
+        assertEquals(self.pv.get("$(avp(hithere)[*])"), {"value"})
     end
 
     function TestPVMock:test_unset_xavp()
