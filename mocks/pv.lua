@@ -95,12 +95,16 @@ local pvMock = {
             local patterns = {
                 '%$avp%(([%w_]+)%)$',
                 '%$%(avp%(([%w_]+)%)%)$',
-                '%$%(avp%(([%w_]+)%)%[%*%]%)$'
+                '%$%(avp%(([%w_]+)%)%[%*%]%)$',
+                '%$%(avp%(([%w_]+)%)%[(%d+)%]%)$',
             }
             _id = t._clean_id(id)
             for _,v in pairs(patterns) do
-                for i in string.gmatch(_id, v) do
-                    return { id=i, clean=(v==patterns[3]), type='avp' }
+                for i, indx in string.gmatch(_id, v) do
+                    if _ == 4 then
+                        indx = tonumber(indx)
+                    end
+                    return { id=i, indx=indx, clean=(v==patterns[3]), type='avp' }
                 end
             end
         end
@@ -218,11 +222,15 @@ local pvMock = {
                 end
             elseif result.type == 'avp' then
                 if t.vars[result.private_id] then
-                    local l = t.vars[result.private_id]:list()
+                    if not result.indx then
+                        result.indx = 0
+                    end
                     if result.clean then
-                        return l
+                        return t.vars[result.private_id]:list()
                     else
-                        return l[1]
+                        if t.vars[result.private_id][result.indx] then
+                            return t.vars[result.private_id][result.indx]
+                        end
                     end
                 end
             elseif result.type == 'hdr' then
@@ -348,7 +356,13 @@ local pvMock = {
                     t.vars[result.private_id][result.indx][result.key] = nil
                 end
             elseif result.type == 'avp' then
-                t.vars[result.private_id] = nil
+                if result.clean then
+                    t.vars[result.private_id] = nil
+                    return
+                end
+                if t.vars[result.private_id] then
+                    t.vars[result.private_id]:pop()
+                end
             elseif result.type == 'var' or result.type == 'dlg_var' then
                 t.vars[result.private_id] = nil
             end
