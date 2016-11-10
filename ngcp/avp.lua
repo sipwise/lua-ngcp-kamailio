@@ -29,6 +29,7 @@ local NGCPAvp_MT = {
     function NGCPAvp:new(id)
         local t = {
             id = "$avp(s:" .. id .. ")",
+            id_indx = "$(avp(s:" .. id .. ")[%d])",
             id_all = "$(avp(s:" .. id .. ")[*])",
         }
         NGCPAvp_MT.__call = function(s, value)
@@ -47,7 +48,18 @@ local NGCPAvp_MT = {
             end
         end
         function t.all()
-            return sr.pv.get(t.id_all)
+            local val
+            local indx = 0
+            local res = {}
+
+            val = sr.pv.get(string.format(t.id_indx, indx))
+            if not val then return nil end
+            while val do
+                table.insert(res, val)
+                indx = indx + 1
+                val = sr.pv.get(string.format(t.id_indx, indx))
+            end
+            return res
         end
         NGCPAvp_MT.__tostring = function(s)
             local value = sr.pv.get(s.id)
