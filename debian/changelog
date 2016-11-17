@@ -1,3 +1,13 @@
+lua-ngcp-kamailio (5.1.0.0+0~mr5.1.0.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [b09db92] TT#5034 fix avp:clean()
+  * [0162899] TT#6226 fix avp:all()
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 17 Nov 2016 23:15:03 +0100
+
 lua-ngcp-kamailio (5.0.0.0+0~mr5.0.0.0) unstable; urgency=medium
 
   [ Alexander Lutay ]
