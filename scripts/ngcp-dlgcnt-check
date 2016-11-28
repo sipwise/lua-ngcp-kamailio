@@ -1,0 +1,56 @@
+#!/bin/bash
+
+set -e
+
+REMOVE=false
+
+function usage() {
+  printf "%s [options]\n" "$(basename "$0")"
+  printf "\toptions\n"
+  printf "\t-h this help\n"
+  printf "\t-r remove unknown callids from redis properly\n"
+}
+
+while getopts "rh" opt; do
+  case $opt in
+    h) usage; exit 0;;
+    r) REMOVE=true;;
+    \?) usage; exit 1;;
+  esac
+done
+shift $((OPTIND-1))
+
+if [[ $# -ne 0 ]] ; then
+  usage
+  exit 2
+fi
+
+if ! ngcp-check_active -q ; then
+  echo "node is not active, abort" >&2
+  exit 3
+fi
+
+# full list
+REDIS_CALLIDS=$(mktemp)
+ngcp-redis-helper -n 4 dump | egrep -v "^$" > "$REDIS_CALLIDS" || true
+# 'lists:' belongs to dlglist
+REDIS_CALLIDS_FILTER=$(mktemp)
+egrep -v '^list:' "$REDIS_CALLIDS" > "$REDIS_CALLIDS_FILTER" || true
+
+# list of dialogs known by kamailio
+KAM_CALLIDS=$(mktemp)
+ngcp-sercmd proxy dlg.list | awk -F: '/call-id:/ { print $2}' > "$KAM_CALLIDS"
+
+while read -r i ; do
+  if ! grep -q "$i" "$KAM_CALLIDS" ; then
+    printf "CallID:[%s] unknown\n" "$i"
+    if $REMOVE ; then
+      ngcp-dlgcnt-clean "$i" || true
+      if grep -q "list:$i" "$REDIS_CALLIDS" ; then
+        ngcp-dlglist-clean "$i" || true
+      fi
+    fi
+  fi
+done < "$REDIS_CALLIDS_FILTER"
+
+rm -f "$KAM_CALLIDS" "$REDIS_CALLIDS" "$REDIS_CALLIDS_FILTER"
