@@ -1,0 +1,45 @@
+#!/usr/bin/env lua5.1
+--local ut = require 'ngcp.utils'.table
+local NGCPDlg = require 'ngcp.dlgcnt'
+local config = "/etc/kamailio/proxy/dlgcnt.lua.cfg"
+
+-- luacheck: globals dlg_config
+
+local function get_config()
+	if os.getenv('DLG_CONFIG') then
+	  config = os.getenv('DLG_CONFIG')
+	end
+
+	local ok,e = pcall(dofile,config)
+	if not ok then
+	  io.stderr:write(e..'\n')
+	  print("using defaults\n")
+	end
+end
+
+local function usage()
+	print("ngcp-dlgcnt-clean callid")
+end
+
+if #arg ~= 1 then
+	io.stderr:write("wrong number of arguments\n");
+	usage()
+	os.exit(2)
+end
+
+if arg[1] == "-h" then usage(); os.exit(0); end
+
+get_config()
+
+local dlg = NGCPDlg:new()
+if dlg_config then
+	dlg.config.central.host = dlg_config.central.host
+	dlg.config.central.port = dlg_config.central.port
+	dlg.config.central.db = dlg_config.central.db
+	dlg.config.pair.host = dlg_config.pair.host
+	dlg.config.pair.port = dlg_config.pair.port
+	dlg.config.pair.db = dlg_config.pair.db
+	--print(string.format("dlg.config:%s", ut.tostring(dlg.config)))
+end
+
+dlg:del(arg[1])
