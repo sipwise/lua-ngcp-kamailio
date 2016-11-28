@@ -18,3 +18,4 @@ else
 fi
 
 RESULTS=${RESULTS} FORMAT=JUNIT ./run_tests.sh
+WORKSPACE=${RESULTS}/tmp ./tests/test_dlgcnt.py > ${RESULTS}/reports/test_dlgcnt.xml
