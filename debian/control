@@ -1,8 +1,9 @@
 Source: lua-ngcp-kamailio
 Priority: extra
 Maintainer: Sipwise Development Team <support@sipwise.com>
-Build-Depends: debhelper (>= 8~),
-               dh-lua (>= 16~)
+Build-Depends:
+ debhelper (>= 8~),
+ dh-lua (>= 16~),
 Standards-Version: 3.9.7
 Section: libs
 Homepage: http://sipwise.com/
@@ -10,12 +11,14 @@ Homepage: http://sipwise.com/
 Package: lua-ngcp-kamailio
 Section: libs
 Architecture: any
-Depends: lua-redis,
-         lua-sql-mysql,
-         ngcp-system-tools-ce | ngcp-system-tools,
-         ${misc:Depends},
-         ${shlibs:Depends}
-Provides: ${lua:Provides}
+Depends:
+ lua-sql-mysql,
+ lua5.1,
+ ngcp-system-tools-ce | ngcp-system-tools,
+ ${misc:Depends},
+ ${shlibs:Depends},
+Provides:
+ ${lua:Provides},
 XB-Lua-Versions: ${lua:Versions}
 Description: lua framework for ngcp-kamailio config
  This package provides the lua ngcp lib that ngcp-template-kamailio
@@ -24,13 +27,15 @@ Description: lua framework for ngcp-kamailio config
 Package: lua-ngcp-kamailio-dev
 Section: libs
 Architecture: any
-Depends: lua-lemock,
-         lua-logging,
-         lua-sql-mysql,
-         lua-unit,
-         ${misc:Depends},
-         ${shlibs:Depends}
-Provides: ${lua:Provides}
+Depends:
+ lua-lemock,
+ lua-logging,
+ lua-sql-mysql,
+ lua-unit,
+ ${misc:Depends},
+ ${shlibs:Depends},
+Provides:
+ ${lua:Provides},
 XB-Lua-Versions: ${lua:Versions}
 Description: lua framework for ngcp-kamailio config development tests
  This package provides the lua ngcp lib that ngcp-template-kamailio
