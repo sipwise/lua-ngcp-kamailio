@@ -1,0 +1,102 @@
+{
+	h_entry: 51
+	h_id: 3315
+	call-id: WSGH2SB52VHYLPX4VQQ6N4B2ZM@81.201.82.107
+	from_uri: sip:390649904073@voxbone.com
+	to_uri: sip:390240708163@46.29.177.34
+	state: 4
+	start_ts: 1480083143
+	init_ts: 1480083140
+	timeout: 1480126343
+	lifetime: 43200
+	dflags: 512
+	sflags: 0
+	iflags: 0
+	caller: {
+		tag: as2da8b920
+		contact: sip:390649904073@81.201.82.107:5060;transport=udp
+		cseq: 102
+		route_set: <sip:203.0.113.113;r2=on;lr;ftag=as2da8b920;ngcplb=yes;socket=udp:46.29.177.34:5060>,<sip:46.29.177.34;r2=on;lr;ftag=as2da8b920;ngcplb=yes;socket=udp:46.29.177.34:5060>,<sip:81.201.82.45;lr=on>
+		socket: udp:203.0.113.113:5062
+	}
+	callee: {
+		tag: 2B56584B-583846C4000C078A-A5F9B700
+		contact: sip:390240708163@203.0.113.113:5080
+		cseq: 0
+		route_set: 
+		socket: udp:203.0.113.113:5062
+	}
+	profiles: {
+	}
+	variables: {
+		{
+			recent_calls_user_online: 1
+		}
+		{
+			recent_calls_caller: 390649904073
+		}
+		{
+			start_time: 1480083143
+		}
+		{
+			callee_uuid: 38de282f-5c5c-4d71-8a0d-b300a68d86ec
+		}
+		{
+			recent_calls_key: 38de282f-5c5c-4d71-8a0d-b300a68d86ec
+		}
+		{
+			lua_dlg_callid: WSGH2SB52VHYLPX4VQQ6N4B2ZM@81.201.82.107
+		}
+	}
+}
+{
+	h_entry: 52
+	h_id: 3316
+	call-id: WSGH2SB52VHYLPX4VQQ6N4B2ZM@81.201.82.107-pbx_1
+	from_uri: sip:390649904073@voxbone.com
+	to_uri: sip:390240708163@46.29.177.34
+	state: 4
+	start_ts: 1480083143
+	init_ts: 1480083140
+	timeout: 1480126343
+	lifetime: 43200
+	dflags: 512
+	sflags: 0
+	iflags: 0
+	caller: {
+		tag: as2da8b920
+		contact: sip:390649904073@81.201.82.107:5060;transport=udp
+		cseq: 102
+		route_set: <sip:203.0.113.113;r2=on;lr;ftag=as2da8b920;ngcplb=yes;socket=udp:46.29.177.34:5060>,<sip:46.29.177.34;r2=on;lr;ftag=as2da8b920;ngcplb=yes;socket=udp:46.29.177.34:5060>,<sip:81.201.82.45;lr=on>
+		socket: udp:203.0.113.113:5062
+	}
+	callee: {
+		tag: 2B56584B-583846C4000C078A-A5F9B700
+		contact: sip:390240708163@203.0.113.113:5080
+		cseq: 0
+		route_set: 
+		socket: udp:203.0.113.113:5062
+	}
+	profiles: {
+	}
+	variables: {
+		{
+			recent_calls_user_online: 1
+		}
+		{
+			recent_calls_caller: 390649904073
+		}
+		{
+			start_time: 1480083143
+		}
+		{
+			callee_uuid: 38de282f-5c5c-4d71-8a0d-b300a68d86ec
+		}
+		{
+			recent_calls_key: 38de282f-5c5c-4d71-8a0d-b300a68d86ec
+		}
+		{
+			lua_dlg_callid: WSGH2SB52VHYLPX4VQQ6N4B2ZM@81.201.82.107-pbx_1
+		}
+	}
+}
