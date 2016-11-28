@@ -1,0 +1,43 @@
+#!/bin/bash
+
+set -e
+
+REMOVE=false
+
+function usage() {
+  printf "%s [options]\n" "$(basename "$0")"
+  printf "\toptions\n"
+  printf "\t-h this help\n"
+  printf "\t-r remove unknown callids from redis properly\n"
+}
+
+while getopts "rh" opt; do
+  case $opt in
+    h) usage; exit 0;;
+    r) REMOVE=true;;
+    \?) usage; exit 1;;
+  esac
+done
+shift $((OPTIND-1))
+
+if [[ $# -ne 0 ]] ; then
+  usage
+  exit 2
+fi
+
+REDIS_CALLIDS=$(mktemp)
+# 'lists:' belongs to dlglist
+ngcp-redis-helper -n 4 dump | grep -Ev '^list:' || true > "$REDIS_CALLIDS"
+
+# list of dialogs known by kamailio
+KAM_CALLIDS=$(mktemp)
+ngcp-sercmd proxy dlg.list | awk -F: '/callid:/ { print $2}' > "$KAM_CALLIDS"
+
+while read -r i ; do
+  if ! grep -q "$i" "$KAM_CALLIDS" ; then
+    printf "CallID:[%s] unknown\n" "$i"
+    if $REMOVE ; then ngcp-dlgcnt-clean "$i"; fi
+  fi
+done < "$REDIS_CALLIDS"
+
+rm -f "$KAM_CALLIDS" "$REDIS_CALLIDS"
