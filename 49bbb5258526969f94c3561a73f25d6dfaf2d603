@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba51214e_0a27a065",
+        "filename": "scripts/ngcp-dlgcnt-check",
+        "patchSetId": 9
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000001
+      },
+      "writtenOn": "2016-11-29T10:40:37Z",
+      "side": 1,
+      "message": "grep -v \"^$\\|^list:\" ?\n\nNo need REDIS_CALLIDS_FILTER at all.",
+      "range": {
+        "startLine": 30,
+        "startChar": 39,
+        "endLine": 30,
+        "endChar": 44
+      },
+      "revId": "49bbb5258526969f94c3561a73f25d6dfaf2d603",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    }
+  ]
+}
