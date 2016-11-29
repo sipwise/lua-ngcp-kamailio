@@ -22,6 +22,30 @@
       "revId": "49bbb5258526969f94c3561a73f25d6dfaf2d603",
       "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_65176dee",
+        "filename": "scripts/ngcp-dlgcnt-check",
+        "patchSetId": 9
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000001
+      },
+      "writtenOn": "2016-11-29T12:28:24Z",
+      "side": 1,
+      "message": "I think it is still topical, isn\u0027t it?",
+      "parentUuid": "ba51214e_0a27a065",
+      "range": {
+        "startLine": 30,
+        "startChar": 39,
+        "endLine": 30,
+        "endChar": 44
+      },
+      "revId": "49bbb5258526969f94c3561a73f25d6dfaf2d603",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
     }
   ]
 }
