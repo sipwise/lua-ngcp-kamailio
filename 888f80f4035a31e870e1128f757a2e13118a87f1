@@ -42,6 +42,24 @@
     },
     {
       "key": {
+        "uuid": "ba51214e_ea46ac22",
+        "filename": "scripts/ngcp-dlgcnt-check",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2016-11-29T10:27:55Z",
+      "side": 1,
+      "message": "ack. Next patchset",
+      "parentUuid": "ba51214e_4a419838",
+      "revId": "888f80f4035a31e870e1128f757a2e13118a87f1",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_ea0eac33",
         "filename": "scripts/ngcp-dlgcnt-check",
         "patchSetId": 6
@@ -65,6 +83,30 @@
     },
     {
       "key": {
+        "uuid": "ba51214e_aa3cb494",
+        "filename": "scripts/ngcp-dlgcnt-check",
+        "patchSetId": 6
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2016-11-29T10:27:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba51214e_ea0eac33",
+      "range": {
+        "startLine": 34,
+        "startChar": 39,
+        "endLine": 34,
+        "endChar": 45
+      },
+      "revId": "888f80f4035a31e870e1128f757a2e13118a87f1",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "ba51214e_2a3704e5",
         "filename": "scripts/ngcp-dlgcnt-check",
         "patchSetId": 6
@@ -76,6 +118,30 @@
       "writtenOn": "2016-11-29T10:19:19Z",
       "side": 1,
       "message": "I believe it can be aborted in a moment if the call-id is being removed. so get it in a list \"$REDIS_CALLIDS\" while for the next moment is is removed. Should we have here:\n  \nprintf \"CallID:[%s] unknown: \" \"$i\"\nif $REMOVE ; then\n  if ngcp-dlgcnt-clean \"$i\" ; then\n    echo \"REMOVED\"\n  else\n    echo \"ERROR\"\n  fi\nfi\n\notherwise the script will be aborted due to set -e",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 48
+      },
+      "revId": "888f80f4035a31e870e1128f757a2e13118a87f1",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_0a420010",
+        "filename": "scripts/ngcp-dlgcnt-check",
+        "patchSetId": 6
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2016-11-29T10:27:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba51214e_2a3704e5",
       "range": {
         "startLine": 39,
         "startChar": 0,
