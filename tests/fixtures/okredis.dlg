@@ -1,7 +1,7 @@
 {
 	h_entry: 51
 	h_id: 3315
-	call-id: WSGH2SB52VHYLPX4VQQ6N4B2ZM@81.201.82.107
+	call-id: WSGH2SB52VHYLPX4VQQ6N4B2ZM@81.201.82.107:5060
 	from_uri: sip:390649904073@voxbone.com
 	to_uri: sip:390240708163@46.29.177.34
 	state: 4
@@ -45,14 +45,14 @@
 			recent_calls_key: 38de282f-5c5c-4d71-8a0d-b300a68d86ec
 		}
 		{
-			lua_dlg_callid: WSGH2SB52VHYLPX4VQQ6N4B2ZM@81.201.82.107
+			lua_dlg_callid: WSGH2SB52VHYLPX4VQQ6N4B2ZM@81.201.82.107:5060
 		}
 	}
 }
 {
 	h_entry: 52
 	h_id: 3316
-	call-id: WSGH2SB52VHYLPX4VQQ6N4B2ZM@81.201.82.107-pbx_1
+	call-id: WSGH2SB52VHYLPX4VQQ6N4B2ZM@81.201.82.107:5060-pbx_1
 	from_uri: sip:390649904073@voxbone.com
 	to_uri: sip:390240708163@46.29.177.34
 	state: 4
@@ -96,7 +96,7 @@
 			recent_calls_key: 38de282f-5c5c-4d71-8a0d-b300a68d86ec
 		}
 		{
-			lua_dlg_callid: WSGH2SB52VHYLPX4VQQ6N4B2ZM@81.201.82.107-pbx_1
+			lua_dlg_callid: WSGH2SB52VHYLPX4VQQ6N4B2ZM@81.201.82.107:5060-pbx_1
 		}
 	}
 }

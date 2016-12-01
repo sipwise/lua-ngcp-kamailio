@@ -31,7 +31,7 @@ if ! ngcp-check_active -q ; then
 fi
 
 # read kamailio.proxy.dlgcnt.pair_redis_db
-REDIS_DB="$(ngcp-dlgcnt-clean -c|| echo 4)"
+REDIS_DB="$(ngcp-dlgcnt-clean -c 2>/dev/null|| echo 4)"
 
 # full list
 REDIS_CALLIDS=$(mktemp)
@@ -42,7 +42,7 @@ egrep -v '^list:' "$REDIS_CALLIDS" > "$REDIS_CALLIDS_FILTER" || true
 
 # list of dialogs known by kamailio
 KAM_CALLIDS=$(mktemp)
-ngcp-sercmd proxy dlg.list | awk -F: '/call-id:/ { print $2}' > "$KAM_CALLIDS"
+ngcp-sercmd proxy dlg.list | awk -F' ' '/call-id:/ { print $2}' > "$KAM_CALLIDS"
 
 while read -r i ; do
   if ! grep -q "$i" "$KAM_CALLIDS" ; then
