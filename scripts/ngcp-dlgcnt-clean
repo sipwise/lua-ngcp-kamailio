@@ -13,7 +13,7 @@ local function get_config()
 	local ok,e = pcall(dofile,config)
 	if not ok then
 	  io.stderr:write(e..'\n')
-	  print("using defaults\n")
+	  io.stderr:write("using defaults\n")
 	end
 end
 

@@ -108,6 +108,17 @@ class TestDlgCnt(unittest.TestCase):
         self.assertEqual(res[0], 3, res[1])
         self.checkNotCmd()
 
+    def test_noredisconf(self):
+        create_prog(os.path.join(FAKE_BIN, 'ngcp-dlgcnt-clean'),
+                    'echo "error" >&2; false')
+        create_prog(os.path.join(FAKE_BIN, 'ngcp-sercmd'),
+                    "true")
+        create_prog(os.path.join(FAKE_BIN, 'ngcp-redis-helper'),
+                    "%s; true" % FAKE_REDIS_HELPER)
+        res = executeAndReturnOutput(self.command)
+        self.assertEqual(res[0], 0, res[1])
+        self.checkNotCmd()
+
     def test_redisconf(self):
         create_prog(os.path.join(FAKE_BIN, 'ngcp-sercmd'),
                     "true")
