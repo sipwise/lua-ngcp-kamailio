@@ -4,6 +4,10 @@ local NGCPDlgList = require 'ngcp.dlglist'
 local config = "/etc/kamailio/proxy/dlgcnt.lua.cfg"
 
 -- luacheck: globals dlg_config
+sr = {}
+sr.log = function (level, str)
+	print(string.format("[%s] %s", level, str))
+end
 
 local function get_config()
 	if os.getenv('DLG_CONFIG') then
