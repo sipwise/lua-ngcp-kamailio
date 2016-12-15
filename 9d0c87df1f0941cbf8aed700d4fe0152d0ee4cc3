@@ -22,6 +22,30 @@
       "revId": "9d0c87df1f0941cbf8aed700d4fe0152d0ee4cc3",
       "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_b53a3032",
+        "filename": "scripts/ngcp-dlgcnt-check",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1000002
+      },
+      "writtenOn": "2016-12-15T13:59:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba51214e_7513780d",
+      "range": {
+        "startLine": 45,
+        "startChar": 11,
+        "endLine": 45,
+        "endChar": 16
+      },
+      "revId": "9d0c87df1f0941cbf8aed700d4fe0152d0ee4cc3",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
     }
   ]
 }
