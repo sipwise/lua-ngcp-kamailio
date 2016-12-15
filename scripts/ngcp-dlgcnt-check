@@ -40,12 +40,10 @@ ngcp-redis-helper -n "$REDIS_DB" dump | egrep -v "^$" > "$REDIS_CALLIDS" || true
 REDIS_CALLIDS_FILTER=$(mktemp)
 egrep -v '^list:' "$REDIS_CALLIDS" > "$REDIS_CALLIDS_FILTER" || true
 
-# list of dialogs known by kamailio
-KAM_CALLIDS=$(mktemp)
-ngcp-sercmd proxy dlg.list | awk -F' ' '/call-id:/ { print $2}' > "$KAM_CALLIDS"
-
 while read -r i ; do
-  if ! grep -q "$i" "$KAM_CALLIDS" ; then
+  if ! ngcp-sercmd proxy dlg.dlg_list "$i"| \
+       awk '/call-id:/ { print $NF}'| grep -q "$i"
+  then
     printf "CallID:[%s] unknown\n" "$i"
     if $REMOVE ; then
       ngcp-dlgcnt-clean "$i" || true
@@ -56,4 +54,4 @@ while read -r i ; do
   fi
 done < "$REDIS_CALLIDS_FILTER"
 
-rm -f "$KAM_CALLIDS" "$REDIS_CALLIDS" "$REDIS_CALLIDS_FILTER"
+rm -f "$REDIS_CALLIDS" "$REDIS_CALLIDS_FILTER"
