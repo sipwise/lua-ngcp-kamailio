@@ -1,3 +1,15 @@
+lua-ngcp-kamailio (5.0.1.2+0~mr5.0.1.2) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [5701565] TT#7190 ngcp-dlgcnt-check
+  * [cffd14a] TT#7190 ngcp-dlgcnt-check
+  * [75e2117] TT#7190 ngcp-dlg(cnt|list)-clean: fix sr.log error
+  * [f174866] TT#8007 ngcp-dlgcnt-check: use dlg.dlg_list with callid
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 21 Dec 2016 10:46:30 +0100
+
 lua-ngcp-kamailio (5.0.1.1+0~mr5.0.1.1) unstable; urgency=medium
 
   * New release.
