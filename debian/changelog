@@ -1,3 +1,20 @@
+lua-ngcp-kamailio (0.13.4.0+0~mr4.5.4.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [ad9cc12] TT#4590 generate unique id for JUNIT output
+  * [e4b1b11] MT#21751 fix test fail introduced at 2d34ec796
+  * [65c13c9] TT#4657 avp: add del(value)
+  * [9c59325] TT#5034 fix avp:clean()
+  * [364ae61] TT#6226 fix avp:all()
+  * [ef89d79] TT#7190 ngcp-dlgcnt-check
+  * [0c6e3ae] TT#7190 ngcp-dlgcnt-check
+  * [7d00656] TT#7190 ngcp-dlg(cnt|list)-clean: fix sr.log error
+  * [6706809] TT#8007 ngcp-dlgcnt-check: use dlg.dlg_list with callid
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 27 Dec 2016 11:16:38 +0100
+
 lua-ngcp-kamailio (0.13.3.0+0~mr4.5.3.0) unstable; urgency=medium
 
   [ Kirill Solomko ]
