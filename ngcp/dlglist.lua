@@ -128,7 +128,7 @@ end
         if not _test_connection(self.pair) then
             self.pair = _connect(self.config.pair);
         end
-        local num = self.pair:lrem(callid, 0, key);
+        local num = self.pair:lrem("list:"..callid, 0, key);
         sr.log("dbg", string.format("pair:lrem[%s]=>[%s] %d\n", callid, key, num));
         if not _test_connection(self.central) then
             self.central = _connect(self.config.central);
