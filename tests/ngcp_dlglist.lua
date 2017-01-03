@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2015 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2017 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -45,4 +45,85 @@ function TestNGCPDlgList:setUp()
     self.dlg.pair = self.pair
 end
 
+function TestNGCPDlgList:test_exists()
+    self.pair:ping() ;mc :returns(true)
+    self.pair:llen("list:fakeAAA") ;mc :returns(0)
+
+    mc:replay()
+    local ok = self.dlg:exists('fakeAAA')
+    mc:verify()
+
+    assertFalse(ok)
+end
+
+function TestNGCPDlgList:test_add()
+    local key, callid = 'key1', 'fakeAAA'
+    self.central:ping() ;mc :returns(true)
+    self.central:rpush(key, callid) ;mc :returns(1)
+    self.pair:ping() ;mc :returns(true)
+    self.pair:lpush("list:"..callid, key) ;mc :returns(1)
+
+    mc:replay()
+    self.dlg:add(callid, key)
+    mc:verify()
+end
+
+function TestNGCPDlgList:test_del()
+    local key, callid = 'key1', 'fakeAAA'
+    self.pair:ping() ;mc :returns(true)
+    self.pair:lrem("list:"..callid, 0, key) ;mc :returns(1)
+    self.central:ping() ;mc :returns(true)
+    self.central:lrem(key, 0, callid) ;mc :returns(true)
+    self.central:llen(key) ;mc :returns(0)
+    self.central:del(key) ;mc :returns(true)
+
+    mc:replay()
+    self.dlg:del(callid, key)
+    mc:verify()
+end
+
+function TestNGCPDlgList:test_is_in_set()
+    local key, callid = 'key1', 'fakeAAA'
+    local content = {'key0', 'key1', 'key2'}
+    self.pair:ping() ;mc :returns(true)
+    self.pair:lrange("list:"..callid, 0, -1) ;mc :returns(content)
+    self.pair:ping() ;mc :returns(true)
+    self.pair:lrange("list:"..callid, 0, -1) ;mc :returns(content)
+
+    mc:replay()
+    local ok = self.dlg:is_in_set(callid, key)
+    local ko = self.dlg:is_in_set(callid, 'key3')
+    mc:verify()
+
+    assertTrue(ok)
+    assertFalse(ko)
+end
+
+function TestNGCPDlgList:test_destroy_empty()
+    local callid = 'fakeAAA'
+    self.pair:ping() ;mc :returns(true)
+    self.pair:lpop("list:"..callid) ;mc :returns(nil)
+    self.pair:del("list:"..callid) ;mc :returns(true)
+
+    mc:replay()
+    assertError(self.dlg.destroy, self.dlg, callid)
+    mc:verify()
+end
+
+function TestNGCPDlgList:test_destroy()
+    local callid = 'fakeAAA'
+    self.pair:ping() ;mc :returns(true)
+    self.pair:lpop("list:"..callid) ;mc :returns('key1')
+    self.central:ping() ;mc :returns(true)
+    self.central:lrem('key1', 0, callid) ;mc :returns(true)
+    self.central:llen('key1') ;mc :returns(1)
+    self.pair:lpop("list:"..callid) ;mc :returns('key2')
+    self.central:lrem('key2', 0, callid) ;mc :returns(true)
+    self.central:llen('key2') ;mc :returns(1)
+    self.pair:lpop("list:"..callid) ;mc :returns(nil)
+
+    mc:replay()
+    self.dlg:destroy(callid)
+    mc:verify()
+end
 -- class
