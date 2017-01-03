@@ -105,7 +105,7 @@ end
             self.pair = _connect(self.config.pair);
         end
         local res = self.pair:lrange("list:"..callid, 0, -1);
-        return table.contains(res, key);
+        return utable.contains(res, key);
     end
 
     function NGCPDlgList:add(callid, key)
