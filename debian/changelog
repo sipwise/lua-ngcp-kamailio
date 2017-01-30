@@ -1,3 +1,12 @@
+lua-ngcp-kamailio (0.7.9.1+0~mr3.8.9.1) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [a5e7c05] TT#4590 generate unique id for JUNIT output
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 30 Jan 2017 15:33:41 +0100
+
 lua-ngcp-kamailio (0.7.9.0+0~mr3.8.9.0) unstable; urgency=medium
 
   * New release.
