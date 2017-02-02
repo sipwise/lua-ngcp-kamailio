@@ -1,3 +1,24 @@
+lua-ngcp-kamailio (5.1.1.0+0~mr5.1.1.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [a86f086] TT#7190 ngcp-dlgcnt-check
+  * [ab391d0] TT#7190 refresh Dockerfile
+  * [d80e64f] TT#7190 ngcp-dlgcnt-check
+  * [2a9dd10] TT#7190 ngcp-dlg(cnt|list)-clean: fix sr.log error
+  * [dff76b7] TT#8007 ngcp-dlgcnt-check: use dlg.dlg_list with callid
+  * [f6a1b5d] TT#8678 dlglist: add unit tests
+
+  [ Andrew Pogrebennyk ]
+  * [0263636] TT#5500 proper removal of list: keys from pair db
+
+  [ Sergii Kipot ]
+  * [9815c1e] TT#8635 set umask for files created by docker
+  * [321f8e9] Revert "TT#8635 set umask for files created by docker"
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 03 Feb 2017 00:35:10 +0100
+
 lua-ngcp-kamailio (5.1.0.0+0~mr5.1.0.0) unstable; urgency=medium
 
   [ Victor Seva ]
