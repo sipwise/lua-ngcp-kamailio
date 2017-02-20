@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da01753e_079fa653",
+        "filename": "t/Dockerfile",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1000001
+      },
+      "writtenOn": "2017-02-20T14:10:09Z",
+      "side": 1,
+      "message": "this is not nice to use in NGCP tests.\nif we need lua-check in NGCP (at least for testing), lets add it to trunk.yaml, nope?",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 125
+      },
+      "revId": "f2a55b4564ee647d12797fca148285147b872571",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    }
+  ]
+}
