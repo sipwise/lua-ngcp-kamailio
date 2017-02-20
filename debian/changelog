@@ -1,3 +1,19 @@
+lua-ngcp-kamailio (5.0.3.0+0~mr5.0.3.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [910ceb0] TT#7190 ngcp-dlgcnt-check
+  * [92dcb21] TT#7190 ngcp-dlgcnt-check
+  * [7aa5a78] TT#7190 ngcp-dlg(cnt|list)-clean: fix sr.log error
+  * [559f52c] TT#8007 ngcp-dlgcnt-check: use dlg.dlg_list with callid
+  * [8dca62b] TT#8678 dlglist: add unit tests
+
+  [ Andrew Pogrebennyk ]
+  * [5d2a7de] TT#5500 proper removal of list: keys from pair db
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 20 Feb 2017 21:00:19 +0100
+
 lua-ngcp-kamailio (5.0.2.0+0~mr5.0.2.0) unstable; urgency=medium
 
   * New release.
