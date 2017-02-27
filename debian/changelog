@@ -1,3 +1,15 @@
+lua-ngcp-kamailio (0.13.4.1+0~mr4.5.4.1) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [22bbba6] TT#8678 dlglist: add unit tests
+
+  [ Andrew Pogrebennyk ]
+  * [87b6254] TT#5500 proper removal of list: keys from pair db
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 27 Feb 2017 21:28:47 +0100
+
 lua-ngcp-kamailio (0.13.4.0+0~mr4.5.4.0) unstable; urgency=medium
 
   [ Victor Seva ]
