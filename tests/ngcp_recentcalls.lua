@@ -87,7 +87,7 @@ TestNGCPRecentCalls = {} --class
                                  "caller", caller,
                                  "callee", callee,
                                  "source", source) ;mc :returns(true)
-        self.central:expire(key, ttl) ;mc :returns(1)
+        self.central:expire(uuid, ttl) ;mc :returns(1)
 
         mc:replay()
         local res = self.rcalls:set_by_key(key,
