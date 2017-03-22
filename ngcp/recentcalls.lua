@@ -68,27 +68,24 @@ end
         return client
     end
 
-    function NGCPRecentCalls:set_by_key(key,
-                                            callid, uuid, start_time,
+    function NGCPRecentCalls:set_by_uuid(uuid, callid, start_time,
                                             duration, caller, callee,
                                             source)
         if not self._test_connection(self.central) then
             self.central = self._connect(self.config.central)
         end
-        local res = self.central:hmset(key,
-                                        "callid", callid,
-                                        "uuid", uuid,
+        local res = self.central:hmset(uuid, "callid", callid,
                                         "start_time", start_time,
                                         "duration", duration,
                                         "caller", caller,
                                         "callee", callee,
                                         "source", source)
         if res then
-            self.central:expire(key, self.config.expire)
+            self.central:expire(uuid, self.config.expire)
         end
-        sr.log("info", string.format("central:hset[%s]=>[%s] callid: %s uuid: %s start_time: %s duration: %d caller: %s callee: %s source: %s expire: %d\n",
-                                    key, tostring(res),
-                                    callid, uuid,
+        sr.log("info", string.format("central:hset[%s]=>[%s] callid: %s start_time: %s duration: %d caller: %s callee: %s source: %s expire: %d\n",
+                                    uuid, tostring(res),
+                                    callid,
                                     start_time, duration,
                                     caller, callee,
                                     source,
