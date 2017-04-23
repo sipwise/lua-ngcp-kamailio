@@ -40,6 +40,8 @@ local NGCPConfig_MT = { __index = NGCPConfig }
             default = {
                 contract = {
                 },
+                fax = {
+                },
                 peer = {
                     sst_enable = "yes",
                     sst_expires = 300,
