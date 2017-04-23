@@ -24,6 +24,7 @@ local DPFetch = require 'tests_v.dp_vars'
 local PPFetch = require 'tests_v.pp_vars'
 local PProfFetch = require 'tests_v.pprof_vars'
 local UPFetch = require 'tests_v.up_vars'
+local FPFetch = require 'tests_v.fp_vars'
 local utils = require 'ngcp.utils'
 local utable = utils.table
 
@@ -35,6 +36,7 @@ local dp_vars = DPFetch:new()
 local pp_vars = PPFetch:new()
 local up_vars = UPFetch:new()
 local pprof_vars = PProfFetch:new()
+local fp_vars = FPFetch:new()
 
 package.loaded.luasql = nil
 package.preload['luasql.mysql'] = function ()
@@ -63,6 +65,7 @@ TestNGCP = {} --class
         pp_vars:reset()
         pprof_vars:reset()
         up_vars:reset()
+        fp_vars:reset()
     end
 
     function TestNGCP:tearDown()
@@ -76,6 +79,8 @@ TestNGCP = {} --class
         sr.pv.unset("$xavp(callee_usr_prefs)")
         sr.pv.unset("$xavp(caller_real_prefs)")
         sr.pv.unset("$xavp(callee_real_prefs)")
+        sr.pv.unset("$xavp(caller_fax_prefs)")
+        sr.pv.unset("$xavp(callee_fax_prefs)")
         self.ngcp = nil
     end
 
@@ -120,6 +125,9 @@ TestNGCP = {} --class
         assertTrue(self.ngcp.prefs.prof)
         assertEquals(sr.pv.get("$xavp(caller_prof_prefs=>dummy)"),"caller")
         assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>dummy)"),"callee")
+        assertTrue(self.ngcp.prefs.fax)
+        assertEquals(sr.pv.get("$xavp(caller_fax_prefs=>dummy)"),"caller")
+        assertEquals(sr.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
     end
 
     function TestNGCP:test_log_pref()
@@ -159,6 +167,16 @@ TestNGCP = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+        -- connection check
+        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
+        self.cur:fetch()              ;mc :returns({})
+        self.cur:numrows()            ;mc :returns(1)
+        self.cur:close()
+        --
+        self.con:execute("SELECT fp.* FROM provisioning.voip_fax_preferences fp, provisioning.voip_subscribers s WHERE s.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c' AND fp.subscriber_id = s.id")  ;mc :returns(self.cur)
+        self.cur:getcolnames()        ;mc :returns(fp_vars:val("fp_keys"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(fp_vars:val("fp_1"))
         self.cur:close()
 
         mc:replay()
@@ -253,6 +271,16 @@ TestNGCP = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
+        -- connection check
+        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
+        self.cur:fetch()              ;mc :returns({})
+        self.cur:numrows()            ;mc :returns(1)
+        self.cur:close()
+        --
+        self.con:execute("SELECT fp.* FROM provisioning.voip_fax_preferences fp, provisioning.voip_subscribers s WHERE s.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c' AND fp.subscriber_id = s.id")  ;mc :returns(self.cur)
+        self.cur:getcolnames()        ;mc :returns(fp_vars:val("fp_keys"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(fp_vars:val("fp_1"))
+        self.cur:close()
 
         mc:replay()
         local keys = self.ngcp:caller_usr_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c", "192.168.51.56")
@@ -325,6 +353,16 @@ TestNGCP = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
+        -- connection check
+        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
+        self.cur:fetch()              ;mc :returns({})
+        self.cur:numrows()            ;mc :returns(1)
+        self.cur:close()
+        --
+        self.con:execute("SELECT fp.* FROM provisioning.voip_fax_preferences fp, provisioning.voip_subscribers s WHERE s.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c' AND fp.subscriber_id = s.id")  ;mc :returns(self.cur)
+        self.cur:getcolnames()        ;mc :returns(fp_vars:val("fp_keys"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(fp_vars:val("fp_2"))
+        self.cur:close()
 
         mc:replay()
         local keys = self.ngcp:callee_usr_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c", "192.168.51.56")
@@ -391,6 +429,16 @@ TestNGCP = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
+        -- connection check
+        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
+        self.cur:fetch()              ;mc :returns({})
+        self.cur:numrows()            ;mc :returns(1)
+        self.cur:close()
+        --
+        self.con:execute("SELECT fp.* FROM provisioning.voip_fax_preferences fp, provisioning.voip_subscribers s WHERE s.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c' AND fp.subscriber_id = s.id")  ;mc :returns(self.cur)
+        self.cur:getcolnames()        ;mc :returns(fp_vars:val("fp_keys"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(fp_vars:val("fp_2"))
+        self.cur:close()
 
         mc:replay()
         local keys = self.ngcp:callee_usr_load("ae736f72-21d1-4ea6-a3ea-4d7f56b3887c", "192.168.51.56")
@@ -453,6 +501,16 @@ TestNGCP = {} --class
         self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ah736f72-21d1-4ea6-a3ea-4d7f56b3887c' ORDER BY id DESC") ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ah736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+        -- connection check
+        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
+        self.cur:fetch()              ;mc :returns({})
+        self.cur:numrows()            ;mc :returns(1)
+        self.cur:close()
+        --
+        self.con:execute("SELECT fp.* FROM provisioning.voip_fax_preferences fp, provisioning.voip_subscribers s WHERE s.uuid = 'ah736f72-21d1-4ea6-a3ea-4d7f56b3887c' AND fp.subscriber_id = s.id")  ;mc :returns(self.cur)
+        self.cur:getcolnames()        ;mc :returns(fp_vars:val("fp_keys"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(fp_vars:val("fp_2"))
         self.cur:close()
 
         mc:replay()
@@ -644,7 +702,7 @@ TestNGCP = {} --class
     end
 
     function TestNGCP:test_tostring()
-        assertEquals(tostring(self.ngcp), 'caller_contract_prefs:{dummy={"caller"}}\ncallee_contract_prefs:{dummy={"callee"}}\ncaller_peer_prefs:{dummy={"caller"}}\ncallee_peer_prefs:{dummy={"callee"}}\ncaller_dom_prefs:{dummy={"caller"}}\ncallee_dom_prefs:{dummy={"callee"}}\ncaller_prof_prefs:{dummy={"caller"}}\ncallee_prof_prefs:{dummy={"callee"}}\ncaller_usr_prefs:{dummy={"caller"}}\ncallee_usr_prefs:{dummy={"callee"}}\ncaller_real_prefs:{dummy={"caller"}}\ncallee_real_prefs:{dummy={"callee"}}\n')
+        assertEquals(tostring(self.ngcp), 'caller_contract_prefs:{dummy={"caller"}}\ncallee_contract_prefs:{dummy={"callee"}}\ncaller_peer_prefs:{dummy={"caller"}}\ncallee_peer_prefs:{dummy={"callee"}}\ncaller_dom_prefs:{dummy={"caller"}}\ncallee_dom_prefs:{dummy={"callee"}}\ncaller_prof_prefs:{dummy={"caller"}}\ncallee_prof_prefs:{dummy={"callee"}}\ncaller_fax_prefs:{dummy={"caller"}}\ncallee_fax_prefs:{dummy={"callee"}}\ncaller_usr_prefs:{dummy={"caller"}}\ncallee_usr_prefs:{dummy={"callee"}}\ncaller_real_prefs:{dummy={"caller"}}\ncallee_real_prefs:{dummy={"callee"}}\n')
     end
 -- class TestNGCP
 --EOF
