@@ -25,6 +25,7 @@ local NGCPPeerPrefs = require 'ngcp.pp'
 local NGCPDomainPrefs = require 'ngcp.dp'
 local NGCPUserPrefs = require 'ngcp.up'
 local NGCPRealPrefs = require 'ngcp.rp'
+local NGCPFaxPrefs = require 'ngcp.fp'
 local NGCPConfig = require 'ngcp.config'
 local utils = require 'ngcp.utils'
 local utable = utils.table
@@ -60,6 +61,7 @@ end
             peer     = NGCPPeerPrefs:new(t.config),
             real     = NGCPRealPrefs:new(t.config),
             contract = NGCPContractPrefs:new(t.config),
+            fax      = NGCPFaxPrefs:new(t.config),
         }
         return t
     end
@@ -96,7 +98,8 @@ end
         local keys = {
             domain = self.prefs.dom:caller_load(domain),
             prof   = self.prefs.prof:caller_load(uuid),
-            user   = self.prefs.usr:caller_load(uuid)
+            user   = self.prefs.usr:caller_load(uuid),
+            fax    = self.prefs.fax:caller_load(uuid)
         }
         local unique_keys = utable.deepcopy(keys.domain)
         utable.merge(unique_keys, keys.prof)
@@ -112,7 +115,8 @@ end
         local keys = {
             domain = self.prefs.dom:callee_load(domain),
             prof   = self.prefs.prof:callee_load(uuid),
-            user   = self.prefs.usr:callee_load(uuid)
+            user   = self.prefs.usr:callee_load(uuid),
+            fax    = self.prefs.fax:callee_load(uuid)
         }
         local unique_keys = utable.deepcopy(keys.domain)
         utable.merge(unique_keys, keys.prof)
