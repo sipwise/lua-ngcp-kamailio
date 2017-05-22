@@ -52,11 +52,16 @@ FAKE_DLG_CLEAN = """
 if [ $1 = -c ] ; then
     echo 4
     exit 0
+else if [ $1 = -C ] ; then
+    echo localhost
+    exit 0
 fi
 echo "ngcp-dlgcnt-clean $*">> %s""" % FAKE_CMD_LIST
 
 FAKE_REDIS_HELPER = """
-if [ $1 != -n ] && [ $2 != 4 ] ; then
+if [ $1 != -h ] && [ $2 != localhost ] ; then
+    echo $0 $* >&2
+if [ $3 != -n ] && [ $4 != 4 ] ; then
     echo $0 $* >&2
     exit 1
 fi"""
