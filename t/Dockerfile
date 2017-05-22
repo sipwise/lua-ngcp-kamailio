@@ -10,7 +10,8 @@ ENV REFRESHED_AT 2016-12-2
 # TODO - the release-trunk-jessie is too dynamic yet, though required for lua-unit backport
 RUN echo "deb https://deb.sipwise.com/autobuild/ release-trunk-jessie main" >>/etc/apt/sources.list
 
-RUN apt-get update && apt-get install --assume-yes lua5.1 lua-unit lua-lemock lua-logging python-xmlrunner
+RUN apt-get update && apt-get install --assume-yes \
+	lua5.1 lua-unit lua-lemock lua-logging lua-argparse python-xmlrunner
 
 RUN echo './t/testrunner' >>/root/.bash_history
 

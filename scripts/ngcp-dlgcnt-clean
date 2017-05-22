@@ -3,6 +3,16 @@
 local NGCPDlg = require 'ngcp.dlgcnt'
 local config = "/etc/kamailio/proxy/dlgcnt.lua.cfg"
 
+local argparse = require "argparse"
+local parser = argparse() {
+	name = "ngcp-dlgcnt-clean",
+	description = "helper to remove kamailio dialogs from redis db"
+}
+
+parser:argument("callid", "Call-Id to remove")
+parser:flag("-c --config-db", "redis db defined at config")
+parser:flag("-C --config-host", "redis server defined at config")
+
 -- luacheck: globals dlg_config
 sr = {}
 sr.log = function (level, str)
@@ -21,26 +31,16 @@ local function get_config()
 	end
 end
 
-local function usage()
-	print("ngcp-dlgcnt-clean callid")
-end
-
-if #arg ~= 1 then
-	io.stderr:write("wrong number of arguments\n");
-	usage()
-	os.exit(2)
-end
-
-if arg[1] == "-h" then usage(); os.exit(0); end
+local args = parser:parse()
 
 get_config()
 
 local dlg = NGCPDlg:new()
 
-if arg[1] == '-c' then
-	print(tostring(dlg.config.pair.db))
+if args.config_db then
+	print(tostring(dlg_config.pair.db))
 	os.exit(0)
-elseif arg[1] == '-C' then
+elseif args.config_host then
 	print(tostring(dlg_config.pair.host))
 	os.exit(0)
 end
@@ -55,4 +55,4 @@ if dlg_config then
 	--print(string.format("dlg.config:%s", ut.tostring(dlg.config)))
 end
 
-dlg:del(arg[1])
+dlg:del(args.callid)
