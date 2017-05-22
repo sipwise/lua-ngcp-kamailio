@@ -32,10 +32,11 @@ fi
 
 # read kamailio.proxy.dlgcnt.pair_redis_db
 REDIS_DB="$(ngcp-dlgcnt-clean -c 2>/dev/null|| echo 4)"
+host="$(awk '/^bind/ {print $NF}' /etc/redis/redis.conf)"
 
 # full list
 REDIS_CALLIDS=$(mktemp)
-ngcp-redis-helper -n "$REDIS_DB" dump | egrep -v "^$" > "$REDIS_CALLIDS" || true
+ngcp-redis-helper -h "$host" -n "$REDIS_DB" dump | egrep -v "^$" > "$REDIS_CALLIDS" || true
 # 'lists:' belongs to dlglist
 REDIS_CALLIDS_FILTER=$(mktemp)
 egrep -v '^list:' "$REDIS_CALLIDS" > "$REDIS_CALLIDS_FILTER" || true
