@@ -1,3 +1,12 @@
+lua-ngcp-kamailio (0.13.4.2+0~mr4.5.4.2) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [551a22b] TT#16507 ngcp-dlgcnt-check: add missing host parameter
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 23 May 2017 11:02:38 +0200
+
 lua-ngcp-kamailio (0.13.4.1+0~mr4.5.4.1) unstable; urgency=medium
 
   [ Victor Seva ]
