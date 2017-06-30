@@ -12,6 +12,7 @@ Package: lua-ngcp-kamailio
 Section: libs
 Architecture: any
 Depends:
+ lua-argparse,
  lua-sql-mysql,
  lua5.1,
  ngcp-system-tools-ce | ngcp-system-tools,
