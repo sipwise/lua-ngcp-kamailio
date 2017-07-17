@@ -1,3 +1,15 @@
+lua-ngcp-kamailio (5.4.1.0+0~mr5.4.1.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [751c1e7] TT#16507 ngcp-dlgcnt-check: add missing host parameter
+  * [e6a3a1b] TT#16518 ngcp-dlg(cnt|list)-clean: improve arg parse
+  * [4723e57] TT#16518 debian: lua-argparse as dependency for scripts
+  * [a5cd687] TT#17642 docker: follow policy to include NGCP repository
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 17 Jul 2017 22:44:03 +0200
+
 lua-ngcp-kamailio (5.4.0.0+0~mr5.4.0.0) unstable; urgency=medium
 
   [ Kirill Solomko ]
