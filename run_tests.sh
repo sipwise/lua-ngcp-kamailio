@@ -46,8 +46,8 @@ require "tests/${1}"
 ---- Control test output:
 local lu = LuaUnit
 lu:setOutputType('${FORMAT}')
-lu:setFname('${RES}')
-lu:setVerbosity(1)
+lu.fname = '${RES}'
+lu.verbosity = 1
 lu:run()
 EOF
 		if [[ "${FORMAT}" = "JUNIT" ]] ; then

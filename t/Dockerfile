@@ -14,6 +14,9 @@ COPY t/sources.list.d/preferences /etc/apt/preferences.d/
 RUN apt-get update && apt-get install --assume-yes \
 	lua5.1 lua-unit lua-lemock lua-logging lua-argparse python-xmlrunner
 
+RUN cd /tmp; wget http://ftp.de.debian.org/debian/pool/main/l/lua-unit/lua-unit_3.2-1_all.deb; \
+	dpkg -i /tmp/lua-unit_3.2-1_all.deb
+
 RUN echo './t/testrunner' >>/root/.bash_history
 
 WORKDIR /code/
