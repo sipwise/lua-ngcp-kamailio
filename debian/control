@@ -13,6 +13,8 @@ Section: libs
 Architecture: any
 Depends:
  lua-argparse,
+ lua-cjson,
+ lua-curl,
  lua-sql-mysql,
  lua5.1,
  ngcp-system-tools-ce | ngcp-system-tools,
@@ -29,6 +31,8 @@ Package: lua-ngcp-kamailio-dev
 Section: libs
 Architecture: any
 Depends:
+ lua-cjson,
+ lua-curl,
  lua-lemock,
  lua-logging,
  lua-sql-mysql,
