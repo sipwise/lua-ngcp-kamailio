@@ -12,7 +12,7 @@ COPY t/sources.list.d/builddeps.list /etc/apt/sources.list.d/
 COPY t/sources.list.d/preferences /etc/apt/preferences.d/
 
 RUN apt-get update && apt-get install --assume-yes \
-	lua5.1 lua-unit lua-lemock lua-logging lua-argparse python-xmlrunner
+	lua5.1 lua-unit lua-cjson lua-curl lua-lemock lua-logging lua-argparse python-xmlrunner
 
 RUN echo './t/testrunner' >>/root/.bash_history
 
