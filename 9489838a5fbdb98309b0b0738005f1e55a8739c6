@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3ae8d1ca_dc482dcf",
+        "filename": "t/Dockerfile",
+        "patchSetId": 6
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1000001
+      },
+      "writtenOn": "2017-08-14T10:00:11Z",
+      "side": 1,
+      "message": "time was NOT updated, so docker file should NOT be rebuild... AFAIK.... JFYI.",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 27
+      },
+      "revId": "9489838a5fbdb98309b0b0738005f1e55a8739c6",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    }
+  ]
+}
