@@ -1,3 +1,12 @@
+lua-ngcp-kamailio (5.3.3.0+0~mr5.3.3.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [f20c513] TT#17642 docker: follow policy to include NGCP repository
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 21 Aug 2017 12:41:26 +0200
+
 lua-ngcp-kamailio (5.3.2.0+0~mr5.3.2.0) unstable; urgency=medium
 
   [ Victor Seva ]
