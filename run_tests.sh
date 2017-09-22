@@ -36,18 +36,15 @@ require "tests/${1}"
 ---- Control test output:
 local lu = LuaUnit
 lu:setOutputType('${FORMAT}')
-lu:setVerbosity(1)
 lu:run()
 EOF
 	else
-		cat<<EOF |lua5.1 -
+		cat<<EOF |lua5.1 - --name "${RES}"
 EXPORT_ASSERT_TO_GLOBALS = true
 require "tests/${1}"
 ---- Control test output:
 local lu = LuaUnit
 lu:setOutputType('${FORMAT}')
-lu:setFname('${RES}')
-lu:setVerbosity(1)
 lu:run()
 EOF
 		if [[ "${FORMAT}" = "JUNIT" ]] ; then
