@@ -26,8 +26,7 @@ WORKDIR /code/
 #
 # you need to put the proper NGCP sources at t/sources.list.d/builddeps.list
 # for instance, trunk:
-# echo "deb https://deb.sipwise.com/autobuild/ release-trunk-jessie main" > /
-#  t/sources.list.d/builddeps.list
+# echo "deb https://deb.sipwise.com/autobuild/ release-trunk-jessie main" > t/sources.list.d/builddeps.list
 #
 # % docker build --tag="lua-ngcp-kamailio-jessie" -f t/Dockerfile .
 # % docker run --rm -i -t -v $(pwd):/code:rw lua-ngcp-kamailio-jessie:latest bash
