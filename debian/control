@@ -1,15 +1,14 @@
 Source: lua-ngcp-kamailio
-Priority: extra
+Section: interpreters
+Priority: optional
 Maintainer: Sipwise Development Team <support@sipwise.com>
+Homepage: https://www.sipwise.com/
+Standards-Version: 3.9.8
 Build-Depends:
- debhelper (>= 8~),
+ debhelper (>= 10),
  dh-lua (>= 16~),
-Standards-Version: 3.9.7
-Section: libs
-Homepage: http://sipwise.com/
 
 Package: lua-ngcp-kamailio
-Section: libs
 Architecture: any
 Depends:
  lua-argparse,
@@ -28,7 +27,6 @@ Description: lua framework for ngcp-kamailio config
  uses.
 
 Package: lua-ngcp-kamailio-dev
-Section: libs
 Architecture: any
 Depends:
  lua-cjson,
