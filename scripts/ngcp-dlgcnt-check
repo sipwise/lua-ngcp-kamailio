@@ -42,8 +42,8 @@ REDIS_CALLIDS_FILTER=$(mktemp)
 egrep -v '^list:' "$REDIS_CALLIDS" > "$REDIS_CALLIDS_FILTER" || true
 
 while read -r i ; do
-  if ! ngcp-sercmd proxy dlg.dlg_list "$i"| \
-       awk '/call-id:/ { print $NF}'| grep -q "$i"
+  if ! ngcp-sercmd proxy dlg.dlg_list -- "$i"| \
+       awk '/call-id:/ { print $NF}'| grep -q -- "$i"
   then
     printf "CallID:[%s] unknown\n" "$i"
     if $REMOVE ; then
