@@ -22,6 +22,30 @@
       "revId": "749fa93a50655799699ba863a7fd392982348f2f",
       "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "baada198_84b483f3",
+        "filename": "scripts/ngcp-dlgcnt-check",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1000011
+      },
+      "writtenOn": "2017-11-27T16:18:54Z",
+      "side": 1,
+      "message": "yes, cause actually that was the root cause, as I tested:\n\nroot@sp1:/var/sipwise# ngcp-sercmd proxy dlg.dlg_list -JXYsI8RkxMSNeHYDsF0vg..\nUnknown option `-J\u0027.\n\nas you can see that was the issue, so I need to skip on both",
+      "parentUuid": "baada198_44d34b38",
+      "range": {
+        "startLine": 45,
+        "startChar": 38,
+        "endLine": 45,
+        "endChar": 40
+      },
+      "revId": "749fa93a50655799699ba863a7fd392982348f2f",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
     }
   ]
 }
