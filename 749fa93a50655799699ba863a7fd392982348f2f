@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "baada198_44d34b38",
+        "filename": "scripts/ngcp-dlgcnt-check",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1000001
+      },
+      "writtenOn": "2017-11-27T16:14:07Z",
+      "side": 1,
+      "message": "are you sure this is necessary here? AFAIK it is NOT necessary there and I believe it might make some harm...",
+      "range": {
+        "startLine": 45,
+        "startChar": 38,
+        "endLine": 45,
+        "endChar": 40
+      },
+      "revId": "749fa93a50655799699ba863a7fd392982348f2f",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    }
+  ]
+}
