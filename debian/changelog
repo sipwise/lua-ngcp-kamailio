@@ -1,3 +1,12 @@
+lua-ngcp-kamailio (5.5.3.0+0~mr5.5.3.0) unstable; urgency=medium
+
+  [ Alexander Lutay ]
+  * [32f06e8] TT#21905 Switch lua-ngcp-kamailio Dockerfile to Debian stretch
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 04 Dec 2017 11:39:35 +0100
+
 lua-ngcp-kamailio (5.5.2.0+0~mr5.5.2.0) unstable; urgency=medium
 
   * New release.
