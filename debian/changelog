@@ -1,3 +1,18 @@
+lua-ngcp-kamailio (6.1.0.0+0~mr6.1.0.0) unstable; urgency=medium
+
+  [ Alexander Lutay ]
+  * [606362f] TT#21905 Switch lua-ngcp-kamailio Dockerfile to Debian stretch
+
+  [ Guillem Jover ]
+  * [ae01a3c] TT#22072 Update packaging
+
+  [ Daniel Grotti ]
+  * [749fa93] TT#26114 fix problem with callID starting with minus(-)
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 06 Dec 2017 00:05:39 +0100
+
 lua-ngcp-kamailio (6.0.0.0+0~mr6.0.0.0) unstable; urgency=medium
 
   [ Kirill Solomko ]
