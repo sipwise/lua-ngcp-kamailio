@@ -95,10 +95,10 @@ local NGCPXAvp_MT = {
 
     function NGCPXAvp._setvalue(id, vtype, value)
         local check
-    	-- sr.log("info", string.format("vtype:[%s]:%d", type(vtype), vtype))
-    	if type(vtype) == "string" then
-    		vtype = tonumber(vtype)
-    	end
+        -- sr.log("info", string.format("vtype:[%s]:%d", type(vtype), vtype))
+        if type(vtype) == "string" then
+            vtype = tonumber(vtype)
+        end
         if vtype == 0 then
             sr.log("dbg",string.format("sr.pv.sets->%s:%s", id, value))
             if type(value) == 'number' then
