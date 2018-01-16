@@ -1,0 +1,2 @@
+deb https://deb.sipwise.com/autobuild internal-jessie main
+deb https://deb.sipwise.com/autobuild/ release-trunk-stretch main

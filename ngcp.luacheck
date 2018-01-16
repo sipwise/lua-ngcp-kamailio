@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Luacheck report" tests="32">
+    <testcase name="ngcp/api_client.lua:1" classname="ngcp/api_client.lua">
+        <failure type="W113" message="ngcp/api_client.lua:51:13: accessing undefined variable 'curl'"/>
+    </testcase>
+    <testcase name="ngcp/api_client.lua:2" classname="ngcp/api_client.lua">
+        <failure type="W113" message="ngcp/api_client.lua:68:19: accessing undefined variable 'curl'"/>
+    </testcase>
+    <testcase name="ngcp/api_client.lua:3" classname="ngcp/api_client.lua">
+        <failure type="W113" message="ngcp/api_client.lua:70:19: accessing undefined variable 'curl'"/>
+    </testcase>
+    <testcase name="ngcp/api_client.lua:4" classname="ngcp/api_client.lua">
+        <failure type="W113" message="ngcp/api_client.lua:71:19: accessing undefined variable 'curl'"/>
+    </testcase>
+    <testcase name="ngcp/api_client.lua:5" classname="ngcp/api_client.lua">
+        <failure type="W113" message="ngcp/api_client.lua:73:19: accessing undefined variable 'curl'"/>
+    </testcase>
+    <testcase name="ngcp/api_client.lua:6" classname="ngcp/api_client.lua">
+        <failure type="W113" message="ngcp/api_client.lua:74:19: accessing undefined variable 'curl'"/>
+    </testcase>
+    <testcase name="ngcp/api_client.lua:7" classname="ngcp/api_client.lua">
+        <failure type="W113" message="ngcp/api_client.lua:74:38: accessing undefined variable 'curl'"/>
+    </testcase>
+    <testcase name="ngcp/api_client.lua:8" classname="ngcp/api_client.lua">
+        <failure type="W113" message="ngcp/api_client.lua:75:19: accessing undefined variable 'curl'"/>
+    </testcase>
+    <testcase name="ngcp/api_client.lua:9" classname="ngcp/api_client.lua">
+        <failure type="W113" message="ngcp/api_client.lua:76:19: accessing undefined variable 'curl'"/>
+    </testcase>
+    <testcase name="ngcp/api_client.lua:10" classname="ngcp/api_client.lua">
+        <failure type="W113" message="ngcp/api_client.lua:83:19: accessing undefined variable 'curl'"/>
+    </testcase>
+    <testcase name="ngcp/api_client.lua:11" classname="ngcp/api_client.lua">
+        <failure type="W113" message="ngcp/api_client.lua:84:19: accessing undefined variable 'curl'"/>
+    </testcase>
+    <testcase name="ngcp/api_client.lua:12" classname="ngcp/api_client.lua">
+        <failure type="W211" message="ngcp/api_client.lua:86:11: unused variable 'res'"/>
+    </testcase>
+    <testcase name="ngcp/api_client.lua:13" classname="ngcp/api_client.lua">
+        <failure type="W211" message="ngcp/api_client.lua:86:16: unused variable 'msg'"/>
+    </testcase>
+    <testcase name="ngcp/api_client.lua:14" classname="ngcp/api_client.lua">
+        <failure type="W113" message="ngcp/api_client.lua:88:8: accessing undefined variable 'curl'"/>
+    </testcase>
+    <testcase name="ngcp/avp.lua" classname="ngcp/avp.lua"/>
+    <testcase name="ngcp/config.lua" classname="ngcp/config.lua"/>
+    <testcase name="ngcp/cp.lua" classname="ngcp/cp.lua"/>
+    <testcase name="ngcp/dlg_var.lua" classname="ngcp/dlg_var.lua"/>
+    <testcase name="ngcp/dlgcnt.lua" classname="ngcp/dlgcnt.lua"/>
+    <testcase name="ngcp/dlglist.lua" classname="ngcp/dlglist.lua"/>
+    <testcase name="ngcp/dp.lua" classname="ngcp/dp.lua"/>
+    <testcase name="ngcp/fp.lua" classname="ngcp/fp.lua"/>
+    <testcase name="ngcp/loop.lua" classname="ngcp/loop.lua"/>
+    <testcase name="ngcp/ngcp.lua" classname="ngcp/ngcp.lua"/>
+    <testcase name="ngcp/pp.lua" classname="ngcp/pp.lua"/>
+    <testcase name="ngcp/pprof.lua" classname="ngcp/pprof.lua"/>
+    <testcase name="ngcp/pref.lua" classname="ngcp/pref.lua"/>
+    <testcase name="ngcp/recentcalls.lua" classname="ngcp/recentcalls.lua"/>
+    <testcase name="ngcp/rp.lua" classname="ngcp/rp.lua"/>
+    <testcase name="ngcp/up.lua" classname="ngcp/up.lua"/>
+    <testcase name="ngcp/utils.lua" classname="ngcp/utils.lua"/>
+    <testcase name="ngcp/xavp.lua" classname="ngcp/xavp.lua"/>
+</testsuite>
