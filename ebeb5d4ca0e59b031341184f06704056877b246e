@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da9b358b_24527cde",
+        "filename": "ngcp/dlglist.lua",
+        "patchSetId": 3
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1000021
+      },
+      "writtenOn": "2018-03-22T16:50:45Z",
+      "side": 1,
+      "message": "Fine for me.\nJust a suggestion: remove the \"exist\" check we do in templates lua scripts before calling the remove. This because it is basically already done here.\nIn this way we avoid a duplicated query on redis.",
+      "range": {
+        "startLine": 132,
+        "startChar": 8,
+        "endLine": 135,
+        "endChar": 11
+      },
+      "revId": "ebeb5d4ca0e59b031341184f06704056877b246e",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    }
+  ]
+}
