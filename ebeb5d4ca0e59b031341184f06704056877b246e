@@ -22,6 +22,30 @@
       "revId": "ebeb5d4ca0e59b031341184f06704056877b246e",
       "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da9b358b_a4afac93",
+        "filename": "ngcp/dlglist.lua",
+        "patchSetId": 3
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1000006
+      },
+      "writtenOn": "2018-03-22T17:36:22Z",
+      "side": 1,
+      "message": "I think that for call queues we have in local redis list:\u003ccallid\u003e that contains the callqueue:\u003cuuid\u003e\nand in central DB callqueue:\u003cuuid\u003e is a list containing all call-ids from all proxy nodes. So what code does in general is removing items from local (where it checks first in template if dialog exist - and here if the item exists) and also removing items from central. With my change I am skipping removal from central if the item does not exist in local - not sure if this is 100% necessary.",
+      "parentUuid": "da9b358b_24527cde",
+      "range": {
+        "startLine": 132,
+        "startChar": 8,
+        "endLine": 135,
+        "endChar": 11
+      },
+      "revId": "ebeb5d4ca0e59b031341184f06704056877b246e",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
     }
   ]
 }
