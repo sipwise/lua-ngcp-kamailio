@@ -132,6 +132,10 @@ end
             self.pair = self._connect(self.config.pair);
         end
         local num = self.pair:lrem(callid, 1, key);
+        if not num then
+            sr.log("dbg", string.format("pair:del_key[%s] no such key found for callid %s, skipping decrement", key, callid));
+            return num;
+        end
         sr.log("dbg", string.format("pair:lrem[%s]=>[%s] %d\n", callid, key, num));
         if not self._test_connection(self.central) then
             self.central = self._connect(self.config.central);
