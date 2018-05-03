@@ -41,7 +41,7 @@ def setnode(active=True):
         mode = 'true'
     else:
         mode = 'false'
-    create_prog(os.path.join(FAKE_BIN, 'ngcp-check_active'), mode)
+    create_prog(os.path.join(FAKE_BIN, 'ngcp-check-active'), mode)
 
 command = [
     "env",
