@@ -1,3 +1,15 @@
+lua-ngcp-kamailio (6.4.0.0+0~mr6.4.0.0) unstable; urgency=medium
+
+  [ Marco Capetta ]
+  * [4dfbd20] TT#36218 Verify that kam proxy is active before restart app_lua
+
+  [ Guillem Jover ]
+  * [0c91fa2] TT#36351 Use modern ngcp-check-active
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 29 May 2018 10:04:46 +0200
+
 lua-ngcp-kamailio (6.3.0.0+0~mr6.3.0.0) unstable; urgency=medium
 
   [ Andrew Pogrebennyk ]
