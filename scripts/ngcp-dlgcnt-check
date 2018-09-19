@@ -47,9 +47,9 @@ while read -r i ; do
   then
     printf "CallID:[%s] unknown\n" "$i"
     if $REMOVE ; then
-      ngcp-dlgcnt-clean "$i" || true
+      ngcp-dlgcnt-clean "--" "$i" || true
       if grep -q "list:$i" "$REDIS_CALLIDS" ; then
-        ngcp-dlglist-clean "$i" || true
+        ngcp-dlglist-clean "--" "$i" || true
       fi
     fi
   fi
