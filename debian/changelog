@@ -1,3 +1,9 @@
+lua-ngcp-kamailio (7.1.2.0+0~mr7.1.2.0) unstable; urgency=medium
+
+  * New release.
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 21 Jan 2019 22:44:06 +0100
+
 lua-ngcp-kamailio (7.1.1.0+0~mr7.1.1.0) unstable; urgency=medium
 
   * New release.
