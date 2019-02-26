@@ -17,6 +17,7 @@ Depends:
  lua-sql-mysql,
  lua5.1,
  ngcp-system-tools-ce | ngcp-system-tools,
+ systemd,
  ${misc:Depends},
  ${shlibs:Depends},
 Provides:
