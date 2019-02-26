@@ -16,6 +16,24 @@
       "revId": "ff0a42a6e1f778613200366e1b331dc6b37d2835",
       "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba076199_979dee5b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000016
+      },
+      "writtenOn": "2019-02-26T16:53:48Z",
+      "side": 1,
+      "message": "I mean, either the system already has systemd installed and running, or if it does not, then calling systemctl will not be a happy event anyway I guess. :)",
+      "parentUuid": "ba076199_f78e6a26",
+      "revId": "ff0a42a6e1f778613200366e1b331dc6b37d2835",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
     }
   ]
 }
