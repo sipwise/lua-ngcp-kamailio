@@ -106,6 +106,24 @@
       "revId": "ff0a42a6e1f778613200366e1b331dc6b37d2835",
       "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba076199_776dda31",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000001
+      },
+      "writtenOn": "2019-02-26T17:25:47Z",
+      "side": 1,
+      "message": "Added Marco here, AFAIR he is an author.",
+      "parentUuid": "ba076199_b78232c7",
+      "revId": "ff0a42a6e1f778613200366e1b331dc6b37d2835",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
     }
   ]
 }
