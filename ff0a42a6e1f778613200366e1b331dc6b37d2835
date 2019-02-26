@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "ba076199_f78e6a26",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000016
+      },
+      "writtenOn": "2019-02-26T16:53:00Z",
+      "side": 1,
+      "message": "Hmm actually, should the code not be using service status instead?",
+      "revId": "ff0a42a6e1f778613200366e1b331dc6b37d2835",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    }
+  ]
+}
