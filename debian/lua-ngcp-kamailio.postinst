@@ -4,9 +4,10 @@ set -e
 
 case "$1" in
     configure)
-        if [ "$(systemctl is-active kamailio-proxy)" = "active" ] ; then
-            ngcp-sercmd proxy app_lua.reload 0 || true
-            echo "Kamailio proxy module 'app_lua' reloaded"
+        if service kamailio-proxy status >/dev/null 2>&1 ; then
+            echo "kamailio-proxy seems to be active, reloading app_lua"
+            ngcp-sercmd proxy app_lua.reload 0 || RC=$?
+            echo "Kamailio proxy module 'app_lua' reloaded (exit code: ${RC:-0})"
         fi
         ;;
 
