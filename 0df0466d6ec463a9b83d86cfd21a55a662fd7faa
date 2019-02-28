@@ -22,6 +22,30 @@
       "revId": "0df0466d6ec463a9b83d86cfd21a55a662fd7faa",
       "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a0c5dc1_aa6c0f09",
+        "filename": "debian/lua-ngcp-kamailio.postinst",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2019-02-28T08:37:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a0c5dc1_4aad9330",
+      "range": {
+        "startLine": 10,
+        "startChar": 53,
+        "endLine": 10,
+        "endChar": 54
+      },
+      "revId": "0df0466d6ec463a9b83d86cfd21a55a662fd7faa",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
     }
   ]
 }
