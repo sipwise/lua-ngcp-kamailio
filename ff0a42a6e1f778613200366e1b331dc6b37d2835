@@ -124,6 +124,24 @@
       "revId": "ff0a42a6e1f778613200366e1b331dc6b37d2835",
       "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a0c5dc1_ca998321",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2019-02-28T08:23:53Z",
+      "side": 1,
+      "message": "\u003e I vote to use service instead of systemctl :-D\n \u003e It is a common practice for us, AFAIK.\n\nDone",
+      "parentUuid": "ba076199_b7fd9270",
+      "revId": "ff0a42a6e1f778613200366e1b331dc6b37d2835",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
     }
   ]
 }
