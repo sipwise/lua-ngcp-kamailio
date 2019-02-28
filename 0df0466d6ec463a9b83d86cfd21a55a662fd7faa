@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a0c5dc1_4aad9330",
+        "filename": "debian/lua-ngcp-kamailio.postinst",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1000001
+      },
+      "writtenOn": "2019-02-28T08:33:45Z",
+      "side": 1,
+      "message": "Maybe: $?\n\nAlso it can be:\n    \necho \"kamailio-proxy seems to be active, reloading app_lua\"\nngcp-sercmd proxy app_lua.reload 0 || RC\u003d$?\necho \"Kamailio proxy module \u0027app_lua\u0027 reloaded (exit code: ${RC:-0})\"",
+      "range": {
+        "startLine": 10,
+        "startChar": 53,
+        "endLine": 10,
+        "endChar": 54
+      },
+      "revId": "0df0466d6ec463a9b83d86cfd21a55a662fd7faa",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    }
+  ]
+}
