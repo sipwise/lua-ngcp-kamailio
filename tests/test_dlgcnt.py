@@ -20,7 +20,7 @@ def executeAndReturnOutput(command):
     p = subprocess.Popen(command, stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
     stdoutdata, stderrdata = p.communicate()
-    #print(stdoutdata, file=sys.stdout)
+    # print(stdoutdata, file=sys.stdout)
     print(stderrdata, file=sys.stderr)
     return p.returncode, stdoutdata, stderrdata
 
