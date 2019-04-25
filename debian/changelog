@@ -1,3 +1,18 @@
+lua-ngcp-kamailio (7.3.1.0+0~mr7.3.1.0) unstable; urgency=medium
+
+  [ Michael Prokop ]
+  * [85e77cc] TT#53525 postinst: use service(8) to identify active kamailio-proxy instance
+
+  [ Guillem Jover ]
+  * [819a0c0] TT#56550 Rename ngcp-sercmd to ngcp-kamcmd
+
+  [ Alexander Lutay ]
+  * [ce2d462] TT#45377 Make 'lua-ngcp-kamailio-tap-test' happy (test_dlgcnt.py comment without space)
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 25 Apr 2019 14:28:24 +0200
+
 lua-ngcp-kamailio (7.3.0.0+0~mr7.3.0.0) unstable; urgency=medium
 
   [ Michael Prokop ]
