@@ -1,3 +1,12 @@
+lua-ngcp-kamailio (6.5.6.0+0~mr6.5.6.0) unstable; urgency=medium
+
+  [ Alexander Lutay ]
+  * [4e328d8] TT#45377 Make 'lua-ngcp-kamailio-tap-test' happy (test_dlgcnt.py comment without space)
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 27 Jun 2019 15:50:54 +0200
+
 lua-ngcp-kamailio (6.5.5.0+0~mr6.5.5.0) unstable; urgency=medium
 
   * New release.
