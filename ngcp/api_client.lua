@@ -22,7 +22,7 @@ local NGCPAPIClient = {
      __class__ = 'NGCPAPIClient'
 }
 
-require('curl')
+local curl = require 'curl'
 local utils = require 'ngcp.utils'
 local utable = utils.table
 _ENV = NGCPAPIClient
@@ -83,7 +83,7 @@ function NGCPAPIClient:request(method, request)
     self.c:setopt(curl.OPT_CUSTOMREQUEST, method)
     self.c:setopt(curl.OPT_HTTPHEADER, headers)
 
-    local res, msg =  self.c:perform()
+    self.c:perform()
 
     if curl.close then
        self.c:close()
