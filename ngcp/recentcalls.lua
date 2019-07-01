@@ -86,7 +86,8 @@ end
         if res then
             self.central:expire(key, self.config.expire)
         end
-        sr.log("info", string.format("central:hset[%s]=>[%s] callid: %s uuid: %s start_time: %s duration: %d caller: %s callee: %s source: %s expire: %d\n",
+        sr.log("info", string.format("central:hset[%s]=>[%s] callid: %s uuid: %s " ..
+            "start_time: %s duration: %d caller: %s callee: %s source: %s expire: %d\n",
                                     key, tostring(res),
                                     callid, uuid,
                                     start_time, duration,

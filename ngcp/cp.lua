@@ -79,9 +79,15 @@ NGCPContractPrefs_MT.__tostring = function ()
         end
 
         local con = self.config:getDBConnection()
-        local query = string.format("SELECT location_id FROM provisioning.voip_contract_locations cl JOIN provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id WHERE cl.contract_id = %s AND _ipv4_net_from <= UNHEX(HEX(INET_ATON('%s'))) AND _ipv4_net_to >= UNHEX(HEX(INET_ATON('%s'))) ORDER BY cb.ip DESC, cb.mask DESC LIMIT 1", contract, ip, ip)
+        local query = string.format("SELECT location_id FROM provisioning.voip_contract_locations cl JOIN " ..
+            "provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id WHERE cl.contract_id = %s " ..
+            "AND _ipv4_net_from <= UNHEX(HEX(INET_ATON('%s'))) AND _ipv4_net_to >= UNHEX(HEX(INET_ATON('%s')))" ..
+            "ORDER BY cb.ip DESC, cb.mask DESC LIMIT 1", contract, ip, ip)
         if string.find(ip, ':') ~= nil then
-            query = string.format("SELECT location_id FROM provisioning.voip_contract_locations cl JOIN provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id WHERE cl.contract_id = %s AND _ipv6_net_from <= UNHEX(HEX(INET_ATON('%s'))) AND _ipv6_net_to >= UNHEX(HEX(INET_ATON('%s'))) ORDER BY cb.ip DESC, cb.mask DESC LIMIT 1", contract, ip, ip)
+            query = string.format("SELECT location_id FROM provisioning.voip_contract_locations cl JOIN " ..
+                "provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id WHERE cl.contract_id = %s " ..
+                "AND _ipv6_net_from <= UNHEX(HEX(INET_ATON('%s'))) AND _ipv6_net_to >= UNHEX(HEX(INET_ATON('%s'))) " ..
+                "ORDER BY cb.ip DESC, cb.mask DESC LIMIT 1", contract, ip, ip)
         end
 
         local cur,err = con:execute(query)
@@ -104,11 +110,13 @@ NGCPContractPrefs_MT.__tostring = function ()
     function NGCPContractPrefs:_load(level, contract, ip)
         local con = self.config:getDBConnection()
         local location_id = nil
-        local query = string.format("SELECT * FROM %s WHERE uuid ='%s' AND location_id IS NULL", self.db_table, contract)
+        local query = string.format("SELECT * FROM %s WHERE uuid ='%s' AND location_id IS NULL",
+            self.db_table, contract)
         if ip then
             location_id = self:_get_location_id(contract, ip)
             if location_id then
-                query = string.format("SELECT * FROM %s WHERE uuid ='%s' AND location_id = %d", self.db_table, contract, location_id)
+                query = string.format("SELECT * FROM %s WHERE uuid ='%s' AND location_id = %d",
+                    self.db_table, contract, location_id)
             end
         end
         local cur = con:execute(query)
