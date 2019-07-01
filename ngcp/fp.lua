@@ -76,7 +76,8 @@ NGCPFaxPrefs_MT.__tostring = function ()
 
     function NGCPFaxPrefs:_load(level, uuid)
         local con = assert (self.config:getDBConnection())
-        local query = "SELECT fp.* FROM provisioning.voip_fax_preferences fp, provisioning.voip_subscribers s WHERE s.uuid = '" .. uuid .. "' AND fp.subscriber_id = s.id"
+        local query = "SELECT fp.* FROM provisioning.voip_fax_preferences fp, " ..
+            "provisioning.voip_subscribers s WHERE s.uuid = '" .. uuid .. "' AND fp.subscriber_id = s.id"
         local cur = assert (con:execute(query))
         local colnames = cur:getcolnames()
         local keys = {}
