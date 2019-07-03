@@ -1,0 +1,7 @@
+Code-Review+2: Marco Capetta <mcapetta@sipwise.com>
+Verified+1: Alexander Lutay <alutay@sipwise.com>
+Submitted-by: Alexander Lutay <alutay@sipwise.com>
+Submitted-at: Wed, 03 Jul 2019 11:37:49 +0200
+Reviewed-on: http://gerrit.mgm.sipwise.com/31026
+Project: lua-ngcp-kamailio
+Branch: refs/heads/master
