@@ -38,7 +38,7 @@ TestNGCPRecentCalls = {} --class
         local NGCPRecentCalls = require 'ngcp.recentcalls'
 
         self.rcalls = NGCPRecentCalls.new()
-        assertTrue(self.rcalls)
+        assertEvalToTrue(self.rcalls)
 
         self.rcalls.central = self.central;
     end

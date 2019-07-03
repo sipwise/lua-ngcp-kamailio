@@ -105,8 +105,8 @@ TestNGCPXAvp = {} --class
         assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"),"caller")
         xavp:clean()
         assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"),"caller")
-        assertFalse(xavp("testid"))
-        assertFalse(sr.pv.get("$xavp(caller_peer=>testid)"))
+        assertNil(xavp("testid"))
+        assertNil(sr.pv.get("$xavp(caller_peer=>testid)"))
     end
 
     function TestNGCPXAvp:test_clean_all()

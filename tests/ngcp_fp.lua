@@ -84,17 +84,17 @@ TestNGCPFaxPrefs = {} --class
     end
 
     function TestNGCPFaxPrefs:test_caller_load_empty()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         assertEquals(self.d:caller_load(), {})
     end
 
     function TestNGCPFaxPrefs:test_callee_load_empty()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         assertEquals(self.d:callee_load(), {})
     end
 
     function TestNGCPFaxPrefs:test_caller_load()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         con:execute("SELECT fp.* FROM provisioning.voip_fax_preferences fp, provisioning.voip_subscribers s WHERE s.uuid = 'ah736f72-21d1-4ea6-a3ea-4d7f56b3887c' AND fp.subscriber_id = s.id")  ;mc :returns(self.cur)
         self.cur:getcolnames()        ;mc :returns(fp_vars:val("fp_keys"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(fp_vars:val("fp_1"))
@@ -115,7 +115,7 @@ TestNGCPFaxPrefs = {} --class
     end
 
     function TestNGCPFaxPrefs:test_callee_load()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         con:execute("SELECT fp.* FROM provisioning.voip_fax_preferences fp, provisioning.voip_subscribers s WHERE s.uuid = 'ah736f72-21d1-4ea6-a3ea-4d7f56b3887c' AND fp.subscriber_id = s.id") ;mc :returns(self.cur)
         self.cur:getcolnames()        ;mc :returns(fp_vars:val("fp_keys"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(fp_vars:val("fp_2"))
@@ -146,7 +146,7 @@ TestNGCPFaxPrefs = {} --class
         self.d:clean()
         assertEquals(sr.pv.get("$xavp(caller_fax_prefs=>dummy)"),"caller")
         assertEquals(sr.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
-        assertFalse(sr.pv.get("$xavp(fax)"))
+        assertNil(sr.pv.get("$xavp(fax)"))
     end
 
     function TestNGCPFaxPrefs:test_callee_clean()
@@ -164,8 +164,8 @@ TestNGCPFaxPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
         self.d:clean('callee')
         assertEquals(sr.pv.get("$xavp(caller_fax_prefs=>dummy)"),'caller')
-        assertFalse(sr.pv.get("$xavp(callee_fax_prefs=>testid)"))
-        assertFalse(sr.pv.get("$xavp(callee_fax_prefs=>foo)"))
+        assertNil(sr.pv.get("$xavp(callee_fax_prefs=>testid)"))
+        assertNil(sr.pv.get("$xavp(callee_fax_prefs=>foo)"))
         assertEquals(sr.pv.get("$xavp(caller_fax_prefs=>other)"),1)
         assertEquals(sr.pv.get("$xavp(caller_fax_prefs=>otherfoo)"),"foo")
         assertEquals(sr.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
@@ -186,8 +186,8 @@ TestNGCPFaxPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
         self.d:clean('caller')
         assertEquals(sr.pv.get("$xavp(caller_fax_prefs=>dummy)"),"caller")
-        assertFalse(sr.pv.get("$xavp(caller_fax_prefs=>other)"))
-        assertFalse(sr.pv.get("$xavp(caller_fax_prefs=>otherfoo)"))
+        assertNil(sr.pv.get("$xavp(caller_fax_prefs=>other)"))
+        assertNil(sr.pv.get("$xavp(caller_fax_prefs=>otherfoo)"))
         assertEquals(sr.pv.get("$xavp(callee_fax_prefs=>testid)"),1)
         assertEquals(sr.pv.get("$xavp(callee_fax_prefs=>foo)"),"foo")
         assertEquals(sr.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")

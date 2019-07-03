@@ -42,7 +42,7 @@ TestHDRMock = {}
     end
 
     function TestHDRMock:test_append()
-        assertFalse(self.hdr._get_header("From"))
+        assertNil(self.hdr._get_header("From"))
         self.hdr.append("From: hi@there.com\r\n")
         assertEquals(self.hdr.headers, {"From: hi@there.com\r\n"})
         self.hdr.append("To: bye@there.com\r\n")
@@ -50,7 +50,7 @@ TestHDRMock = {}
     end
 
     function TestHDRMock:test_insert()
-        assertFalse(self.hdr._get_header("From"))
+        assertNil(self.hdr._get_header("From"))
         self.hdr.insert("From: hi@there.com\r\n")
         assertEquals(self.hdr.headers, {"From: hi@there.com\r\n"})
         self.hdr.insert("To: bye@there.com\r\n")

@@ -53,7 +53,7 @@ TestNGCPDlgVar = {} --class
     function TestNGCPDlgVar:test_clean()
         self.var(1)
         self.var:clean()
-        assertFalse(self.var())
+        assertNil(self.var())
     end
 
     function TestNGCPDlgVar:test_log()

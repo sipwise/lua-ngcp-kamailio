@@ -1,4 +1,4 @@
---
+    --
 -- Copyright 2013-2016 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
@@ -85,17 +85,17 @@ TestNGCPContractPrefs = {} --class
     end
 
     function TestNGCPContractPrefs:test_caller_load_empty()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         assertEquals(self.d:caller_load(), {})
     end
 
     function TestNGCPContractPrefs:test_callee_load_empty()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         assertEquals(self.d:callee_load(), {})
     end
 
     function TestNGCPContractPrefs:test_caller_load()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         con:execute("SELECT * FROM contract_preferences WHERE uuid ='1' AND location_id IS NULL")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(cp_vars:val("cp_1"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
@@ -111,7 +111,7 @@ TestNGCPContractPrefs = {} --class
     end
 
     function TestNGCPContractPrefs:test_callee_load()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         con:execute("SELECT location_id FROM provisioning.voip_contract_locations cl JOIN provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id WHERE cl.contract_id = 2 AND _ipv4_net_from <= UNHEX(HEX(INET_ATON('172.16.15.1'))) AND _ipv4_net_to >= UNHEX(HEX(INET_ATON('172.16.15.1'))) ORDER BY cb.ip DESC, cb.mask DESC LIMIT 1")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns({location_id = 1 })
         self.cur:close()
@@ -140,7 +140,7 @@ TestNGCPContractPrefs = {} --class
         self.d:clean()
         assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
         assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
-        assertFalse(sr.pv.get("$xavp(prof)"))
+        assertNil(sr.pv.get("$xavp(prof)"))
     end
 
     function TestNGCPContractPrefs:test_callee_clean()
@@ -158,8 +158,8 @@ TestNGCPContractPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
         self.d:clean('callee')
         assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>dummy)"),'caller')
-        assertFalse(sr.pv.get("$xavp(callee_contract_prefs=>testid)"))
-        assertFalse(sr.pv.get("$xavp(callee_contract_prefs=>foo)"))
+        assertNil(sr.pv.get("$xavp(callee_contract_prefs=>testid)"))
+        assertNil(sr.pv.get("$xavp(callee_contract_prefs=>foo)"))
         assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>other)"),1)
         assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>otherfoo)"),"foo")
         assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
@@ -180,8 +180,8 @@ TestNGCPContractPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
         self.d:clean('caller')
         assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
-        assertFalse(sr.pv.get("$xavp(caller_contract_prefs=>other)"))
-        assertFalse(sr.pv.get("$xavp(caller_contract_prefs=>otherfoo)"))
+        assertNil(sr.pv.get("$xavp(caller_contract_prefs=>other)"))
+        assertNil(sr.pv.get("$xavp(caller_contract_prefs=>otherfoo)"))
         assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
         assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
         assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")

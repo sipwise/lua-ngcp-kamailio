@@ -37,7 +37,7 @@ TestNGCPDlgCnt = {} --class
         local NGCPDlg = require 'ngcp.dlgcnt'
 
         self.dlg = NGCPDlg.new()
-        assertTrue(self.dlg)
+        assertEvalToTrue(self.dlg)
 
         self.dlg.central = self.central;
         self.dlg.pair = self.pair

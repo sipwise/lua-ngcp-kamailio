@@ -103,17 +103,17 @@ TestNGCPPeerPrefs = {} --class
     end
 
     function TestNGCPPeerPrefs:test_caller_load_empty()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         assertEquals(self.d:caller_load(), {})
     end
 
     function TestNGCPPeerPrefs:test_callee_load_empty()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         assertEquals(self.d:callee_load(), {})
     end
 
     function TestNGCPPeerPrefs:test_caller_load()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         con:execute("SELECT * FROM peer_preferences WHERE uuid = '2'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(pp_vars:val("p_2"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(pp_vars:val("p_2"))
@@ -146,7 +146,7 @@ TestNGCPPeerPrefs = {} --class
     end
 
     function TestNGCPPeerPrefs:test_callee_load()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         con:execute("SELECT * FROM peer_preferences WHERE uuid = '2'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(pp_vars:val("p_2"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(pp_vars:val("p_2"))
@@ -189,7 +189,7 @@ TestNGCPPeerPrefs = {} --class
         self.d:clean()
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"),"caller")
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
-        assertFalse(sr.pv.get("$xavp(peer)"))
+        assertNil(sr.pv.get("$xavp(peer)"))
     end
 
     function TestNGCPPeerPrefs:test_callee_clean()
@@ -207,8 +207,8 @@ TestNGCPPeerPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
         self.d:clean('callee')
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"),'caller')
-        assertFalse(sr.pv.get("$xavp(callee_peer_prefs=>testid)"))
-        assertFalse(sr.pv.get("$xavp(callee_peer_prefs=>foo)"))
+        assertNil(sr.pv.get("$xavp(callee_peer_prefs=>testid)"))
+        assertNil(sr.pv.get("$xavp(callee_peer_prefs=>foo)"))
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>other)"),1)
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>otherfoo)"),"foo")
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
@@ -229,8 +229,8 @@ TestNGCPPeerPrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
         self.d:clean('caller')
         assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"),"caller")
-        assertFalse(sr.pv.get("$xavp(caller_peer_prefs=>other)"))
-        assertFalse(sr.pv.get("$xavp(caller_peer_prefs=>otherfoo)"))
+        assertNil(sr.pv.get("$xavp(caller_peer_prefs=>other)"))
+        assertNil(sr.pv.get("$xavp(caller_peer_prefs=>otherfoo)"))
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>testid)"),1)
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>foo)"),"foo")
         assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
