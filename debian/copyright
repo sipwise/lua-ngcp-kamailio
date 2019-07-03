@@ -3,13 +3,7 @@ Source: https://github.com/sipwise/lua-ngcp-kamailio.git
 Upstream-Name: lua-ngcp-kamailio
 
 Files: *
-Copyright: 2013-2014 Sipwise GmbH, Austria
-License: GPL-3.0+
-
-Files: debian/*
-Copyright: 2013-2014 SipWise Team <development@sipwise.com>
-License: GPL-3.0+
-
+Copyright: 2013-2019 Sipwise GmbH, Austria
 License: GPL-3.0+
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
