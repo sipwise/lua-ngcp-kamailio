@@ -100,7 +100,7 @@ TestNGCPAvp = {} --class
     function TestNGCPAvp:test_clean()
         self.avp(1)
         self.avp:clean()
-        assertFalse(self.avp())
+        assertNil(self.avp())
     end
 
     function TestNGCPAvp:test_log()

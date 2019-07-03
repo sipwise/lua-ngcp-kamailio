@@ -37,7 +37,7 @@ TestNGCPAPIClient = {} --class
         local NGCPAPIClient = require 'ngcp.api_client'
 
         self.client = NGCPAPIClient.new()
-        assertTrue(self.client)
+        assertEvalToTrue(self.client)
 
         self.client.c = self.c;
         self.client.j = self.j;
@@ -81,7 +81,7 @@ TestNGCPAPIClient = {} --class
         local res = self.client:request(method, request)
         mc:verify()
 
-        assertTrue(res)
+        assertEvalToTrue(res)
         assertIs(self.client.c, self.c)
     end
 

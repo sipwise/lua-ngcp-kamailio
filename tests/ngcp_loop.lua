@@ -38,7 +38,7 @@ function TestNGCPLoop:setUp()
     local NGCPLoop = require 'ngcp.loop'
 
     self.loop = NGCPLoop.new()
-    assertTrue(self.loop)
+    assertEvalToTrue(self.loop)
 
     self.loop.client = self.client;
     self.loop.config.max = 5;

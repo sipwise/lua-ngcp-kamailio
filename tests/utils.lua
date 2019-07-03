@@ -144,9 +144,9 @@ TestUtils = {}
     function TestUtils:test_table_tostring()
         assertError(utils.table.tostring, "nil")
         assertEquals(utils.table.tostring(self.simple_list), "{1,2,3}")
-        assertTrue(utils.table.tostring(self.simple_hash))
+        assertEvalToTrue(utils.table.tostring(self.simple_hash))
         --print(table.tostring(self.simple_hash) .. "\n")
-        assertTrue(utils.table.tostring(self.complex_hash))
+        assertEvalToTrue(utils.table.tostring(self.complex_hash))
         --print(table.tostring(self.complex_hash))
     end
 

@@ -34,7 +34,7 @@ TestSRMock = {}
     end
 
     function TestSRMock:test_log()
-        assertTrue(self.sr.log)
+        assertEvalToTrue(self.sr.log)
         self.sr.log("dbg", "Hi dude!")
         assertError(self.sr.log, "debug", "Hi dude!")
     end

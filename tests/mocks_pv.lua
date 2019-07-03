@@ -34,7 +34,7 @@ TestPVMock = {}
     end
 
     function TestPVMock:test_ini()
-        assertTrue(self.pv)
+        assertEvalToTrue(self.pv)
     end
 
     function TestPVMock:test_clean_id()
@@ -45,7 +45,7 @@ TestPVMock = {}
 
     function TestPVMock:test_is_pv_simple()
         local result = self.pv._is_pv("$si")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'pv')
         assertEquals(result.id, 'si')
         assertEquals(result.key, nil)
@@ -55,7 +55,7 @@ TestPVMock = {}
 
     function TestPVMock:test_is_pv_rw()
         local result = self.pv._is_pv("$rU")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'pv')
         assertEquals(result.id, 'rU')
         assertEquals(result.key, nil)
@@ -65,7 +65,7 @@ TestPVMock = {}
 
     function TestPVMock:test_is_hdr_simple()
         local result = self.pv._is_hdr("$hdr(id)")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'hdr')
         assertEquals(result.id, 'id')
         assertEquals(result.key, nil)
@@ -74,7 +74,7 @@ TestPVMock = {}
 
     function TestPVMock:test_is_hdr_complex()
         local result = self.pv._is_hdr("$hdr($si)")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'hdr')
         assertEquals(result.id, '$si')
         assertEquals(result.key, nil)
@@ -83,7 +83,7 @@ TestPVMock = {}
 
     function TestPVMock:test_is_xavp_simple()
         local result = self.pv._is_xavp("$xavp(id=>key)")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'xavp')
         assertEquals(result.id, 'id')
         assertEquals(result.key, 'key')
@@ -94,7 +94,7 @@ TestPVMock = {}
 
     function TestPVMock:test_is_xavp_complex()
         local result = self.pv._is_xavp("$xavp(id1[8]=>key3g2)")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'xavp')
         assertEquals(result.id, 'id1')
         assertEquals(result.key, 'key3g2')
@@ -102,7 +102,7 @@ TestPVMock = {}
         assertIsNil(result.kindx)
         assertFalse(result.clean)
         result = self.pv._is_xavp("$xavp(id2g1f[9]=>keygg33_f)")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'xavp')
         assertEquals(result.id, 'id2g1f')
         assertEquals(result.key, 'keygg33_f')
@@ -113,7 +113,7 @@ TestPVMock = {}
 
     function TestPVMock:test_is_xavp_complex_indx()
         local result = self.pv._is_xavp("$xavp(id1[8]=>key3g2)")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'xavp')
         assertEquals(result.id, 'id1')
         assertEquals(result.key, 'key3g2')
@@ -121,7 +121,7 @@ TestPVMock = {}
         assertIsNil(result.kindx)
         assertFalse(result.clean)
         result = self.pv._is_xavp("$xavp(id2g1f[9]=>keygg33_f[2])")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'xavp')
         assertEquals(result.id, 'id2g1f')
         assertEquals(result.key, 'keygg33_f')
@@ -132,31 +132,31 @@ TestPVMock = {}
 
     function TestPVMock:test_is_xavp_complex_indx2()
         local result = self.pv._is_xavp("$xavp(gogo[9]=>gogo[*])")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'xavp')
         assertEquals(result.id, 'gogo')
         assertEquals(result.key, 'gogo')
         assertEquals(result.indx, 9)
-        assertFalse(result.kindx)
+        assertNil(result.kindx)
         assertTrue(result.clean)
     end
 
     function TestPVMock:test_is_xavp_simple_nokey()
         local result = self.pv._is_xavp("$xavp(id1[8])")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'xavp')
         assertEquals(result.id, 'id1')
-        assertFalse(result.key)
+        assertNil(result.key)
         assertEquals(result.indx, 8)
         assertFalse(result.clean)
     end
 
     function TestPVMock:test_is_xavp_simple_nokey_noindx()
         local result = self.pv._is_xavp("$xavp(id1)")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'xavp')
         assertEquals(result.id, 'id1')
-        assertFalse(result.key)
+        assertNil(result.key)
         assertIsNil(result.indx)
         assertIsNil(result.kindx)
         assertFalse(result.clean)
@@ -164,7 +164,7 @@ TestPVMock = {}
 
     function TestPVMock:test_is_avp_simple()
         local result = self.pv._is_avp("$avp(id2_f)")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'avp')
         assertEquals(result.id, 'id2_f')
         assertIsNil(result.indx)
@@ -173,7 +173,7 @@ TestPVMock = {}
 
     function TestPVMock:test_is_avp_simple1()
         local result = self.pv._is_avp("$(avp(s:id))")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'avp')
         assertEquals(result.id, 'id')
         assertIsNil(result.indx)
@@ -182,7 +182,7 @@ TestPVMock = {}
 
     function TestPVMock:test_is_avp_simple2()
         local result = self.pv._is_avp("$(avp(id))")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'avp')
         assertEquals(result.id, 'id')
         assertIsNil(result.indx)
@@ -191,7 +191,7 @@ TestPVMock = {}
 
     function TestPVMock:test_is_avp_simple3()
         local result = self.pv._is_avp("$(avp(s:id)[*])")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'avp')
         assertEquals(result.id, 'id')
         assertIsNil(result.indx)
@@ -200,7 +200,7 @@ TestPVMock = {}
 
     function TestPVMock:test_is_avp_simple4()
         local result = self.pv._is_avp("$(avp(s:id)[1])")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'avp')
         assertEquals(result.id, 'id')
         assertEquals(result.indx, 1)
@@ -209,7 +209,7 @@ TestPVMock = {}
 
     function TestPVMock:test_is_var_simple()
         local result = self.pv._is_var("$var(id)")
-        assertTrue(result)
+        assertEvalToTrue(result)
         assertEquals(result.type, 'var')
         assertEquals(result.id, 'id')
         --print(table.tostring(result))
@@ -315,7 +315,7 @@ TestPVMock = {}
 
     function TestPVMock:test_xavp_get()
         self.pv.sets("$xavp(g=>hithere)", "value")
-        assertTrue(self.pv.get, "$xavp(g)")
+        assertEvalToTrue(self.pv.get, "$xavp(g)")
     end
 
     function TestPVMock:test_xavp_get_multi()
@@ -346,7 +346,7 @@ TestPVMock = {}
             self.pv.seti("$avp(s:hithere)", vals[i])
         end
         local l = self.pv.get("$(avp(s:hithere)[*])")
-        assertTrue(type(l), 'table')
+        assertEquals(type(l), 'table')
         assertEquals(#l,#vals)
         --print(table.tostring(l))
         local v = 1
@@ -444,7 +444,7 @@ TestPVMock = {}
         assertEquals(self.pv.get("$xavp(g[1]=>t)"), "value")
         --
         self.pv.unset("$xavp(g[1])")
-        assertFalse(self.pv.get("$xavp(g[1])"))
+        assertNil(self.pv.get("$xavp(g[1])"))
         self.pv.unset("$xavp(g)")
         assertEquals(self.pv.get("$xavp(g)"), nil)
     end
@@ -462,10 +462,10 @@ TestPVMock = {}
         assertEquals(self.pv.get("$xavp(g[0]=>t)"), nil)
         assertEquals(self.pv.get("$xavp(g[1]=>t)"), "value")
         assertEquals(self.pv.get("$xavp(g[1]=>z)"), "value_z")
-        assertFalse(self.pv.get("$xavp(g[0])"))
+        assertNil(self.pv.get("$xavp(g[0])"))
         --
         self.pv.unset("$xavp(g[1])")
-        assertFalse(self.pv.get("$xavp(g[1])"))
+        assertNil(self.pv.get("$xavp(g[1])"))
         self.pv.unset("$xavp(g)")
         assertEquals(self.pv.get("$xavp(g)"), nil)
     end

@@ -39,7 +39,7 @@ function TestNGCPDlgList:setUp()
     local NGCPDlgList = require 'ngcp.dlglist'
 
     self.dlg = NGCPDlgList.new()
-    assertTrue(self.dlg)
+    assertEvalToTrue(self.dlg)
 
     self.dlg.central = self.central;
     self.dlg.pair = self.pair

@@ -83,17 +83,17 @@ TestNGCPProfilePrefs = {} --class
     end
 
     function TestNGCPProfilePrefs:test_caller_load_empty()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         assertEquals(self.d:caller_load(), {})
     end
 
     function TestNGCPProfilePrefs:test_callee_load_empty()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         assertEquals(self.d:callee_load(), {})
     end
 
     function TestNGCPProfilePrefs:test_caller_load()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         con:execute("SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN prof_preferences AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = 'ah736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(pprof_vars:val("prof_2"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(pprof_vars:val("prof_2"))
@@ -113,7 +113,7 @@ TestNGCPProfilePrefs = {} --class
     end
 
     function TestNGCPProfilePrefs:test_callee_load()
-        assertTrue(self.d.config)
+        assertEvalToTrue(self.d.config)
         con:execute("SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN prof_preferences AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = 'ah736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(pprof_vars:val("prof_2"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(pprof_vars:val("prof_2"))
@@ -143,7 +143,7 @@ TestNGCPProfilePrefs = {} --class
         self.d:clean()
         assertEquals(sr.pv.get("$xavp(caller_prof_prefs=>dummy)"),"caller")
         assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>dummy)"),"callee")
-        assertFalse(sr.pv.get("$xavp(prof)"))
+        assertNil(sr.pv.get("$xavp(prof)"))
     end
 
     function TestNGCPProfilePrefs:test_callee_clean()
@@ -161,8 +161,8 @@ TestNGCPProfilePrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>dummy)"),"callee")
         self.d:clean('callee')
         assertEquals(sr.pv.get("$xavp(caller_prof_prefs=>dummy)"),'caller')
-        assertFalse(sr.pv.get("$xavp(callee_prof_prefs=>testid)"))
-        assertFalse(sr.pv.get("$xavp(callee_prof_prefs=>foo)"))
+        assertNil(sr.pv.get("$xavp(callee_prof_prefs=>testid)"))
+        assertNil(sr.pv.get("$xavp(callee_prof_prefs=>foo)"))
         assertEquals(sr.pv.get("$xavp(caller_prof_prefs=>other)"),1)
         assertEquals(sr.pv.get("$xavp(caller_prof_prefs=>otherfoo)"),"foo")
         assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>dummy)"),"callee")
@@ -183,8 +183,8 @@ TestNGCPProfilePrefs = {} --class
         assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>dummy)"),"callee")
         self.d:clean('caller')
         assertEquals(sr.pv.get("$xavp(caller_prof_prefs=>dummy)"),"caller")
-        assertFalse(sr.pv.get("$xavp(caller_prof_prefs=>other)"))
-        assertFalse(sr.pv.get("$xavp(caller_prof_prefs=>otherfoo)"))
+        assertNil(sr.pv.get("$xavp(caller_prof_prefs=>other)"))
+        assertNil(sr.pv.get("$xavp(caller_prof_prefs=>otherfoo)"))
         assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>testid)"),1)
         assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>foo)"),"foo")
         assertEquals(sr.pv.get("$xavp(callee_prof_prefs=>dummy)"),"callee")

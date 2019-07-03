@@ -51,37 +51,37 @@ TestXAVPMock = {}
 
     function TestXAVPMock:test_get_keys()
         local l = self.xavp.get_keys("test", 0)
-        assertTrue(l)
+        assertEvalToTrue(l)
         assertItemsEquals(l, {"uno", "dos", "tres"})
     end
 
     function TestXAVPMock:test_get_keys_1()
         local l = self.xavp.get_keys("test", 1)
-        assertTrue(l)
+        assertEvalToTrue(l)
         assertItemsEquals(l, {"uno", "dos"})
     end
 
     function TestXAVPMock:test_get_simple()
         local l = self.xavp.get("test", 0, 1)
-        assertTrue(l)
+        assertEvalToTrue(l)
         assertItemsEquals(l, {uno=1, dos="dos", tres=3})
     end
 
     function TestXAVPMock:test_get_simple_1()
         local l = self.xavp.get("test", 1, 1)
-        assertTrue(l)
+        assertEvalToTrue(l)
         assertItemsEquals(l, {uno="uno", dos=2})
     end
 
     function TestXAVPMock:test_get()
         local l = self.xavp.get("test", 0, 0)
-        assertTrue(l)
+        assertEvalToTrue(l)
         assertItemsEquals(l, {uno={1,3}, dos={"dos"}, tres={3}})
     end
 
     function TestXAVPMock:test_get_1()
         local l = self.xavp.get("test", 1, 0)
-        assertTrue(l)
+        assertEvalToTrue(l)
         assertItemsEquals(l, {uno={"uno"}, dos={2,4}})
     end
 --EOF
