@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fa1b9901_3a4956d1",
+        "filename": "tests/mocks_pv.lua",
+        "patchSetId": 1
+      },
+      "lineNbr": 349,
+      "author": {
+        "id": 1000021
+      },
+      "writtenOn": "2019-07-03T08:58:44Z",
+      "side": 1,
+      "message": "assertEvaltoTrue is fine as well.\nBut I think here is more correct assertEquals because we are checking the type of the pseudovariable, not it\u0027s content.",
+      "parentUuid": "fa1b9901_ba34864a",
+      "range": {
+        "startLine": 349,
+        "startChar": 8,
+        "endLine": 349,
+        "endChar": 20
+      },
+      "revId": "0b560b5bcbe2c3972632f08535c6ea6e2bc24fb7",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fa1b9901_1a301256",
         "filename": "tests/ngcp_cp.lua",
         "patchSetId": 1
@@ -36,6 +60,24 @@
       "writtenOn": "2019-07-03T08:51:34Z",
       "side": 1,
       "message": "unnecessary?",
+      "revId": "0b560b5bcbe2c3972632f08535c6ea6e2bc24fb7",
+      "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa1b9901_fa119eb0",
+        "filename": "tests/ngcp_cp.lua",
+        "patchSetId": 1
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000021
+      },
+      "writtenOn": "2019-07-03T08:58:44Z",
+      "side": 1,
+      "message": "You are right, typo during the editing.",
+      "parentUuid": "fa1b9901_1a301256",
       "revId": "0b560b5bcbe2c3972632f08535c6ea6e2bc24fb7",
       "serverId": "85315e57-5f03-49c3-83f8-201ae2313a75",
       "unresolved": false
