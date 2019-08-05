@@ -1,3 +1,22 @@
+lua-ngcp-kamailio (8.0.0.0+0~mr8.0.0.0) unstable; urgency=medium
+
+  [ Marco Capetta ]
+  * [0ee7f27] TT#62001 Limit to max 120 chars in a single line of code
+  * [280c58f] TT#62001 Fix tests after update of LuaUnit
+
+  [ Alexander Lutay ]
+  * [6a51433] TT#60950 Switch lua-ngcp-kamailio docker to buster
+
+  [ Guillem Jover ]
+  * [6b273ce] TT#61954 Update copyright Format URL to use https
+  * [6bbfae5] TT#61954 Move license location in Debian systems into a Comment field
+  * [0aa3724] TT#61954 Update copyright years
+  * [32133f6] TT#61954 Set debhelper compat level in Build-Depends instead of debian/compat
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 05 Aug 2019 20:55:23 +0200
+
 lua-ngcp-kamailio (7.5.0.0+0~mr7.5.0.0) unstable; urgency=medium
 
   * New release.
