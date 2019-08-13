@@ -48,6 +48,7 @@ end
                     db = "7"
                 },
                 expire = 7200
+                out_expire = 86400
             },
             central = {},
         };
@@ -95,6 +96,38 @@ end
                                     source,
                                     self.config.expire))
         return res
+    end
+
+    function NGCPRecentCalls:set_element_by_key(key, element, value)
+        if not self._test_connection(self.central) then
+            self.central = self._connect(self.config.central)
+        end
+
+        local res = self.central:hmset(key, element, value)
+        if res then
+            self.central:expire(key, self.config.out_expire)
+        end
+        sr.log("info", string.format("central:hset[%s]=>[%s] %s: %s expire: %d\n",
+                                    key, tostring(res),
+                                    element, tostring(value),
+                                    self.config.out_expire))
+        return res
+    end
+
+    function NGCPRecentCalls:get_element_by_key(key, element)
+        if not self._test_connection(self.central) then
+            self.central = self._connect(self.config.central)
+        end
+
+        local res = self.central:hgetall(key)
+        if res then
+            sr.log("info", string.format("central:hget[%s]=>[%s]\n",
+                                    key, tostring(res[element])))
+
+            return res[element]
+        end
+
+        return 0
     end
 
 -- class
