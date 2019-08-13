@@ -97,6 +97,22 @@ end
         return res
     end
 
+    function NGCPRecentCalls:get_by_key(key, element)
+        if not self._test_connection(self.central) then
+            self.central = self._connect(self.config.central)
+        end
+
+        local res = self.central:hgetall(key)
+        if res then
+            sr.log("info", string.format("central:hget[%s]=>[%s]\n",
+                                    key, tostring(res[element])))
+
+            return res[element]
+        end
+
+        return 0
+    end
+
 -- class
 
 return NGCPRecentCalls
