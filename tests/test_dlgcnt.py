@@ -1,9 +1,8 @@
-#!/usr/bin/env python
-from __future__ import print_function
+#!/usr/bin/env python3
+
 import subprocess
 import sys
 import unittest
-import xmlrunner
 import os
 import io
 import shutil
@@ -17,7 +16,8 @@ FAKE_PATH = "%s:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin" % FAKE_BIN
 
 
 def executeAndReturnOutput(command):
-    p = subprocess.Popen(command, stdout=subprocess.PIPE,
+    p = subprocess.Popen(command, encoding="utf-8",
+                         stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
     stdoutdata, stderrdata = p.communicate()
     # print(stdoutdata, file=sys.stdout)
@@ -32,7 +32,7 @@ def create_prog(filename, command):
     :param unicode command: command to write to test program
     """
     with io.open(filename, 'w', encoding='utf-8') as fp:
-        fp.write(u"#!/bin/bash\n%s\n" % (command, ))
+        fp.write("#!/bin/bash\n%s\n" % (command, ))
         os.fchmod(fp.fileno(), 0o755)
 
 
@@ -100,14 +100,14 @@ class TestDlgCnt(unittest.TestCase):
         self.command = ["./scripts/ngcp-dlgcnt-check", "-k"]
         res = executeAndReturnOutput(self.command)
         self.assertEqual(res[0], 1, res[2])
-        self.assertRegexpMatches(res[2], 'illegal option')
+        self.assertRegex(res[2], 'illegal option')
         self.checkNotCmd()
 
     def test_help(self):
         self.command = ["./scripts/ngcp-dlgcnt-check", "-h"]
         res = executeAndReturnOutput(self.command)
         self.assertEqual(res[0], 0, res[2])
-        self.assertRegexpMatches(res[1], '\toptions\n')
+        self.assertRegex(res[1], '\toptions\n')
         self.checkNotCmd()
 
     def test_inactive(self):
@@ -207,7 +207,6 @@ class TestDlgCnt(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main(
-        testRunner=xmlrunner.XMLTestRunner(output=sys.stdout),
         # these make sure that some options that are not applicable
         # remain hidden from the help menu.
         failfast=False, buffer=False, catchbreak=False)
