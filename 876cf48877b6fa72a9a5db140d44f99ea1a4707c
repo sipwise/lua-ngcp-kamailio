@@ -1,0 +1,7 @@
+Verified+1: Jenkins Jenkins
+Code-Review+2: Alexander Lutay <alutay@sipwise.com>
+Submitted-by: Marco Capetta <mcapetta@sipwise.com>
+Submitted-at: Thu, 10 Oct 2019 14:53:39 +0200
+Reviewed-on: http://gerrit.mgm.sipwise.com/c/lua-ngcp-kamailio/+/34144
+Project: lua-ngcp-kamailio
+Branch: refs/heads/mr5.5.5
