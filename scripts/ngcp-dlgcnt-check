@@ -34,16 +34,21 @@ fi
 REDIS_DB="$(ngcp-dlgcnt-clean -c 2>/dev/null|| echo 4)"
 host="$(ngcp-dlgcnt-clean -C 2>/dev/null|| echo localhost)"
 
-# full list
+
+# kamailio full dialogs (no ngcp-kamcmd because in fails in case of large output)
+KAMAILIO_DIALOGS=$(mktemp)
+ngcp-kamctl proxy fifo dlg.list | awk '/"call-id":/ { print $NF}' > "$KAMAILIO_DIALOGS" || true
+
+# redis full list
 REDIS_CALLIDS=$(mktemp)
-ngcp-redis-helper -h "$host" -n "$REDIS_DB" dump | egrep -v "^$" > "$REDIS_CALLIDS" || true
+ngcp-redis-helper -h "$host" -n "$REDIS_DB" dump | grep -E -v "^$" > "$REDIS_CALLIDS" || true
+
 # 'lists:' belongs to dlglist
 REDIS_CALLIDS_FILTER=$(mktemp)
-egrep -v '^list:' "$REDIS_CALLIDS" > "$REDIS_CALLIDS_FILTER" || true
+grep -E -v '^list:' "$REDIS_CALLIDS" > "$REDIS_CALLIDS_FILTER" || true
 
 while read -r i ; do
-  if ! ngcp-kamcmd proxy dlg.dlg_list -- "$i"| \
-       awk '/call-id:/ { print $NF}'| grep -q -- "$i"
+  if ! grep -q -- "$i" "$KAMAILIO_DIALOGS"
   then
     printf "CallID:[%s] unknown\n" "$i"
     if $REMOVE ; then
@@ -55,4 +60,4 @@ while read -r i ; do
   fi
 done < "$REDIS_CALLIDS_FILTER"
 
-rm -f "$REDIS_CALLIDS" "$REDIS_CALLIDS_FILTER"
+rm -f "$KAMAILIO_DIALOGS" "$REDIS_CALLIDS" "$REDIS_CALLIDS_FILTER"
