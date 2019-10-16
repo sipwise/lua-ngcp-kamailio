@@ -156,7 +156,7 @@ class TestDlgCnt(unittest.TestCase):
 
     def test_okredis(self):
         FAKE_DLG = os.path.join(FIXTURES, 'okredis.dlg')
-        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamcmd'),
+        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamctl'),
                     "cat %s" % (FAKE_DLG))
         FAKE_REDIS = os.path.join(FIXTURES, 'okredis.redis')
         create_prog(os.path.join(FAKE_BIN, 'ngcp-redis-helper'),
@@ -167,7 +167,7 @@ class TestDlgCnt(unittest.TestCase):
 
     def test_koredis(self):
         FAKE_DLG = os.path.join(FIXTURES, 'koredis.dlg')
-        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamcmd'),
+        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamctl'),
                     "cat %s" % (FAKE_DLG))
         FAKE_REDIS = os.path.join(FIXTURES, 'koredis.redis')
         create_prog(os.path.join(FAKE_BIN, 'ngcp-redis-helper'),
@@ -179,7 +179,7 @@ class TestDlgCnt(unittest.TestCase):
 
     def test_kodlgclean(self):
         FAKE_DLG = os.path.join(FIXTURES, 'koredis.dlg')
-        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamcmd'),
+        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamctl'),
                     "cat %s" % (FAKE_DLG))
         FAKE_REDIS = os.path.join(FIXTURES, 'koredis.redis')
         create_prog(os.path.join(FAKE_BIN, 'ngcp-redis-helper'),
@@ -193,7 +193,7 @@ class TestDlgCnt(unittest.TestCase):
 
     def test_kolistclean(self):
         FAKE_DLG = os.path.join(FIXTURES, 'koredis.dlg')
-        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamcmd'),
+        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamctl'),
                     "cat %s" % (FAKE_DLG))
         FAKE_REDIS = os.path.join(FIXTURES, 'koredis.redis')
         create_prog(os.path.join(FAKE_BIN, 'ngcp-redis-helper'),
