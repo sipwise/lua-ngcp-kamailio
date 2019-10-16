@@ -20,7 +20,7 @@ def executeAndReturnOutput(command):
     p = subprocess.Popen(command, stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
     stdoutdata, stderrdata = p.communicate()
-    #print(stdoutdata, file=sys.stdout)
+    # print(stdoutdata, file=sys.stdout)
     print(stderrdata, file=sys.stderr)
     return p.returncode, stdoutdata, stderrdata
 
@@ -119,7 +119,7 @@ class TestDlgCnt(unittest.TestCase):
     def test_noredisconf(self):
         create_prog(os.path.join(FAKE_BIN, 'ngcp-dlgcnt-clean'),
                     'echo "error" >&2; false')
-        create_prog(os.path.join(FAKE_BIN, 'ngcp-sercmd'),
+        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamctl'),
                     "true")
         create_prog(os.path.join(FAKE_BIN, 'ngcp-redis-helper'),
                     "%s; true" % FAKE_REDIS_HELPER)
@@ -128,7 +128,7 @@ class TestDlgCnt(unittest.TestCase):
         self.checkNotCmd()
 
     def test_redisconf(self):
-        create_prog(os.path.join(FAKE_BIN, 'ngcp-sercmd'),
+        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamctl'),
                     "true")
         create_prog(os.path.join(FAKE_BIN, 'ngcp-redis-helper'),
                     "%s; true" % FAKE_REDIS_HELPER)
@@ -137,7 +137,7 @@ class TestDlgCnt(unittest.TestCase):
         self.checkNotCmd()
 
     def test_empty(self):
-        create_prog(os.path.join(FAKE_BIN, 'ngcp-sercmd'),
+        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamctl'),
                     "true")
         create_prog(os.path.join(FAKE_BIN, 'ngcp-redis-helper'),
                     "true")
@@ -146,7 +146,7 @@ class TestDlgCnt(unittest.TestCase):
         self.checkNotCmd()
 
     def test_empty_line(self):
-        create_prog(os.path.join(FAKE_BIN, 'ngcp-sercmd'),
+        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamctl'),
                     "echo")
         create_prog(os.path.join(FAKE_BIN, 'ngcp-redis-helper'),
                     "echo")
@@ -156,7 +156,7 @@ class TestDlgCnt(unittest.TestCase):
 
     def test_okredis(self):
         FAKE_DLG = os.path.join(FIXTURES, 'okredis.dlg')
-        create_prog(os.path.join(FAKE_BIN, 'ngcp-sercmd'),
+        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamctl'),
                     "cat %s" % (FAKE_DLG))
         FAKE_REDIS = os.path.join(FIXTURES, 'okredis.redis')
         create_prog(os.path.join(FAKE_BIN, 'ngcp-redis-helper'),
@@ -167,7 +167,7 @@ class TestDlgCnt(unittest.TestCase):
 
     def test_koredis(self):
         FAKE_DLG = os.path.join(FIXTURES, 'koredis.dlg')
-        create_prog(os.path.join(FAKE_BIN, 'ngcp-sercmd'),
+        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamctl'),
                     "cat %s" % (FAKE_DLG))
         FAKE_REDIS = os.path.join(FIXTURES, 'koredis.redis')
         create_prog(os.path.join(FAKE_BIN, 'ngcp-redis-helper'),
@@ -179,7 +179,7 @@ class TestDlgCnt(unittest.TestCase):
 
     def test_kodlgclean(self):
         FAKE_DLG = os.path.join(FIXTURES, 'koredis.dlg')
-        create_prog(os.path.join(FAKE_BIN, 'ngcp-sercmd'),
+        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamctl'),
                     "cat %s" % (FAKE_DLG))
         FAKE_REDIS = os.path.join(FIXTURES, 'koredis.redis')
         create_prog(os.path.join(FAKE_BIN, 'ngcp-redis-helper'),
@@ -193,7 +193,7 @@ class TestDlgCnt(unittest.TestCase):
 
     def test_kolistclean(self):
         FAKE_DLG = os.path.join(FIXTURES, 'koredis.dlg')
-        create_prog(os.path.join(FAKE_BIN, 'ngcp-sercmd'),
+        create_prog(os.path.join(FAKE_BIN, 'ngcp-kamctl'),
                     "cat %s" % (FAKE_DLG))
         FAKE_REDIS = os.path.join(FIXTURES, 'koredis.redis')
         create_prog(os.path.join(FAKE_BIN, 'ngcp-redis-helper'),
