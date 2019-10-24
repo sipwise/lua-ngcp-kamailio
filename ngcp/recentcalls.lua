@@ -130,6 +130,17 @@ end
         return 0
     end
 
+    function NGCPRecentCalls:del_by_key(key)
+        if not self._test_connection(self.central) then
+            self.central = self._connect(self.config.central)
+        end
+
+        self.central:del(key)
+        sr.log("info", string.format("central:del[%s] removed\n", key));
+
+        return 0
+    end
+
 -- class
 
 return NGCPRecentCalls
