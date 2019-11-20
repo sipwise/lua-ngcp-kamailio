@@ -1,3 +1,15 @@
+lua-ngcp-kamailio (5.5.11.1+0~mr5.5.11.1) unstable; urgency=medium
+
+  [ Daniel Grotti ]
+  * [36b98f9] TT#26114 fix problem with callID starting with minus(-)
+
+  [ Juergen Fortin ]
+  * [71f4824] TT#44453 fix 'ngcp-dlgcnt-check -r' problem when callID starting with minus(-)
+
+  [ Sipwise Jenkins Builder ]
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 20 Nov 2019 15:04:40 +0100
+
 lua-ngcp-kamailio (5.5.11.0+0~mr5.5.11.0) unstable; urgency=medium
 
   * New release.
