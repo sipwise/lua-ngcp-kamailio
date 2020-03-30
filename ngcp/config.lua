@@ -97,11 +97,11 @@ local NGCPConfig_MT = { __index = NGCPConfig }
             local ok,_ = pcall(check_connection, self.con)
             if not ok then
                 self.con = nil
-                sr.log("dbg", "lost database connection. Reconnecting")
+                KSR.log("dbg", "lost database connection. Reconnecting")
             end
         end
         if not self.con then
-            sr.log("dbg","connecting to mysql")
+            KSR.log("dbg","connecting to mysql")
             self.con = self.env:connect( self.db_database,
                 self.db_username, self.db_pass, self.db_host, self.db_port)
         end

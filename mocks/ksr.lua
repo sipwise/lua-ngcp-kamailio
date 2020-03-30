@@ -26,9 +26,9 @@ local pvMock = require 'mocks.pv'
 local xavpMock = require 'mocks.xavp'
 
 -- class srMock
-local srMock = {
-    __class__ = 'srMock',
-    _logger = log_file("reports/sr_%s.log", "%Y-%m-%d"),
+local ksrMock = {
+    __class__ = 'ksrMock',
+    _logger = log_file("reports/ksr_%s.log", "%Y-%m-%d"),
     _logger_levels = {
         dbg  = logging.DEBUG,
         info = logging.INFO,
@@ -37,8 +37,8 @@ local srMock = {
         crit = logging.FATAL
     }
 }
-local srMock_MT = { __index = srMock, __newindex = lemock.controller():mock() }
-    function srMock.new()
+local ksrMock_MT = { __index = ksrMock, __newindex = lemock.controller():mock() }
+    function ksrMock.new()
         local t = {}
         t.hdr = hdrMock.new()
         t.pv = pvMock.new(t.hdr)
@@ -48,9 +48,27 @@ local srMock_MT = { __index = srMock, __newindex = lemock.controller():mock() }
                 end
                 t._logger:log(t._logger_levels[level], message)
             end
+            function t.dbg(message)
+                t._logger:log(logging.DEBUG, message)
+            end
+            function t.err(message)
+                t._logger:log(logging.ERROR, message)
+            end
+            function t.info(message)
+                t._logger:log(logging.INFO, message)
+            end
+            function t.notice(message)
+                t._logger:log(logging.INFO, message)
+            end
+            function t.warn(message)
+                t._logger:log(logging.WARN, message)
+            end
+            function t.crit(message)
+                t._logger:log(logging.FATAL, message)
+            end
         t.xavp = xavpMock.new(t.pv)
-        setmetatable(t, srMock_MT)
+        setmetatable(t, ksrMock_MT)
         return t
     end
 -- end class
-return srMock
+return ksrMock

@@ -18,10 +18,10 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 require('luaunit')
-local srMock = require 'mocks.sr'
+local ksrMock = require 'mocks.ksr'
 local NGCPAvp = require 'ngcp.avp'
 
-sr = srMock.new()
+KSR = ksrMock.new()
 
 -- luacheck: ignore TestNGCPAvp
 TestNGCPAvp = {} --class
@@ -30,7 +30,7 @@ TestNGCPAvp = {} --class
     end
 
     function TestNGCPAvp:tearDown()
-        sr.pv.vars = {}
+        KSR.pv.vars = {}
     end
 
     function TestNGCPAvp:test_avp_id()
@@ -38,9 +38,9 @@ TestNGCPAvp = {} --class
     end
 
     function TestNGCPAvp:test_avp_get()
-        sr.pv.sets("$avp(s:testid)", "value")
+        KSR.pv.sets("$avp(s:testid)", "value")
         assertEquals(self.avp(), "value")
-        sr.pv.sets("$avp(s:testid)", "1")
+        KSR.pv.sets("$avp(s:testid)", "1")
         assertItemsEquals(self.avp(), "1")
         assertItemsEquals(self.avp:all(),{"1","value"})
     end
