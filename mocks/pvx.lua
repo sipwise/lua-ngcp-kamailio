@@ -20,10 +20,10 @@
 local logging = require ('logging')
 local log_file = require ('logging.file')
 
--- class xavpMock
-local xavpMock = {
-    __class__ =  'xavpMock',
-    _logger = log_file("reports/xavp_%s.log", "%Y-%m-%d"),
+-- class pvxMock
+local pvxMock = {
+    __class__ =  'pvxMock',
+    _logger = log_file("reports/pvx_%s.log", "%Y-%m-%d"),
     _logger_levels = {
         dbg  = logging.DEBUG,
         info = logging.INFO,
@@ -32,52 +32,43 @@ local xavpMock = {
         crit = logging.FATAL
     }
 }
-    function xavpMock.new(pv)
+    function pvxMock.new(pv)
         local t = {}
 
-        t.__class__ = 'xavpMock'
+        t.__class__ = 'pvxMock'
         t.pv = pv
 
-        function t._get_xavp(xavp_name, index, mode)
+        function t._get_xavp(xavp_name, mode)
             local private_id = "xavp:" .. xavp_name
-            local temp = {}
             if not t.pv.vars[private_id] then
-                error(string.format("%s not found", xavp_name))
-            elseif not t.pv.vars[private_id][index] then
-                error(string.format("%s[%s] not found",
-                    xavp_name, tostring(index)))
-            end
-            if mode == 0 then
-                for k,v in pairs(t.pv.vars[private_id][index]) do
-                    temp[k] = v:list()
+                if mode == "NULL_NONE" then
+                    return nil
+                elseif mode == "NULL_EMPTY" then
+                    return ""
+                elseif mode == "NULL_PRINT" then
+                    return "<null>"
                 end
             else
-                for k,v in pairs(t.pv.vars[private_id][index]) do
-                    temp[k] = v[0]
-                end
+                local s = tostring(t.pv.vars[private_id])
+                return "<<xavp:"..s:sub(8)..">>"
             end
-            return temp
         end
 
-        function t.get_keys(xavp_name, index)
-            local output = {}
-
-            local xavp = t._get_xavp(xavp_name, index, 1)
-            for k,_ in pairs(xavp) do
-                table.insert(output, k)
-            end
-            return output
+        function t.xavp_get(xavp_name)
+            return t._get_xavp(xavp_name, "NULL_NONE")
         end
 
-        function t.get(xavp_name, index, mode)
-            if not mode then mode = 0 end
-            local xavp = t._get_xavp(xavp_name, index, mode)
-            return xavp
+        function t.xavp_gete(xavp_name)
+            return t._get_xavp(xavp_name, "NULL_EMPTY")
         end
 
-        local xavpMock_MT = { __index = xavpMock }
-        setmetatable(t, xavpMock_MT)
+        function t.xavp_getw(xavp_name)
+            return t._get_xavp(xavp_name, "NULL_PRINT")
+        end
+
+        local pvxMock_MT = { __index = pvxMock }
+        setmetatable(t, pvxMock_MT)
         return t
     end
 --end class
-return xavpMock
+return pvxMock

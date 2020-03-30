@@ -20,8 +20,10 @@
 require('luaunit')
 local NGCPXAvp = require 'ngcp.xavp'
 
+local ksrMock = require 'mocks.ksr'
 local srMock = require 'mocks.sr'
-sr = srMock:new()
+KSR = ksrMock.new()
+sr = srMock.new(KSR)
 
 local vals = {
     {
@@ -57,11 +59,15 @@ local vals = {
 }
 -- luacheck: ignore TestNGCPXAvp
 TestNGCPXAvp = {} --class
+    function TestNGCPXAvp:tearDown()
+        KSR.pv.vars = {}
+    end
+
     function TestNGCPXAvp:test_create()
         local xavp = NGCPXAvp:new("caller", "peer", {})
-        assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(caller_peer=>dummy)"),"caller")
         xavp = NGCPXAvp:new("callee", "peer", {})
-        assertEquals(sr.pv.get("$xavp(callee_peer=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(callee_peer=>dummy)"),"callee")
     end
 
     function TestNGCPXAvp:test_xavp_id()
@@ -74,17 +80,17 @@ TestNGCPXAvp = {} --class
 
     function TestNGCPXAvp:test_xavp_get()
         local xavp = NGCPXAvp:new("caller", "peer", vals)
-        sr.pv.sets("$xavp(caller_peer=>testid)", "value")
+        KSR.pv.sets("$xavp(caller_peer=>testid)", "value")
         assertEquals(xavp("testid"), "value")
-        sr.pv.sets("$xavp(caller_peer=>testid)", "1")
+        KSR.pv.sets("$xavp(caller_peer=>testid)", "1")
         assertItemsEquals(xavp("testid"), "1")
     end
 
     function TestNGCPXAvp:test_xavp_get_all()
         local xavp = NGCPXAvp:new("caller", "peer", vals)
-        sr.pv.sets("$xavp(caller_peer=>testid)", "value")
+        KSR.pv.sets("$xavp(caller_peer=>testid)", "value")
         assertEquals(xavp("testid"), "value")
-        sr.pv.sets("$xavp(caller_peer[0]=>testid)", "1")
+        KSR.pv.sets("$xavp(caller_peer[0]=>testid)", "1")
         assertItemsEquals(xavp:all("testid"), {"1", "value"})
     end
 
@@ -94,34 +100,34 @@ TestNGCPXAvp = {} --class
         for i=1,#lvals do
             xavp("testid",lvals[i])
             assertEquals(xavp("testid"), lvals[i])
-            assertEquals(sr.pv.get("$xavp(caller_peer=>testid)"),lvals[i])
+            assertEquals(KSR.pv.get("$xavp(caller_peer=>testid)"),lvals[i])
         end
     end
 
     function TestNGCPXAvp:test_clean()
         local xavp = NGCPXAvp:new("caller", "peer", vals)
         xavp("testid", 1)
-        assertEquals(sr.pv.get("$xavp(caller_peer=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(caller_peer=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_peer=>dummy)"),"caller")
         xavp:clean()
-        assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(caller_peer=>dummy)"),"caller")
         assertNil(xavp("testid"))
-        assertNil(sr.pv.get("$xavp(caller_peer=>testid)"))
+        assertNil(KSR.pv.get("$xavp(caller_peer=>testid)"))
     end
 
     function TestNGCPXAvp:test_clean_all()
         local xavp_caller = NGCPXAvp:new("caller", "peer", {})
-        assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(caller_peer=>dummy)"),"caller")
         local xavp_callee = NGCPXAvp:new("callee", "peer", {})
-        assertEquals(sr.pv.get("$xavp(callee_peer=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(callee_peer=>dummy)"),"callee")
 
         xavp_caller:clean()
-        assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(callee_peer=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(caller_peer=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(callee_peer=>dummy)"),"callee")
 
         xavp_callee:clean()
-        assertEquals(sr.pv.get("$xavp(callee_peer=>dummy)"), "callee")
-        assertEquals(sr.pv.get("$xavp(caller_peer=>dummy)"), "caller")
+        assertEquals(KSR.pv.get("$xavp(callee_peer=>dummy)"), "callee")
+        assertEquals(KSR.pv.get("$xavp(caller_peer=>dummy)"), "caller")
     end
 
     function TestNGCPXAvp:test_clean_key()
@@ -130,7 +136,7 @@ TestNGCPXAvp = {} --class
         for i=1,#lvals do
             xavp("testid",lvals[i])
             assertEquals(xavp("testid"), lvals[i])
-            assertEquals(sr.pv.get("$xavp(caller_peer=>testid)"),lvals[i])
+            assertEquals(KSR.pv.get("$xavp(caller_peer=>testid)"),lvals[i])
         end
         xavp("other", 1)
         xavp("other", 2)

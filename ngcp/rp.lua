@@ -124,7 +124,7 @@ NGCPRealPrefs_MT.__tostring = function ()
             if value then
                 real_values[v] = value
             else
-                sr.log("err", string.format("key:%s not in user, profile or domain", v))
+                KSR.log("err", string.format("key:%s not in user, profile or domain", v))
             end
         end
         local real_keys = {}

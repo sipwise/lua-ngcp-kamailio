@@ -21,8 +21,10 @@ require('luaunit')
 local lemock = require('lemock')
 local CPFetch = require 'tests_v.cp_vars'
 
+local ksrMock = require 'mocks.ksr'
 local srMock = require 'mocks.sr'
-sr = srMock:new()
+KSR = ksrMock.new()
+sr = srMock.new(KSR)
 
 local mc,env,con
 local cp_vars = CPFetch:new()
@@ -64,19 +66,7 @@ TestNGCPContractPrefs = {} --class
     end
 
     function TestNGCPContractPrefs:tearDown()
-        sr.pv.unset("$xavp(caller_dom_prefs)")
-        sr.pv.unset("$xavp(callee_dom_prefs)")
-        sr.pv.unset("$xavp(caller_contract_prefs)")
-        sr.pv.unset("$xavp(callee_contract_prefs)")
-        sr.pv.unset("$xavp(caller_prof_prefs)")
-        sr.pv.unset("$xavp(callee_prof_prefs)")
-        sr.pv.unset("$xavp(caller_prof_prefs)")
-        sr.pv.unset("$xavp(callee_prof_prefs)")
-        sr.pv.unset("$xavp(caller_usr_prefs)")
-        sr.pv.unset("$xavp(callee_usr_prefs)")
-        sr.pv.unset("$xavp(caller_real_prefs)")
-        sr.pv.unset("$xavp(callee_real_prefs)")
-        sr.log("info", "---TestNGCPContractPrefs::cleaned---")
+        KSR.pv.vars= {}
     end
 
     function TestNGCPContractPrefs:test_init()
@@ -106,8 +96,8 @@ TestNGCPContractPrefs = {} --class
         mc:verify()
 
         assertItemsEquals(keys, {"sst_enable"})
-        assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>sst_enable)"),"no")
-        assertNil(sr.pv.get("$xavp(callee_contract_prefs=>location_id)"))
+        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>sst_enable)"),"no")
+        assertNil(KSR.pv.get("$xavp(callee_contract_prefs=>location_id)"))
     end
 
     function TestNGCPContractPrefs:test_callee_load()
@@ -125,22 +115,22 @@ TestNGCPContractPrefs = {} --class
         mc:verify()
 
         assertItemsEquals(keys, {"sst_enable"})
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>sst_enable)"),"yes")
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>location_id)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>sst_enable)"),"yes")
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>location_id)"),1)
     end
 
     function TestNGCPContractPrefs:test_clean()
         local xavp = NGCPContractPrefs:xavp('callee')
         xavp("testid",1)
         xavp("foo","foo")
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
         self.d:clean()
-        assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
-        assertNil(sr.pv.get("$xavp(prof)"))
+        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
+        assertNil(KSR.pv.get("$xavp(prof)"))
     end
 
     function TestNGCPContractPrefs:test_callee_clean()
@@ -150,19 +140,19 @@ TestNGCPContractPrefs = {} --class
         local caller_xavp = NGCPContractPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>other)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>otherfoo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
         self.d:clean('callee')
-        assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>dummy)"),'caller')
-        assertNil(sr.pv.get("$xavp(callee_contract_prefs=>testid)"))
-        assertNil(sr.pv.get("$xavp(callee_contract_prefs=>foo)"))
-        assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),'caller')
+        assertNil(KSR.pv.get("$xavp(callee_contract_prefs=>testid)"))
+        assertNil(KSR.pv.get("$xavp(callee_contract_prefs=>foo)"))
+        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>other)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>otherfoo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPContractPrefs:test_caller_clean()
@@ -172,19 +162,19 @@ TestNGCPContractPrefs = {} --class
         local caller_xavp = NGCPContractPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>other)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>otherfoo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
         self.d:clean('caller')
-        assertEquals(sr.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
-        assertNil(sr.pv.get("$xavp(caller_contract_prefs=>other)"))
-        assertNil(sr.pv.get("$xavp(caller_contract_prefs=>otherfoo)"))
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
+        assertNil(KSR.pv.get("$xavp(caller_contract_prefs=>other)"))
+        assertNil(KSR.pv.get("$xavp(caller_contract_prefs=>otherfoo)"))
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPContractPrefs:test_tostring()

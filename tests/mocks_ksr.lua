@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2016 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2015 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,34 +17,24 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
+
 require('luaunit')
-local NGCPXAvp = require 'ngcp.xavp'
-local NGCPAvp = require 'ngcp.avp'
-
 local ksrMock = require 'mocks.ksr'
-local srMock = require 'mocks.sr'
-KSR = ksrMock.new()
-sr = srMock.new(KSR)
 
--- luacheck: ignore TestUseCases
-TestUseCases = {}
+-- luacheck: ignore TestKEMIMock
+TestKEMIMock = {}
+    function TestKEMIMock:setUp()
+        self.KSR = ksrMock.new()
+    end
 
-function TestUseCases:tearDown()
-    KSR.pv.vars = {}
-end
+    function TestKEMIMock:test_hdr_get()
+        self.KSR.hdr.insert("From: hola\r\n")
+        assertEquals(self.KSR.hdr.headers, {"From: hola\r\n"})
+        assertEquals(self.KSR.pv.get("$hdr(From)"), "hola")
+    end
 
-function TestUseCases:test_copy_avp()
-	local avp = NGCPAvp:new("tmp")
-	local xavp = NGCPXAvp:new('callee', 'real_prefs')
-	local vals = {1, 2, "3", 4}
-	local okvals = {4, "3", 2, 1}
-
-	for i=1,#vals do
-		avp(vals[i])
-	end
-	assertItemsEquals(avp:all(), okvals)
-	xavp:clean('cfu')
-	assertItemsEquals(xavp:all('cfu'), nil)
-	xavp('cfu', avp:all())
-	assertItemsEquals(xavp:all('cfu'), okvals)
-end
+    function TestKEMIMock:test_log()
+        assertEvalToTrue(self.KSR.log)
+        self.KSR.log("dbg", "Hi dude!")
+        assertError(self.KSR.log, "debug", "Hi dude!")
+    end

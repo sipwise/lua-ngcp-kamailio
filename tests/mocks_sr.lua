@@ -19,12 +19,18 @@
 --
 
 require('luaunit')
+local ksrMock = require 'mocks.ksr'
 local srMock = require 'mocks.sr'
 
 -- luacheck: ignore TestSRMock
 TestSRMock = {}
     function TestSRMock:setUp()
-        self.sr = srMock.new()
+        self.ksr = ksrMock.new()
+        self.sr = srMock.new(self.ksr)
+    end
+
+    function TestSRMock:test_hdr()
+        assertIs(self.sr.hdr, self.ksr.hdr)
     end
 
     function TestSRMock:test_hdr_get()
@@ -33,8 +39,30 @@ TestSRMock = {}
         assertEquals(self.sr.pv.get("$hdr(From)"), "hola")
     end
 
+    function TestSRMock:test_pv()
+        self.sr.pv.sets("$var(test)", "value")
+        assertEquals(self.sr.pv.get("$var(test)"), "value")
+        assertIs(self.sr.pv, self.ksr.pv)
+    end
+
+    function TestSRMock:test_pv_get()
+        assertIs(self.sr.pv, self.ksr.pv)
+    end
+
     function TestSRMock:test_log()
-        assertEvalToTrue(self.sr.log)
+        assertNotNil(self.sr.log)
+    end
+
+    function TestSRMock:test_log_dbg()
         self.sr.log("dbg", "Hi dude!")
         assertError(self.sr.log, "debug", "Hi dude!")
+    end
+
+    function TestSRMock:test_xavp()
+        assertNotNil(self.sr.xavp)
+    end
+
+    function TestSRMock:test_xavp_get()
+        assertErrorMsgContains(
+            "dummy not found", self.sr.xavp.get, "dummy", 0, 0)
     end
