@@ -21,14 +21,14 @@ require('luaunit')
 local NGCPXAvp = require 'ngcp.xavp'
 local NGCPAvp = require 'ngcp.avp'
 
-local srMock = require 'mocks.sr'
-sr = srMock:new()
+local ksrMock = require 'mocks.ksr'
+KSR = ksrMock:new()
 
 -- luacheck: ignore TestUseCases
 TestUseCases = {}
 
 function TestUseCases:tearDown()
-    sr.pv.vars = {}
+    KSR.pv.vars = {}
 end
 
 function TestUseCases:test_copy_avp()

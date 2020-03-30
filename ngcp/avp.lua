@@ -34,15 +34,15 @@ local NGCPAvp_MT = {
         }
         NGCPAvp_MT.__call = function(s, value)
             if not value then
-                return sr.pv.get(s.id)
+                return KSR.pv.get(s.id)
             elseif type(value) == "table" then
                 for i = #value, 1, -1 do
                     s(value[i])
                 end
             elseif type(value) == "number" then
-                sr.pv.seti(s.id, value)
+                KSR.pv.seti(s.id, value)
             elseif type(value) == "string" then
-                sr.pv.sets(s.id, value)
+                KSR.pv.sets(s.id, value)
             else
                 error("value is not a number or string")
             end
@@ -52,17 +52,17 @@ local NGCPAvp_MT = {
             local indx = 0
             local res = {}
 
-            val = sr.pv.get(string.format(t.id_indx, indx))
+            val = KSR.pv.get(string.format(t.id_indx, indx))
             if not val then return nil end
             while val do
                 table.insert(res, val)
                 indx = indx + 1
-                val = sr.pv.get(string.format(t.id_indx, indx))
+                val = KSR.pv.get(string.format(t.id_indx, indx))
             end
             return res
         end
         NGCPAvp_MT.__tostring = function(s)
-            local value = sr.pv.get(s.id)
+            local value = KSR.pv.get(s.id)
             return string.format("%s:%s", s.id, tostring(value))
         end
         return setmetatable( t, NGCPAvp_MT )
@@ -72,13 +72,13 @@ local NGCPAvp_MT = {
         if not level then
             level = "dbg"
         end
-        sr.log(level, tostring(self))
+        KSR.log(level, tostring(self))
     end
 
     function NGCPAvp:del(value)
         local values = self.all()
         if not values or not value then return end
-        sr.pv.unset(self.id_all)
+        KSR.pv.unset(self.id_all)
         for i = #values, 1, -1 do
             if values[i] ~= value then
                 self(values[i])
@@ -87,7 +87,7 @@ local NGCPAvp_MT = {
     end
 
     function NGCPAvp:clean()
-        sr.pv.unset(self.id_all)
+        KSR.pv.unset(self.id_all)
     end
 -- class
 return NGCPAvp

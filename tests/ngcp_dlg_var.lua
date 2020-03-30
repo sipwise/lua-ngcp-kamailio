@@ -18,10 +18,10 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 require('luaunit')
-local srMock = require 'mocks.sr'
+local ksrMock = require 'mocks.ksr'
 local NGCPDlgVar = require 'ngcp.dlg_var'
 
-sr = srMock:new()
+KSR = ksrMock:new()
 -- luacheck: ignore TestNGCPDlgVar
 TestNGCPDlgVar = {} --class
     function TestNGCPDlgVar:setUp()
@@ -29,7 +29,7 @@ TestNGCPDlgVar = {} --class
     end
 
     function TestNGCPDlgVar:tearDown()
-        sr.pv.vars = {}
+        KSR.pv.vars = {}
     end
 
     function TestNGCPDlgVar:test_dlg_var_id()
@@ -37,9 +37,9 @@ TestNGCPDlgVar = {} --class
     end
 
     function TestNGCPDlgVar:test_dlg_var_get()
-        sr.pv.sets("$dlg_var(testid)", "value")
+        KSR.pv.sets("$dlg_var(testid)", "value")
         assertEquals(self.var(), "value")
-        sr.pv.sets("$dlg_var(testid)", "1")
+        KSR.pv.sets("$dlg_var(testid)", "1")
         assertItemsEquals(self.var(), "1")
     end
 

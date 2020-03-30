@@ -23,8 +23,8 @@ local NGCPUserPrefs = require 'ngcp.up'
 local NGCPPeerPrefs = require 'ngcp.pp'
 local NGCPRealPrefs = require 'ngcp.rp'
 
-local srMock = require 'mocks.sr'
-sr = srMock:new()
+local ksrMock = require 'mocks.ksr'
+KSR = ksrMock:new()
 
 -- luacheck: ignore TestNGCPRealPrefs
 TestNGCPRealPrefs = {} --class
@@ -34,15 +34,15 @@ TestNGCPRealPrefs = {} --class
     end
 
     function TestNGCPRealPrefs:tearDown()
-       sr.pv.unset("$xavp(caller_dom_prefs)")
-       sr.pv.unset("$xavp(callee_dom_prefs)")
-       sr.pv.unset("$xavp(caller_peer_prefs)")
-       sr.pv.unset("$xavp(callee_peer_prefs)")
-       sr.pv.unset("$xavp(caller_usr_prefs)")
-       sr.pv.unset("$xavp(callee_usr_prefs)")
-       sr.pv.unset("$xavp(caller_real_prefs)")
-       sr.pv.unset("$xavp(callee_real_prefs)")
-       sr.log("info", "---cleaned---")
+       KSR.pv.unset("$xavp(caller_dom_prefs)")
+       KSR.pv.unset("$xavp(callee_dom_prefs)")
+       KSR.pv.unset("$xavp(caller_peer_prefs)")
+       KSR.pv.unset("$xavp(callee_peer_prefs)")
+       KSR.pv.unset("$xavp(caller_usr_prefs)")
+       KSR.pv.unset("$xavp(callee_usr_prefs)")
+       KSR.pv.unset("$xavp(caller_real_prefs)")
+       KSR.pv.unset("$xavp(callee_real_prefs)")
+       KSR.log("info", "---cleaned---")
     end
 
     function TestNGCPRealPrefs:test_caller_load_empty()
@@ -62,9 +62,9 @@ TestNGCPRealPrefs = {} --class
             real    = NGCPRealPrefs:xavp("caller")
         }
         xavp.domain("uno",1)
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>uno)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>uno)"),1)
         xavp.user("uno",2)
-        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>uno)"),2)
+        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>uno)"),2)
         xavp.peer("uno",3)
         local real_keys = self.real:caller_peer_load(keys)
         assertEquals(real_keys, keys)
@@ -80,9 +80,9 @@ TestNGCPRealPrefs = {} --class
             real    = NGCPRealPrefs:xavp("caller")
         }
         xavp.domain("uno",1)
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>uno)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>uno)"),1)
         xavp.user("uno",2)
-        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>uno)"),2)
+        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>uno)"),2)
         local real_keys = self.real:caller_usr_load(keys)
         assertEquals(real_keys, keys)
         assertEquals(xavp.real("uno"),2)
@@ -96,9 +96,9 @@ TestNGCPRealPrefs = {} --class
             real    = NGCPRealPrefs:xavp("caller")
         }
         xavp.domain("uno",1)
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>uno)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>uno)"),1)
         xavp.user("dos",2)
-        assertEquals(sr.pv.get("$xavp(caller_usr_prefs=>dos)"),2)
+        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>dos)"),2)
         local real_keys = self.real:caller_usr_load(keys)
         assertItemsEquals(real_keys, keys)
         assertEquals(xavp.real("uno"),1)
@@ -113,9 +113,9 @@ TestNGCPRealPrefs = {} --class
             real    = NGCPRealPrefs:xavp("callee")
         }
         xavp.domain("uno",1)
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>uno)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>uno)"),1)
         xavp.user("uno",2)
-        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>uno)"),2)
+        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>uno)"),2)
         local real_keys = self.real:callee_usr_load(keys)
         assertEquals(real_keys, keys)
         assertEquals(xavp.real("uno"),2)
@@ -129,9 +129,9 @@ TestNGCPRealPrefs = {} --class
             real    = NGCPRealPrefs:xavp("callee")
         }
         xavp.domain("uno",1)
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>uno)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>uno)"),1)
         xavp.user("dos",2)
-        assertEquals(sr.pv.get("$xavp(callee_usr_prefs=>dos)"),2)
+        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>dos)"),2)
         local real_keys = self.real:callee_usr_load(keys)
         assertItemsEquals(real_keys, keys)
         assertEquals(xavp.real("uno"),1)
@@ -139,34 +139,34 @@ TestNGCPRealPrefs = {} --class
     end
 
     function TestNGCPRealPrefs:test_set()
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>dummy)"),"callee")
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>dummy)"), "caller")
-        assertNil(sr.pv.get("$xavp(callee_real_prefs=>testid)"))
-        assertNil(sr.pv.get("$xavp(callee_real_prefs=>foo)"))
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(caller_real_prefs=>dummy)"), "caller")
+        assertNil(KSR.pv.get("$xavp(callee_real_prefs=>testid)"))
+        assertNil(KSR.pv.get("$xavp(callee_real_prefs=>foo)"))
 
         local callee_xavp = NGCPRealPrefs:xavp("callee")
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>dummy)"),'callee')
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>dummy)"),'callee')
 
         callee_xavp("testid", 1)
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>testid)"), 1)
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>testid)"), 1)
         callee_xavp("foo","foo")
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>foo)"),"foo")
     end
 
     function TestNGCPRealPrefs:test_clean()
         local callee_xavp = NGCPRealPrefs:xavp("callee")
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>dummy)"),'callee')
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>dummy)"),'callee')
 
         callee_xavp("testid",1)
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>testid)"),1)
         callee_xavp("foo","foo")
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(caller_real_prefs=>dummy)"),"caller")
 
         self.real:clean()
 
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(caller_real_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPRealPrefs:test_callee_clean()
@@ -179,21 +179,21 @@ TestNGCPRealPrefs = {} --class
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
 
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(caller_real_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(caller_real_prefs=>other)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_real_prefs=>otherfoo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>dummy)"),"callee")
 
         self.real:clean('callee')
 
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>dummy)"),'caller')
-        assertNil(sr.pv.get("$xavp(callee_real_prefs=>testid)"))
-        assertNil(sr.pv.get("$xavp(callee_real_prefs=>foo)"))
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(caller_real_prefs=>dummy)"),'caller')
+        assertNil(KSR.pv.get("$xavp(callee_real_prefs=>testid)"))
+        assertNil(KSR.pv.get("$xavp(callee_real_prefs=>foo)"))
+        assertEquals(KSR.pv.get("$xavp(caller_real_prefs=>other)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_real_prefs=>otherfoo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPRealPrefs:test_caller_clean()
@@ -206,21 +206,21 @@ TestNGCPRealPrefs = {} --class
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
 
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(caller_real_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(caller_real_prefs=>other)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_real_prefs=>otherfoo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>dummy)"),"callee")
 
         self.real:clean('caller')
 
-        assertEquals(sr.pv.get("$xavp(caller_real_prefs=>dummy)"),"caller")
-        assertNil(sr.pv.get("$xavp(caller_real_prefs=>other)"))
-        assertNil(sr.pv.get("$xavp(caller_real_prefs=>otherfoo)"))
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_real_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(caller_real_prefs=>dummy)"),"caller")
+        assertNil(KSR.pv.get("$xavp(caller_real_prefs=>other)"))
+        assertNil(KSR.pv.get("$xavp(caller_real_prefs=>otherfoo)"))
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPRealPrefs:test_tostring()

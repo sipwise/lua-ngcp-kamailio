@@ -63,7 +63,7 @@ end
     local function _connect(config)
         local client = redis.connect(config.host,config.port);
         client:select(config.db);
-        sr.log("dbg", string.format("connected to redis server %s:%d at %s\n",
+        KSR.log("dbg", string.format("connected to redis server %s:%d at %s\n",
             config.host, config.port, config.db));
         return client;
     end
@@ -77,7 +77,7 @@ end
         if res == 1 then
             self.client:expire(key, self.config.expire);
         end
-        sr.log("dbg", string.format("[%s]=>[%s] expires:%s\n", key, tostring(res), tostring(self.config.expires)));
+        KSR.log("dbg", string.format("[%s]=>[%s] expires:%s\n", key, tostring(res), tostring(self.config.expires)));
         return res;
     end
 
