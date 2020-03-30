@@ -71,7 +71,7 @@ end
     local function _connect(config)
         local client = redis.connect(config.host,config.port);
         client:select(config.db);
-        sr.log("dbg", string.format("connected to redis server %s:%d at %s\n",
+        KSR.log("dbg", string.format("connected to redis server %s:%d at %s\n",
             config.host, config.port, config.db));
         return client;
     end
@@ -81,9 +81,9 @@ end
         local num = self.central:llen(key);
         if num == 0 then
             self.central:del(key);
-            sr.log("dbg", string.format("central[%s] is empty. Removed\n", key));
+            KSR.log("dbg", string.format("central[%s] is empty. Removed\n", key));
         else
-            sr.log("dbg", string.format("central:lrem[%s]=>[%s]\n", key, tostring(num)));
+            KSR.log("dbg", string.format("central:lrem[%s]=>[%s]\n", key, tostring(num)));
         end
         return num;
     end
@@ -113,15 +113,15 @@ end
             self.central = _connect(self.config.central);
         end
         local pos = self.central:rpush(key, callid);
-        sr.log("dbg", string.format("central:rpush[%s]=>[%s] %s\n", key, callid, tostring(pos)));
+        KSR.log("dbg", string.format("central:rpush[%s]=>[%s] %s\n", key, callid, tostring(pos)));
         if not _test_connection(self.pair) then
             self.pair = _connect(self.config.pair);
         end
         if self.config.check_pair_dup and self:is_in_set(callid, key) then
-            sr.log("warn", string.format("pair:check_pair_dup[%s]=>[%s] already there!\n", callid, key));
+            KSR.log("warn", string.format("pair:check_pair_dup[%s]=>[%s] already there!\n", callid, key));
         end
         pos = self.pair:lpush("list:"..callid, key);
-        sr.log("dbg", string.format("pair:lpush[list:%s]=>[%s] %s\n", callid, key, tostring(pos)));
+        KSR.log("dbg", string.format("pair:lpush[list:%s]=>[%s] %s\n", callid, key, tostring(pos)));
     end
 
     function NGCPDlgList:del(callid, key)
@@ -130,10 +130,10 @@ end
         end
         local num = self.pair:lrem("list:"..callid, 0, key);
         if num == 0 then
-            sr.log("dbg", string.format("pair:lrem[list:%s] no such key %s found in list", callid, key));
+            KSR.log("dbg", string.format("pair:lrem[list:%s] no such key %s found in list", callid, key));
             return false;
         end
-        sr.log("dbg", string.format("pair:lrem[%s]=>[%s] %d\n", callid, key, num));
+        KSR.log("dbg", string.format("pair:lrem[%s]=>[%s] %d\n", callid, key, num));
         if not _test_connection(self.central) then
             self.central = _connect(self.config.central);
         end
@@ -154,7 +154,7 @@ end
         end
         while key do
             self:_del(key, callid);
-            sr.log("dbg", string.format("pair:lpop[%s]=>[%s]\n", callid, key));
+            KSR.log("dbg", string.format("pair:lpop[%s]=>[%s]\n", callid, key));
             key = self.pair:lpop("list:"..callid);
         end
     end

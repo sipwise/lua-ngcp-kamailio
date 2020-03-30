@@ -21,8 +21,8 @@
 local lemock = require('lemock')
 require('luaunit')
 
-local srMock = require 'mocks.sr'
-sr = srMock:new()
+local ksrMock = require 'mocks.ksr'
+KSR = ksrMock:new()
 
 local mc
 

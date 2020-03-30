@@ -19,22 +19,22 @@
 --
 
 require('luaunit')
-local srMock = require 'mocks.sr'
+local ksrMock = require 'mocks.ksr'
 
--- luacheck: ignore TestSRMock
-TestSRMock = {}
-    function TestSRMock:setUp()
-        self.sr = srMock.new()
+-- luacheck: ignore TestKEMIMock
+TestKEMIMock = {}
+    function TestKEMIMock:setUp()
+        self.KSR = ksrMock.new()
     end
 
-    function TestSRMock:test_hdr_get()
-        self.sr.hdr.insert("From: hola\r\n")
-        assertEquals(self.sr.hdr.headers, {"From: hola\r\n"})
-        assertEquals(self.sr.pv.get("$hdr(From)"), "hola")
+    function TestKEMIMock:test_hdr_get()
+        self.KSR.hdr.insert("From: hola\r\n")
+        assertEquals(self.KSR.hdr.headers, {"From: hola\r\n"})
+        assertEquals(self.KSR.pv.get("$hdr(From)"), "hola")
     end
 
-    function TestSRMock:test_log()
-        assertEvalToTrue(self.sr.log)
-        self.sr.log("dbg", "Hi dude!")
-        assertError(self.sr.log, "debug", "Hi dude!")
+    function TestKEMIMock:test_log()
+        assertEvalToTrue(self.KSR.log)
+        self.KSR.log("dbg", "Hi dude!")
+        assertError(self.KSR.log, "debug", "Hi dude!")
     end

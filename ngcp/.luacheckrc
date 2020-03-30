@@ -1,2 +1,2 @@
-globals = {'sr', '_ENV'}
+globals = {'KSR', '_ENV'}
 ignore = { '212' }

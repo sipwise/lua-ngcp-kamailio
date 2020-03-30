@@ -136,7 +136,7 @@ NGCPContractPrefs_MT.__tostring = function ()
                 row = cur:fetch({}, "a")
             end
         else
-            sr.log("dbg", string.format("no results for query:%s", query))
+            KSR.log("dbg", string.format("no results for query:%s", query))
         end
         cur:close()
 
