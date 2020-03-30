@@ -24,8 +24,10 @@ local utable = utils.table
 local PPFetch = require 'tests_v.pp_vars'
 
 
+local ksrMock = require 'mocks.ksr'
 local srMock = require 'mocks.sr'
-sr = srMock:new()
+KSR = ksrMock.new()
+sr = srMock.new(KSR)
 
 local mc,env,con
 local pp_vars = PPFetch:new()
@@ -67,15 +69,7 @@ TestNGCPPeerPrefs = {} --class
     end
 
     function TestNGCPPeerPrefs:tearDown()
-        sr.pv.unset("$xavp(caller_dom_prefs)")
-        sr.pv.unset("$xavp(callee_dom_prefs)")
-        sr.pv.unset("$xavp(caller_peer_prefs)")
-        sr.pv.unset("$xavp(callee_peer_prefs)")
-        sr.pv.unset("$xavp(caller_usr_prefs)")
-        sr.pv.unset("$xavp(callee_usr_prefs)")
-        sr.pv.unset("$xavp(caller_real_prefs)")
-        sr.pv.unset("$xavp(callee_real_prefs)")
-        sr.log("info", "---TestNGCPPeerPrefs::cleaned---")
+        KSR.pv.vars = {}
     end
 
     function TestNGCPPeerPrefs:test_init()
@@ -90,14 +84,14 @@ TestNGCPPeerPrefs = {} --class
         if set then
             keys_expected = utable.deepcopy(set)
             for _,v in pairs(keys_expected) do
-                sr.log("dbg", string.format("removed key:%s is been loaded.", v))
+                KSR.log("dbg", string.format("removed key:%s is been loaded.", v))
                 defaults[v] = nil
             end
         end
 
         for k,v in pairs(defaults) do
             utable.add(keys_expected, k)
-            assertEquals(sr.pv.get("$xavp("..level.."_peer_prefs=>"..k..")"), v)
+            assertEquals(KSR.pv.get("$xavp("..level.."_peer_prefs=>"..k..")"), v)
         end
         return keys_expected
     end
@@ -138,10 +132,10 @@ TestNGCPPeerPrefs = {} --class
         }
 
         assertItemsEquals(keys, lkeys)
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"), "caller")
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_enable)"),"no")
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>sst_min_timer)"), 90)
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>dummy)"), "caller")
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>sst_enable)"),"no")
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>sst_min_timer)"), 90)
         assertItemsEquals(keys, TestNGCPPeerPrefs:get_defaults("caller", {"sst_enable", "sst_refresh_method"}))
     end
 
@@ -171,10 +165,10 @@ TestNGCPPeerPrefs = {} --class
         }
 
         assertItemsEquals(keys, lkeys)
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"), "callee")
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_enable)"),"no")
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>sst_min_timer)"), 90)
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>dummy)"), "callee")
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>sst_enable)"),"no")
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>sst_min_timer)"), 90)
         assertItemsEquals(keys, TestNGCPPeerPrefs:get_defaults("callee", {"sst_enable", "sst_refresh_method"}))
     end
 
@@ -182,14 +176,14 @@ TestNGCPPeerPrefs = {} --class
         local xavp = NGCPPeerPrefs:xavp('callee')
         xavp("testid",1)
         xavp("foo","foo")
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
         self.d:clean()
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
-        assertNil(sr.pv.get("$xavp(peer)"))
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
+        assertNil(KSR.pv.get("$xavp(peer)"))
     end
 
     function TestNGCPPeerPrefs:test_callee_clean()
@@ -199,19 +193,19 @@ TestNGCPPeerPrefs = {} --class
         local caller_xavp = NGCPPeerPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>other)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>otherfoo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
         self.d:clean('callee')
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"),'caller')
-        assertNil(sr.pv.get("$xavp(callee_peer_prefs=>testid)"))
-        assertNil(sr.pv.get("$xavp(callee_peer_prefs=>foo)"))
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>dummy)"),'caller')
+        assertNil(KSR.pv.get("$xavp(callee_peer_prefs=>testid)"))
+        assertNil(KSR.pv.get("$xavp(callee_peer_prefs=>foo)"))
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>other)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>otherfoo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPPeerPrefs:test_caller_clean()
@@ -221,19 +215,19 @@ TestNGCPPeerPrefs = {} --class
         local caller_xavp = NGCPPeerPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>other)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>otherfoo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
         self.d:clean('caller')
-        assertEquals(sr.pv.get("$xavp(caller_peer_prefs=>dummy)"),"caller")
-        assertNil(sr.pv.get("$xavp(caller_peer_prefs=>other)"))
-        assertNil(sr.pv.get("$xavp(caller_peer_prefs=>otherfoo)"))
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>dummy)"),"caller")
+        assertNil(KSR.pv.get("$xavp(caller_peer_prefs=>other)"))
+        assertNil(KSR.pv.get("$xavp(caller_peer_prefs=>otherfoo)"))
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPPeerPrefs:test_tostring()

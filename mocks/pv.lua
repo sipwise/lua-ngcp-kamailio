@@ -308,7 +308,7 @@ local pvMock = {
             local result = t._is(id)
             if result.clean then
                 -- clean var
-                t.log("dbg",string.format("sr.pv erase avp[%s]", result.id))
+                t.log("dbg",string.format("KSR.pv erase avp[%s]", result.id))
                 t.vars[result.private_id] = nil
             end
             if not t.vars[result.private_id] then
@@ -316,7 +316,7 @@ local pvMock = {
             else
                 t._addvalue_with_value(result, value)
             end
-            t.log("dbg", string.format("sr.pv vars:%s", utable.tostring(t.vars)))
+            t.log("dbg", string.format("KSR.pv vars:%s", utable.tostring(t.vars)))
         end
 
         function t.seti(id, value)
@@ -366,7 +366,7 @@ local pvMock = {
             elseif result.type == 'var' or result.type == 'dlg_var' then
                 t.vars[result.private_id] = nil
             end
-            t.log("dbg", string.format("sr.pv vars:%s", utable.tostring(t.vars)))
+            t.log("dbg", string.format("KSR.pv vars:%s", utable.tostring(t.vars)))
         end
 
         function t.is_null(id)

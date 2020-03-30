@@ -23,8 +23,10 @@ local utable = utils.table
 local lemock = require('lemock')
 local DPFetch = require 'tests_v.dp_vars'
 
+local ksrMock = require 'mocks.ksr'
 local srMock = require 'mocks.sr'
-sr = srMock:new()
+KSR = ksrMock.new()
+sr = srMock.new(KSR)
 
 local mc,env,con
 local dp_vars = DPFetch:new()
@@ -58,15 +60,7 @@ TestNGCPDomainPrefs = {} --class
     end
 
     function TestNGCPDomainPrefs:tearDown()
-        sr.pv.unset("$xavp(caller_dom_prefs)")
-        sr.pv.unset("$xavp(callee_dom_prefs)")
-        sr.pv.unset("$xavp(caller_peer_prefs)")
-        sr.pv.unset("$xavp(callee_peer_prefs)")
-        sr.pv.unset("$xavp(caller_usr_prefs)")
-        sr.pv.unset("$xavp(callee_usr_prefs)")
-        sr.pv.unset("$xavp(caller_real_prefs)")
-        sr.pv.unset("$xavp(callee_real_prefs)")
-        sr.log("info", "---cleaned---")
+        KSR.pv.vars = {}
     end
 
     function TestNGCPDomainPrefs:test_init()
@@ -106,8 +100,8 @@ TestNGCPDomainPrefs = {} --class
         local keys = self.d:caller_load("192.168.51.56")
         mc:verify()
 
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>sst_enable)"),"no")
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>sst_enable)"),"no")
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
         assertItemsEquals(keys, TestNGCPDomainPrefs:get_defaults())
     end
 
@@ -123,8 +117,8 @@ TestNGCPDomainPrefs = {} --class
         local keys = self.d:callee_load("192.168.51.56")
         mc:verify()
 
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>sst_enable)"),"no")
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>sst_enable)"),"no")
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>sst_refresh_method)"), "UPDATE_FALLBACK_INVITE")
         assertItemsEquals(keys, TestNGCPDomainPrefs:get_defaults())
     end
 
@@ -132,13 +126,13 @@ TestNGCPDomainPrefs = {} --class
         local xavp = NGCPDomainPrefs:xavp('callee')
         xavp("testid",1)
         xavp("foo","foo")
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
         self.d:clean()
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
-        assertNil(sr.pv.get("$xavp(domain)"))
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
+        assertNil(KSR.pv.get("$xavp(domain)"))
     end
 
     function TestNGCPDomainPrefs:test_callee_clean()
@@ -148,19 +142,19 @@ TestNGCPDomainPrefs = {} --class
         local caller_xavp = NGCPDomainPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>other)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>otherfoo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
         self.d:clean('callee')
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"),'caller')
-        assertNil(sr.pv.get("$xavp(callee_dom_prefs=>testid)"))
-        assertNil(sr.pv.get("$xavp(callee_dom_prefs=>foo)"))
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>dummy)"),'caller')
+        assertNil(KSR.pv.get("$xavp(callee_dom_prefs=>testid)"))
+        assertNil(KSR.pv.get("$xavp(callee_dom_prefs=>foo)"))
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>other)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>otherfoo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPDomainPrefs:test_caller_clean()
@@ -170,19 +164,19 @@ TestNGCPDomainPrefs = {} --class
         local caller_xavp = NGCPDomainPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>other)"),1)
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>otherfoo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>other)"),1)
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>otherfoo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
         self.d:clean('caller')
-        assertEquals(sr.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
-        assertNil(sr.pv.get("$xavp(caller_dom_prefs=>other)"))
-        assertNil(sr.pv.get("$xavp(caller_dom_prefs=>otherfoo)"))
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>testid)"),1)
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>foo)"),"foo")
-        assertEquals(sr.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
+        assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
+        assertNil(KSR.pv.get("$xavp(caller_dom_prefs=>other)"))
+        assertNil(KSR.pv.get("$xavp(caller_dom_prefs=>otherfoo)"))
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>testid)"),1)
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>foo)"),"foo")
+        assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPDomainPrefs:test_tostring()
