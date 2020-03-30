@@ -30,18 +30,18 @@ function NGCPDlgVar:new(id)
 
     NGCPDlgVar_MT.__call = function(s, value)
         if not value then
-            return sr.pv.get(s.id)
+            return KSR.pv.get(s.id)
         elseif type(value) == "number" then
-            sr.pv.seti(s.id, value)
+            KSR.pv.seti(s.id, value)
         elseif type(value) == "string" then
-            sr.pv.sets(s.id, value)
+            KSR.pv.sets(s.id, value)
         else
             error("value is not a number or string")
         end
     end
 
     NGCPDlgVar_MT.__tostring = function(s)
-        local value = sr.pv.get(s.id)
+        local value = KSR.pv.get(s.id)
         return string.format("%s:%s", s.id, tostring(value))
     end
     return setmetatable( t, NGCPDlgVar_MT )
@@ -51,11 +51,11 @@ function NGCPDlgVar:log(level)
     if not level then
         level = "dbg"
     end
-    sr.log(level, tostring(self))
+    KSR.log(level, tostring(self))
 end
 
 function NGCPDlgVar:clean()
-    sr.pv.unset(self.id)
+    KSR.pv.unset(self.id)
 end
 
 return NGCPDlgVar

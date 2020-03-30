@@ -12,8 +12,8 @@ local parser = argparse() {
 parser:argument("callid", "Call-Id to remove")
 
 -- luacheck: globals dlg_config
-sr = {}
-sr.log = function (level, str)
+KSR = {}
+KSR.log = function (level, str)
 	print(string.format("[%s] %s", level, str))
 end
 

@@ -65,7 +65,7 @@ NGCPProfilePrefs_MT.__tostring = function ()
     function NGCPProfilePrefs:_load(level, uuid)
         local con = assert (self.config:getDBConnection())
         local query = "SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN "..
-         self.db_table .." AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = '".. uuid .. "'"
+         self.db_table .." AS prefs ON uKSR.profile_id = prefs.uuid WHERE uKSR.uuid = '".. uuid .. "'"
         local cur = assert (con:execute(query))
         local keys = {}
         local result = {}
@@ -73,13 +73,13 @@ NGCPProfilePrefs_MT.__tostring = function ()
 
         if utable.size(row) > 0 then
             while utable.size(row) > 0 do
-                --sr.log("debug", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
+                --KSR.log("debug", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
                 table.insert(result, row)
                 utable.add(keys, row.attribute)
                 row = cur:fetch({}, "a")
             end
         else
-            sr.log("dbg", string.format("no results for query:%s", query))
+            KSR.log("dbg", string.format("no results for query:%s", query))
         end
         cur:close()
         if utable.size(result) > 0 then

@@ -88,20 +88,20 @@ NGCPUserPrefs_MT.__tostring = function ()
 
         if row then
             while row do
-                --sr.log("info", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
+                --KSR.log("info", string.format("result:%s row:%s", table.tostring(result), table.tostring(row)))
                 table.insert(result, row)
                 utable.add(keys, row.attribute)
                 defaults[row.attribute] = nil
                 row = cur:fetch({}, "a")
             end
         else
-            sr.log("dbg", string.format("no results for query:%s", query))
+            KSR.log("dbg", string.format("no results for query:%s", query))
         end
         cur:close()
 
         xavp = self:xavp(level, result)
         for k,v in pairs(defaults) do
-            sr.log("dbg", string.format("setting default[%s]:%s", k, tostring(v)))
+            KSR.log("dbg", string.format("setting default[%s]:%s", k, tostring(v)))
             xavp(k, v)
         end
         return keys

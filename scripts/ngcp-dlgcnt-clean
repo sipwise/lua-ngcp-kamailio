@@ -14,8 +14,8 @@ parser:flag("-c --config-db", "redis db defined at config")
 parser:flag("-C --config-host", "redis server defined at config")
 
 -- luacheck: globals dlg_config
-sr = {}
-sr.log = function (level, str)
+KSR = {}
+KSR.log = function (level, str)
 	print(string.format("[%s] %s", level, str))
 end
 
