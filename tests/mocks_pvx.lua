@@ -20,13 +20,13 @@
 
 require('luaunit')
 local pvMock = require 'mocks.pv'
-local xavpMock = require 'mocks.xavp'
+local pvxMock = require 'mocks.pvx'
 
 -- luacheck: ignore TestXAVPMock
 TestXAVPMock = {}
     function TestXAVPMock:setUp()
         self.pv = pvMock.new()
-        self.xavp = xavpMock.new(self.pv)
+        self.pvx = pvxMock.new(self.pv)
 
         self.pv.sets("$xavp(test=>uno)", "uno")
         assertEquals(self.pv.get("$xavp(test[0]=>uno)"), "uno")
@@ -49,7 +49,7 @@ TestXAVPMock = {}
         self.pv.vars = {}
     end
 
-    function TestXAVPMock:test_get_keys()
+    --[[function TestXAVPMock:test_get_keys()
         local l = self.xavp.get_keys("test", 0)
         assertEvalToTrue(l)
         assertItemsEquals(l, {"uno", "dos", "tres"})
@@ -59,29 +59,11 @@ TestXAVPMock = {}
         local l = self.xavp.get_keys("test", 1)
         assertEvalToTrue(l)
         assertItemsEquals(l, {"uno", "dos"})
-    end
+    end--]]
 
-    function TestXAVPMock:test_get_simple()
-        local l = self.xavp.get("test", 0, 1)
-        assertEvalToTrue(l)
-        assertItemsEquals(l, {uno=1, dos="dos", tres=3})
-    end
-
-    function TestXAVPMock:test_get_simple_1()
-        local l = self.xavp.get("test", 1, 1)
-        assertEvalToTrue(l)
-        assertItemsEquals(l, {uno="uno", dos=2})
-    end
-
-    function TestXAVPMock:test_get()
-        local l = self.xavp.get("test", 0, 0)
+    function TestXAVPMock:test_xavp_get()
+        local l = self.pvx.xavp_get("test", 0, 0)
         assertEvalToTrue(l)
         assertItemsEquals(l, {uno={1,3}, dos={"dos"}, tres={3}})
-    end
-
-    function TestXAVPMock:test_get_1()
-        local l = self.xavp.get("test", 1, 0)
-        assertEvalToTrue(l)
-        assertItemsEquals(l, {uno={"uno"}, dos={2,4}})
     end
 --EOF

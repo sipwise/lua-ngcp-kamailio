@@ -94,13 +94,13 @@ NGCPPeerPrefs_MT.__tostring = function ()
                 row = cur:fetch({}, "a")
             end
         else
-            sr.log("dbg", string.format("no results for query:%s", query))
+            KSR.log("dbg", string.format("no results for query:%s", query))
         end
         cur:close()
 
         xavp = self:xavp(level, result)
         for k,v in pairs(defaults) do
-            sr.log("dbg", string.format("setting default[%s]:%s", k, tostring(v)))
+            KSR.log("dbg", string.format("setting default[%s]:%s", k, tostring(v)))
             xavp(k, v)
         end
         return keys

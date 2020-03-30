@@ -93,7 +93,7 @@ NGCPFaxPrefs_MT.__tostring = function ()
                 end
             end
         else
-            sr.log("dbg", string.format("no results for query:%s", query))
+            KSR.log("dbg", string.format("no results for query:%s", query))
         end
         cur:close()
 

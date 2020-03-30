@@ -20,9 +20,9 @@
 
 require('luaunit')
 local lemock = require('lemock')
-local srMock = require 'mocks.sr'
+local ksrMock = require 'mocks.ksr'
 
-sr = srMock:new()
+KSR = ksrMock:new()
 
 local mc
 
