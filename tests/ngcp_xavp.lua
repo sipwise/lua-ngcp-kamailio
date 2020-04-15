@@ -21,9 +21,7 @@ require('luaunit')
 local NGCPXAvp = require 'ngcp.xavp'
 
 local ksrMock = require 'mocks.ksr'
-local srMock = require 'mocks.sr'
 KSR = ksrMock.new()
-sr = srMock.new(KSR)
 
 local vals = {
     {

@@ -64,7 +64,7 @@ local NGCPXAvp_MT = {
         NGCPXAvp_MT.__tostring = function (s)
             local output
 
-            local ll = sr.xavp.get(s.name, 0)
+            local ll = KSR.pvx.xavp_getd_p1(s.name, 0)
             if ll then
                 output = utable.tostring(ll)
             end
@@ -142,7 +142,7 @@ local NGCPXAvp_MT = {
 
     function NGCPXAvp:all(key)
         if key then
-            local t = sr.xavp.get(self.name, 0, 0)
+            local t = KSR.pvx.xavp_getd_p1(self.name, 0)
             if t then
                 return t[key];
             end

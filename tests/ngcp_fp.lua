@@ -22,9 +22,7 @@ local lemock = require('lemock')
 local FPFetch = require 'tests_v.fp_vars'
 
 local ksrMock = require 'mocks.ksr'
-local srMock = require 'mocks.sr'
 KSR = ksrMock.new()
-sr = srMock.new(KSR)
 
 local mc,env,con
 local fp_vars = FPFetch:new()

@@ -29,9 +29,7 @@ local utils = require 'ngcp.utils'
 local utable = utils.table
 
 local ksrMock = require 'mocks.ksr'
-local srMock = require 'mocks.sr'
 KSR = ksrMock.new()
-sr = srMock.new(KSR)
 
 local mc,env
 local dp_vars = DPFetch:new()
@@ -75,7 +73,7 @@ TestNGCP = {} --class
     end
 
     function TestNGCP:test_config()
-        assertEvalToTrue(self.ngcp.config)
+        assertNotNil(self.ngcp.config)
         assert(self.ngcp.config.env)
         assertIsNil(self.ngcp.config.con)
     end
@@ -98,24 +96,24 @@ TestNGCP = {} --class
 
     function TestNGCP:test_prefs_init()
         KSR.log("dbg", "TestNGCP:test_prefs_init")
-        assertEvalToTrue(self.ngcp)
-        assertEvalToTrue(self.ngcp.prefs)
-        assertEvalToTrue(self.ngcp.prefs.peer)
+        assertNotNil(self.ngcp)
+        assertNotNil(self.ngcp.prefs)
+        assertNotNil(self.ngcp.prefs.peer)
         assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>dummy)"),"caller")
         assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
-        assertEvalToTrue(self.ngcp.prefs.usr)
+        assertNotNil(self.ngcp.prefs.usr)
         assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
         assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
-        assertEvalToTrue(self.ngcp.prefs.dom)
+        assertNotNil(self.ngcp.prefs.dom)
         assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>dummy)"),"caller")
         assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>dummy)"),"callee")
-        assertEvalToTrue(self.ngcp.prefs.real)
+        assertNotNil(self.ngcp.prefs.real)
         assertEquals(KSR.pv.get("$xavp(caller_real_prefs=>dummy)"),"caller")
         assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>dummy)"),"callee")
-        assertEvalToTrue(self.ngcp.prefs.prof)
+        assertNotNil(self.ngcp.prefs.prof)
         assertEquals(KSR.pv.get("$xavp(caller_prof_prefs=>dummy)"),"caller")
         assertEquals(KSR.pv.get("$xavp(callee_prof_prefs=>dummy)"),"callee")
-        assertEvalToTrue(self.ngcp.prefs.fax)
+        assertNotNil(self.ngcp.prefs.fax)
         assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"),"caller")
         assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
     end

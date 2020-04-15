@@ -66,6 +66,56 @@ local pvxMock = {
             return t._get_xavp(xavp_name, "NULL_PRINT")
         end
 
+        function t.xavp_get_keys(xavp_name, index)
+            local private_id = "xavp:" .. xavp_name
+            local output = {}
+            if not t.pv.vars[private_id] then
+                error(string.format("%s not found", xavp_name))
+            elseif not t.pv.vars[private_id][index] then
+                error(string.format("%s[%s] not found",
+                    xavp_name, tostring(index)))
+            end
+            local xavp = t.pv.vars[private_id][index]
+            for k,_ in pairs(xavp) do
+                table.insert(output, k)
+            end
+            return output
+        end
+
+        function t.xavp_getd(xavp_name)
+            local private_id = "xavp:" .. xavp_name
+            local output = {}
+
+            if not t.pv.vars[private_id] then
+                error(string.format("%s not found", xavp_name))
+            end
+            for _,v in ipairs(t.pv.vars[private_id]:list()) do
+                local avp = {}
+                for k, s in pairs(v) do
+                    avp[k] = s:list()
+                end
+                table.insert(output, avp)
+            end
+            return output
+        end
+
+
+        function t.xavp_getd_p1(xavp_name, index)
+            local private_id = "xavp:" .. xavp_name
+
+            if not t.pv.vars[private_id] then
+                error(string.format("%s not found", xavp_name))
+            elseif not t.pv.vars[private_id][index] then
+                error(string.format("%s[%s] not found",
+                    xavp_name, tostring(index)))
+            end
+            local output = {}
+            for k, s in pairs(t.pv.vars[private_id][index]) do
+                output[k] = s:list()
+            end
+            return output
+        end
+
         local pvxMock_MT = { __index = pvxMock }
         setmetatable(t, pvxMock_MT)
         return t

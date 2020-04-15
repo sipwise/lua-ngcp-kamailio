@@ -22,9 +22,7 @@ local lemock = require('lemock')
 local PProfFetch = require 'tests_v.pprof_vars'
 
 local ksrMock = require 'mocks.ksr'
-local srMock = require 'mocks.sr'
 KSR = ksrMock.new()
-sr = srMock.new(KSR)
 
 local mc,env,con
 local pprof_vars = PProfFetch:new()

@@ -24,9 +24,7 @@ local utable = utils.table
 local UPFetch = require 'tests_v.up_vars'
 
 local ksrMock = require 'mocks.ksr'
-local srMock = require 'mocks.sr'
 KSR = ksrMock.new()
-sr = srMock.new(KSR)
 
 local mc,env,con
 local up_vars = UPFetch:new()

@@ -77,7 +77,7 @@ NGCPRealPrefs_MT.__tostring = function ()
             contract  = NGCPContractPrefs:xavp(level),
         }
         local contract_keys = {}
-        local values = sr.xavp.get(xavp.contract.name, 0, 0)
+        local values = KSR.pvx.xavp_getd_p1(xavp.contract.name, 0)
         for _,v in pairs(keys) do
             local value = values[v]
             if value then
@@ -92,7 +92,7 @@ NGCPRealPrefs_MT.__tostring = function ()
             peer  = NGCPPeerPrefs:xavp(level),
         }
         local peer_keys = {}
-        local values = sr.xavp.get(xavp.peer.name, 0, 0)
+        local values = KSR.pvx.xavp_getd_p1(xavp.peer.name, 0)
         for _,v in pairs(keys) do
             local value = values[v]
             if value then
@@ -110,9 +110,9 @@ NGCPRealPrefs_MT.__tostring = function ()
             usr  = NGCPUserPrefs:xavp(level)
         }
         local real_values = {}
-        local dom_values = sr.xavp.get(xavp.dom.name, 0, 0)
-        local prof_values = sr.xavp.get(xavp.prof.name, 0, 0)
-        local usr_values = sr.xavp.get(xavp.usr.name, 0, 0)
+        local dom_values = KSR.pvx.xavp_getd_p1(xavp.dom.name, 0)
+        local prof_values = KSR.pvx.xavp_getd_p1(xavp.prof.name, 0)
+        local usr_values = KSR.pvx.xavp_getd_p1(xavp.usr.name, 0)
         for _,v in pairs(keys) do
             local value = usr_values[v]
             if not value then

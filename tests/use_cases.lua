@@ -22,9 +22,7 @@ local NGCPXAvp = require 'ngcp.xavp'
 local NGCPAvp = require 'ngcp.avp'
 
 local ksrMock = require 'mocks.ksr'
-local srMock = require 'mocks.sr'
 KSR = ksrMock.new()
-sr = srMock.new(KSR)
 
 -- luacheck: ignore TestUseCases
 TestUseCases = {}
