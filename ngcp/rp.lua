@@ -1,5 +1,5 @@
 --
--- Copyright 2013 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -25,130 +25,114 @@ local NGCPPeerPrefs = require 'ngcp.pp'
 local NGCPUserPrefs = require 'ngcp.up'
 local NGCPProfilePrefs = require 'ngcp.pprof'
 local NGCPContractPrefs = require 'ngcp.cp'
-local NGCPXAvp = require 'ngcp.xavp'
 
 -- class NGCPRealPrefs
-local NGCPRealPrefs = {
-     __class__ = 'NGCPRealPrefs'
- }
-local NGCPRealPrefs_MT = { __index = NGCPRealPrefs }
+local NGCPRealPrefs = utils.inheritsFrom(NGCPPrefs)
+NGCPRealPrefs.__class__ = 'NGCPRealPrefs'
+NGCPRealPrefs.group = "real_prefs"
+-- luacheck: globals KSR
+function NGCPRealPrefs:new(config)
+    local instance = NGCPRealPrefs:create()
+    self.config = config
+    -- creates xavp usr
+    instance:init()
+    return instance
+end
 
-NGCPRealPrefs_MT.__tostring = function ()
-        local xavp = NGCPXAvp:new('caller','real_prefs')
-        local output = string.format("caller_real_prefs:%s\n", tostring(xavp))
-        xavp = NGCPXAvp:new('callee','real_prefs')
-        output = output .. string.format("callee_real_prefs:%s\n", tostring(xavp))
-        return output
-    end
+function NGCPRealPrefs:caller_load(uuid)
+    error("Not implemented")
+end
 
-    function NGCPRealPrefs:new()
-        local t = {}
-        -- creates xavp real
-        NGCPPrefs.init("real_prefs")
-        return setmetatable( t, NGCPRealPrefs_MT )
-    end
+function NGCPRealPrefs:callee_load(uuid)
+    error("Not implemented")
+end
 
-    function NGCPRealPrefs:caller_contract_load(keys)
-        return NGCPRealPrefs:_contract_load("caller", keys)
-    end
+function NGCPRealPrefs:caller_contract_load(keys)
+    return self:_contract_load("caller", keys)
+end
 
-    function NGCPRealPrefs:callee_contract_load(keys)
-        return NGCPRealPrefs:_contract_load("callee", keys)
-    end
+function NGCPRealPrefs:callee_contract_load(keys)
+    return self:_contract_load("callee", keys)
+end
 
-    function NGCPRealPrefs:caller_peer_load(keys)
-        return NGCPRealPrefs:_peer_load("caller", keys)
-    end
+function NGCPRealPrefs:caller_peer_load(keys)
+    return self:_peer_load("caller", keys)
+end
 
-    function NGCPRealPrefs:callee_peer_load(keys)
-        return NGCPRealPrefs:_peer_load("callee", keys)
-    end
+function NGCPRealPrefs:callee_peer_load(keys)
+    return self:_peer_load("callee", keys)
+end
 
-    function NGCPRealPrefs:caller_usr_load(keys)
-        return NGCPRealPrefs:_usr_load("caller", keys)
-    end
+function NGCPRealPrefs:caller_usr_load(keys)
+    return self:_usr_load("caller", keys)
+end
 
-    function NGCPRealPrefs:callee_usr_load(keys)
-        return NGCPRealPrefs:_usr_load("callee", keys)
-    end
+function NGCPRealPrefs:callee_usr_load(keys)
+    return self:_usr_load("callee", keys)
+end
 
-    function NGCPRealPrefs:_contract_load(level, keys)
-        local xavp = {
-            contract  = NGCPContractPrefs:xavp(level),
-        }
-        local contract_keys = {}
-        local values = KSR.pvx.xavp_getd_p1(xavp.contract.name, 0)
-        for _,v in pairs(keys) do
-            local value = values[v]
-            if value then
-                utable.add(contract_keys, v)
-            end
+function NGCPRealPrefs:_contract_load(level, keys)
+    local xavp = {
+        contract  = NGCPContractPrefs:xavp(level),
+    }
+    local contract_keys = {}
+    local values = KSR.pvx.xavp_getd_p1(xavp.contract.name, 0)
+    for _,v in pairs(keys) do
+        local value = values[v]
+        if value then
+            utable.add(contract_keys, v)
         end
-        return contract_keys
     end
+    return contract_keys
+end
 
-    function NGCPRealPrefs:_peer_load(level, keys)
-        local xavp = {
-            peer  = NGCPPeerPrefs:xavp(level),
-        }
-        local peer_keys = {}
-        local values = KSR.pvx.xavp_getd_p1(xavp.peer.name, 0)
-        for _,v in pairs(keys) do
-            local value = values[v]
-            if value then
-                utable.add(peer_keys, v)
-            end
+function NGCPRealPrefs:_peer_load(level, keys)
+    local xavp = {
+        peer  = NGCPPeerPrefs:xavp(level),
+    }
+    local peer_keys = {}
+    local values = KSR.pvx.xavp_getd_p1(xavp.peer.name, 0)
+    for _,v in pairs(keys) do
+        local value = values[v]
+        if value then
+            utable.add(peer_keys, v)
         end
-        return peer_keys
     end
+    return peer_keys
+end
 
-    function NGCPRealPrefs:_usr_load(level, keys)
-        local xavp = {
-            real = NGCPRealPrefs:xavp(level),
-            dom  = NGCPDomainPrefs:xavp(level),
-            prof = NGCPProfilePrefs:xavp(level),
-            usr  = NGCPUserPrefs:xavp(level)
-        }
-        local real_values = {}
-        local dom_values = KSR.pvx.xavp_getd_p1(xavp.dom.name, 0)
-        local prof_values = KSR.pvx.xavp_getd_p1(xavp.prof.name, 0)
-        local usr_values = KSR.pvx.xavp_getd_p1(xavp.usr.name, 0)
-        for _,v in pairs(keys) do
-            local value = usr_values[v]
+function NGCPRealPrefs:_usr_load(level, keys)
+    local xavp = {
+        real = NGCPRealPrefs:xavp(level),
+        dom  = NGCPDomainPrefs:xavp(level),
+        prof = NGCPProfilePrefs:xavp(level),
+        usr  = NGCPUserPrefs:xavp(level)
+    }
+    local real_values = {}
+    local dom_values = KSR.pvx.xavp_getd_p1(xavp.dom.name, 0)
+    local prof_values = KSR.pvx.xavp_getd_p1(xavp.prof.name, 0)
+    local usr_values = KSR.pvx.xavp_getd_p1(xavp.usr.name, 0)
+    for _,v in pairs(keys) do
+        local value = usr_values[v]
+        if not value then
+            value = prof_values[v]
             if not value then
-                value = prof_values[v]
-                if not value then
-                    value = dom_values[v]
-                end
-            end
-            if value then
-                real_values[v] = value
-            else
-                KSR.log("err", string.format("key:%s not in user, profile or domain", v))
+                value = dom_values[v]
             end
         end
-        local real_keys = {}
-        for k,v in pairs(real_values) do
-            table.insert(real_keys, k)
-            xavp.real(k, v)
-        end
-        return real_keys
-    end
-
-    function NGCPRealPrefs:xavp(level, l)
-        if level ~= 'caller' and level ~= 'callee' then
-            error(string.format("unknown level:%s. It has to be [caller|callee]", tostring(level)))
-        end
-        return NGCPXAvp:new(level,'real_prefs', l)
-    end
-
-    function NGCPRealPrefs:clean(vtype)
-        if not vtype then
-            NGCPRealPrefs:xavp('callee'):clean()
-            NGCPRealPrefs:xavp('caller'):clean()
+        if value then
+            real_values[v] = value
         else
-            NGCPRealPrefs:xavp(vtype):clean()
+            KSR.err(string.format("key:%s not in user, profile or domain", v))
         end
     end
+    local real_keys = {}
+    for k,v in pairs(real_values) do
+        table.insert(real_keys, k)
+        xavp.real(k, v)
+    end
+    return real_keys
+end
+
 -- class
 return NGCPRealPrefs

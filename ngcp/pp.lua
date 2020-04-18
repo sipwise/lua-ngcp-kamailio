@@ -18,108 +18,23 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 local utils = require 'ngcp.utils'
-local utable = utils.table
-local NGCPXAvp = require 'ngcp.xavp'
 local NGCPPrefs = require 'ngcp.pref'
 
 -- class NGCPPeerPrefs
-local NGCPPeerPrefs = {
-     __class__ = 'NGCPPeerPrefs'
-}
-local NGCPPeerPrefs_MT = { __index = NGCPPeerPrefs }
+local NGCPPeerPrefs = utils.inheritsFrom(NGCPPrefs)
 
-NGCPPeerPrefs_MT.__tostring = function ()
-        local xavp = NGCPXAvp:new('caller','peer_prefs')
-        local output = string.format("caller_peer_prefs:%s\n", tostring(xavp))
-        xavp = NGCPXAvp:new('callee','peer_prefs')
-        output = output .. string.format("callee_peer_prefs:%s\n", tostring(xavp))
-        return output
-    end
+NGCPPeerPrefs.__class__ = 'NGCPPeerPrefs'
+NGCPPeerPrefs.group = "peer_prefs"
+NGCPPeerPrefs.db_table = "peer_preferences"
+NGCPPeerPrefs.query = "SELECT * FROM %s WHERE uuid = '%s'"
+-- luacheck: globals KSR
+function NGCPPeerPrefs:new(config)
+    local instance = NGCPPeerPrefs:create()
+    self.config = config
+    -- creates xavp usr
+    instance:init()
+    return instance
+end
 
-    function NGCPPeerPrefs:new(config)
-        local t = {
-            config = config,
-            db_table = "peer_preferences"
-        }
-        -- creates xavp peer
-        NGCPPrefs.init("peer_prefs")
-        return setmetatable( t, NGCPPeerPrefs_MT )
-    end
-
-    function NGCPPeerPrefs:caller_load(uuid)
-        if uuid then
-            return self:_load("caller",uuid)
-        else
-            return {}
-        end
-    end
-
-    function NGCPPeerPrefs:callee_load(uuid)
-        if uuid then
-            return self:_load("callee",uuid)
-        else
-            return {}
-        end
-    end
-
-    function NGCPPeerPrefs:_defaults(level)
-        local defaults = self.config:get_defaults('peer')
-        local keys = {}
-
-        if defaults then
-            for k,_ in pairs(defaults) do
-                table.insert(keys, k)
-            end
-        end
-        return keys, defaults
-    end
-
-    function NGCPPeerPrefs:_load(level, uuid)
-        local con = assert (self.config:getDBConnection())
-        local query = "SELECT * FROM " .. self.db_table .. " WHERE uuid = '" .. uuid .. "'"
-        local cur = assert (con:execute(query))
-        local defaults
-        local keys
-        local result = {}
-        local row = cur:fetch({}, "a")
-        local xavp
-
-        keys, defaults = self:_defaults(level)
-
-        if row then
-            while row do
-                table.insert(result, row)
-                utable.add(keys, row.attribute)
-                defaults[row.attribute] = nil
-                row = cur:fetch({}, "a")
-            end
-        else
-            KSR.log("dbg", string.format("no results for query:%s", query))
-        end
-        cur:close()
-
-        xavp = self:xavp(level, result)
-        for k,v in pairs(defaults) do
-            KSR.log("dbg", string.format("setting default[%s]:%s", k, tostring(v)))
-            xavp(k, v)
-        end
-        return keys
-    end
-
-    function NGCPPeerPrefs:xavp(level, l)
-        if level ~= 'caller' and level ~= 'callee' then
-            error(string.format("unknown level:%s. It has to be [caller|callee]", tostring(level)))
-        end
-        return NGCPXAvp:new(level,'peer_prefs', l)
-    end
-
-    function NGCPPeerPrefs:clean(vtype)
-        if not vtype then
-            NGCPPeerPrefs:xavp('callee'):clean()
-            NGCPPeerPrefs:xavp('caller'):clean()
-        else
-            NGCPPeerPrefs:xavp(vtype):clean()
-        end
-    end
 -- class
 return NGCPPeerPrefs

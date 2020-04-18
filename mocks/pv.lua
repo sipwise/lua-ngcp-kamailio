@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2015 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ local pvMock = {
     __class__ = 'pvMock',
     vars = {},
     hdr = nil,
-    _logger = log_file('reports/sr_pv_%s.log', '%Y-%m-%d'),
+    _logger = log_file('reports/ksr_pv_%s.log', '%Y-%m-%d'),
     _logger_levels = {
         dbg  = logging.DEBUG,
         info = logging.INFO,

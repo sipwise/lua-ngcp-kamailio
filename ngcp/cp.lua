@@ -18,152 +18,81 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 local utils = require 'ngcp.utils'
-local utable = utils.table
 local NGCPXAvp = require 'ngcp.xavp'
 local NGCPPrefs = require 'ngcp.pref'
 
 -- class NGCPContractPrefs
-local NGCPContractPrefs = {
-     __class__ = 'NGCPContractPrefs'
-}
-local NGCPContractPrefs_MT = { __index = NGCPContractPrefs }
+local NGCPContractPrefs = utils.inheritsFrom(NGCPPrefs)
 
-NGCPContractPrefs_MT.__tostring = function ()
-        local output
-        local xavp = NGCPXAvp:new('caller','contract_prefs')
-        output = string.format("caller_contract_prefs:%s\n", tostring(xavp))
-        xavp = NGCPXAvp:new('callee','contract_prefs')
-        output = output .. string.format("callee_contract_prefs:%s\n", tostring(xavp))
-        return output
+NGCPContractPrefs.__class__ = 'NGCPContractPrefs'
+NGCPContractPrefs.group = "contract_prefs"
+NGCPContractPrefs.db_table = "contract_preferences"
+NGCPContractPrefs.query = "SELECT * FROM %s WHERE uuid ='%s' AND location_id IS NULL"
+NGCPContractPrefs.query_location_id = [[
+SELECT location_id FROM provisioning.voip_contract_locations cl JOIN
+  provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id
+  WHERE cl.contract_id = %s AND
+    _%s_net_from <= UNHEX(HEX(INET_ATON('%s'))) AND
+    _%s_net_to >= UNHEX(HEX(INET_ATON('%s')))
+  ORDER BY cb.ip DESC, cb.mask DESC LIMIT 1
+]]
+-- luacheck: globals KSR
+function NGCPContractPrefs:new(config)
+    local instance = NGCPContractPrefs:create()
+    self.config = config
+    -- creates xavp usr
+    instance:init()
+    return instance
+end
+
+function NGCPContractPrefs:caller_load(contract, ip)
+    if not contract then
+        return {}
     end
+    return self:_load("caller", contract, ip)
+end
 
-    function NGCPContractPrefs:new(config)
-        local t = {
-            config = config,
-            db_table = "contract_preferences"
-        }
-        -- creates xavp contract
-        NGCPPrefs.init("contract_prefs")
-        return setmetatable( t, NGCPContractPrefs_MT )
+function NGCPContractPrefs:callee_load(contract, ip)
+    if not contract then
+        return {}
     end
+    return self:_load("callee", contract, ip)
+end
 
-    function NGCPContractPrefs:caller_load(contract, ip)
-        if not contract then
-            return {}
-        end
-        return NGCPContractPrefs._load(self, "caller", contract, ip)
+function NGCPContractPrefs:_get_location_id(con, id, ip)
+    local ip_type = "ipv4"
+    if string.find(ip, ':') ~= nil then
+        ip_type = "ipv6"
     end
+    local query = self.query_location_id:format(id, ip_type, ip, ip_type, ip)
+    local cur = assert(con:execute(query))
 
-    function NGCPContractPrefs:callee_load(contract, ip)
-        if not contract then
-            return {}
-        end
-        return NGCPContractPrefs._load(self, "callee", contract, ip)
+    local row = cur:fetch({}, "a")
+    cur:close()
+
+    if row then
+        return row.location_id
     end
+end
 
-    function NGCPContractPrefs:_defaults(_)
-        local defaults = self.config:get_defaults('contract')
-        local keys = {}
-
-        if defaults then
-            for k,_ in pairs(defaults) do
-                table.insert(keys, k)
-            end
-        end
-        return keys, defaults
-    end
-
-    function NGCPContractPrefs:_get_location_id(contract, ip)
-        if not ip then
-            return nil;
-        end
-
-        local con = self.config:getDBConnection()
-        local query = string.format("SELECT location_id FROM provisioning.voip_contract_locations cl JOIN " ..
-            "provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id WHERE cl.contract_id = %s " ..
-            "AND _ipv4_net_from <= UNHEX(HEX(INET_ATON('%s'))) AND _ipv4_net_to >= UNHEX(HEX(INET_ATON('%s'))) " ..
-            "ORDER BY cb.ip DESC, cb.mask DESC LIMIT 1", contract, ip, ip)
-        if string.find(ip, ':') ~= nil then
-            query = string.format("SELECT location_id FROM provisioning.voip_contract_locations cl JOIN " ..
-                "provisioning.voip_contract_location_blocks cb ON cb.location_id = cl.id WHERE cl.contract_id = %s " ..
-                "AND _ipv6_net_from <= UNHEX(HEX(INET_ATON('%s'))) AND _ipv6_net_to >= UNHEX(HEX(INET_ATON('%s'))) " ..
-                "ORDER BY cb.ip DESC, cb.mask DESC LIMIT 1", contract, ip, ip)
-        end
-
-        local cur,err = con:execute(query)
-
-        if err then
-            return nil
-        end
-
-        local row = cur:fetch({}, "a")
-
-        cur:close()
-
-        if row then
-            return row.location_id
-        end
-
-        return nil;
-    end
-
-    function NGCPContractPrefs:_load(level, contract, ip)
-        local con = self.config:getDBConnection()
-        local location_id = nil
-        local query = string.format("SELECT * FROM %s WHERE uuid ='%s' AND location_id IS NULL",
-            self.db_table, contract)
-        if ip then
-            location_id = self:_get_location_id(contract, ip)
-            if location_id then
-                query = string.format("SELECT * FROM %s WHERE uuid ='%s' AND location_id = %d",
-                    self.db_table, contract, location_id)
-            end
-        end
-        local cur = con:execute(query)
-        local defaults
-        local keys
-        local result = {}
-        local row = cur:fetch({}, "a")
-        local xavp
-
-        keys, defaults = self:_defaults(level)
-
-        if row then
-            while row do
-                table.insert(result, row)
-                utable.add(keys, row.attribute)
-                defaults[row.attribute] = nil
-                row = cur:fetch({}, "a")
-            end
-        else
-            KSR.log("dbg", string.format("no results for query:%s", query))
-        end
-        cur:close()
-
-        xavp = self:xavp(level, result)
-        for k,v in pairs(defaults) do
-            xavp(k, v)
-        end
-
-        xavp("location_id", location_id)
-
-        return keys
-    end
-
-    function NGCPContractPrefs:xavp(level, l)
-        if level ~= 'caller' and level ~= 'callee' then
-            error(string.format("unknown level:%s. It has to be [caller|callee]", tostring(level)))
-        end
-        return NGCPXAvp:new(level,'contract_prefs', l)
-    end
-
-    function NGCPContractPrefs:clean(vtype)
-        if not vtype then
-            NGCPContractPrefs:xavp('callee'):clean()
-            NGCPContractPrefs:xavp('caller'):clean()
-        else
-            NGCPContractPrefs:xavp(vtype):clean()
+function NGCPContractPrefs:_load(level, contract, ip)
+    local con = self.config:getDBConnection()
+    local location_id = nil
+    local query = self.query:format(self.db_table, contract)
+    if ip then
+        location_id = self:_get_location_id(con, contract, ip)
+        if location_id then
+            query = string.format("SELECT * FROM %s WHERE uuid ='%s' AND location_id = %d",
+                self.db_table, contract, location_id)
         end
     end
+    local cur = assert(con:execute(query))
+    local keys = self:_set_xavp(level, cur, query)
+    local xavp = self:xavp(level)
+    xavp("location_id", location_id)
+
+    return keys
+end
+
 -- class
 return NGCPContractPrefs
