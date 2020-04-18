@@ -17,9 +17,27 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require('luaunit')
+local lu = require('luaunit')
 local NGCPPrefs = require 'ngcp.pref'
+-- luacheck: globals KSR
+local ksrMock = require 'mocks.ksr'
+KSR = ksrMock.new()
 
 -- luacheck: ignore TestNGCPPrefs
 TestNGCPPrefs = {} --class
+
+    function TestNGCPPrefs:tearDown()
+        KSR.pv.vars = {}
+    end
+
+    function TestNGCPPrefs:test_check_level()
+        lu.assertTrue(NGCPPrefs:check_level("caller"))
+        lu.assertTrue(NGCPPrefs:check_level("callee"))
+        lu.assertFalse(NGCPPrefs:check_level("what"))
+    end
+
+    function TestNGCPPrefs:test_xavp_wrong_level()
+        local pref = NGCPPrefs:create()
+        lu.assertErrorMsgContains("unknown level", pref.xavp, pref, 'what')
+    end
 -- class TestNGCP

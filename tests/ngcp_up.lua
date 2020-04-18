@@ -81,8 +81,18 @@ TestNGCPUserPrefs = {} --class
     end
 
     function TestNGCPUserPrefs:test_init()
-        --print("TestNGCPUserPrefs:test_init")
+        assertEquals(self.d.group, 'usr_prefs')
+        assertNotNil(self.d.query)
+        assertNotNil(self.d.config)
+        assertEquals(self.d.__class__, 'NGCPUserPrefs')
         assertEquals(self.d.db_table, "usr_preferences")
+    end
+
+    function TestNGCPUserPrefs:test_query_format()
+        local query = self.d.query:format(self.d.db_table, "uuid")
+        assertEquals( query,
+            "SELECT * FROM usr_preferences WHERE uuid ='uuid' ORDER BY id DESC"
+        )
     end
 
     function TestNGCPUserPrefs:get_defaults(level, set)
@@ -233,6 +243,8 @@ TestNGCPUserPrefs = {} --class
         local caller_xavp = NGCPUserPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(tostring(self.d), 'caller_usr_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_usr_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n')
+        local expected = 'caller_usr_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_usr_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n'
+        assertEquals(self.d:__tostring(), expected)
+        assertEquals(tostring(self.d), expected)
     end
 -- class TestNGCPUserPrefs
