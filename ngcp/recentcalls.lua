@@ -1,5 +1,5 @@
 --
--- Copyright 2015 SipWise Team <development@sipwise.com>
+-- Copyright 2015-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ NGCPRecentCalls_MT.__tostring = function (t)
     return string.format("config:%s central:%s",
         utable.tostring(t.config), utable.tostring(t.central))
 end
-
+-- luacheck: globals KSR
     function NGCPRecentCalls.new()
         local t = NGCPRecentCalls.init();
         setmetatable( t, NGCPRecentCalls_MT )
@@ -64,7 +64,7 @@ end
     function NGCPRecentCalls._connect(config)
         local client = redis.connect(config.host,config.port)
         client:select(config.db)
-        KSR.log("info", string.format("connected to redis server %s:%d at %s\n",
+        KSR.info(string.format("connected to redis server %s:%d at %s\n",
             config.host, config.port, config.db))
         return client
     end
@@ -87,14 +87,14 @@ end
         if res then
             self.central:expire(key, self.config.expire)
         end
-        KSR.log("info", string.format("central:hset[%s]=>[%s] callid: %s uuid: %s " ..
-            "start_time: %s duration: %d caller: %s callee: %s source: %s expire: %d\n",
-                                    key, tostring(res),
-                                    callid, uuid,
-                                    start_time, duration,
-                                    caller, callee,
-                                    source,
-                                    self.config.expire))
+        local msg = "central:hset[%s]=>[%s] callid: %s uuid: %s " ..
+            "start_time: %s duration: %d caller: %s callee: %s source: %s expire: %d\n"
+        KSR.info(msg:format(key, tostring(res),
+                            callid, uuid,
+                            start_time, duration,
+                            caller, callee,
+                            source,
+                            self.config.expire))
         return res
     end
 
@@ -107,10 +107,10 @@ end
         if res then
             self.central:expire(key, self.config.out_expire)
         end
-        KSR.log("info", string.format("central:hset[%s]=>[%s] %s: %s expire: %d\n",
-                                    key, tostring(res),
-                                    element, tostring(value),
-                                    self.config.out_expire))
+        KSR.info(string.format("central:hset[%s]=>[%s] %s: %s expire: %d\n",
+                            key, tostring(res),
+                            element, tostring(value),
+                            self.config.out_expire))
         return res
     end
 
@@ -121,7 +121,7 @@ end
 
         local res = self.central:hgetall(key)
         if res then
-            KSR.log("info", string.format("central:hget[%s]=>[%s]\n",
+            KSR.info(string.format("central:hget[%s]=>[%s]\n",
                                     key, tostring(res[element])))
 
             return res[element]
@@ -136,7 +136,7 @@ end
         end
 
         self.central:del(key)
-        KSR.log("info", string.format("central:del[%s] removed\n", key));
+        KSR.info(string.format("central:del[%s] removed\n", key));
 
         return 0
     end

@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2015 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ local NGCPXAvp = {
 local NGCPXAvp_MT = {
     __index = NGCPXAvp
 }
+-- luacheck: globals KSR
     function NGCPXAvp:new(level,group,l)
         local t = NGCPXAvp.init(level,group,l)
         NGCPXAvp_MT.__call = function(s, key, value)
@@ -34,16 +35,15 @@ local NGCPXAvp_MT = {
                 error("key is empty")
             end
             local id = string.format("$xavp(%s[0]=>%s)", s.name, key)
-            --print(string.format("id:%s", id))
             if not value then
                 return KSR.pv.get(id)
             elseif type(value) == "number" then
                 utable.add(s.keys, key)
-                --sr.log("dbg", string.format("seti: [%s]:%d", id, value))
+                --KSR.dbg(string.format("seti: [%s]:%d\n", id, value))
                 KSR.pv.seti(id, value)
             elseif type(value) == "string" then
                 utable.add(s.keys, key)
-                --sr.log("dbg", string.format("sets: [%s]:%s", id, value))
+                --KSR.dbg(string.format("sets: [%s]:%s\n", id, value))
                 KSR.pv.sets(id, value)
             elseif type(value) == "table" then
                 utable.add(s.keys, key)
@@ -68,7 +68,7 @@ local NGCPXAvp_MT = {
             if ll then
                 output = utable.tostring(ll)
             end
-            KSR.log("dbg", string.format("output:%s", output))
+            KSR.dbg(string.format("output:%s\n", output))
             return output
         end
         setmetatable( t, NGCPXAvp_MT )
@@ -100,7 +100,7 @@ local NGCPXAvp_MT = {
             vtype = tonumber(vtype)
         end
         if vtype == 0 then
-            KSR.log("dbg",string.format("sr.pv.sets->%s:%s", id, value))
+            KSR.dbg(string.format("KSR.pv.sets->%s:%s\n", id, value))
             if type(value) == 'number' then
                 value = tostring(value)
             end
@@ -111,7 +111,7 @@ local NGCPXAvp_MT = {
             end
             KSR.pv.seti(id, value)
         else
-            KSR.log("err",string.format("can't set value:%s of type:%s",
+            KSR.err(string.format("can't set value:%s of type:%s\n",
                 tostring(value), tostring(vtype)))
         end
         if value and id then
@@ -120,9 +120,9 @@ local NGCPXAvp_MT = {
                 if type(check) == 'table' then
                     utable.tostring(check)
                 end
-	        else
+            else
                 --error(string.format("%s:nil", id))
-                KSR.log("err", string.format("%s:nil", id))
+                KSR.err(string.format("%s:nil\n", id))
             end
         end
     end
@@ -131,7 +131,8 @@ local NGCPXAvp_MT = {
         local name = string.format("$xavp(%s=>dummy)", self.name)
         if not KSR.pv.get(name) then
             NGCPXAvp._setvalue(name, 0, self.level)
-            KSR.log("dbg",string.format("%s created with dummy value:%s", name, self.level))
+            KSR.dbg(string.format("%s created with dummy value:%s\n",
+                name, self.level))
         end
         for i=1,#l do
             name = string.format("$xavp(%s[0]=>%s)", tostring(self.name), tostring(l[i].attribute))

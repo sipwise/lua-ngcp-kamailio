@@ -1,5 +1,5 @@
 --
--- Copyright 2015 SipWise Team <development@sipwise.com>
+-- Copyright 2015-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ NGCPDlgList_MT.__tostring = function (t)
         utable.tostring(t.config), utable.tostring(t.central),
         utable.tostring(t.pair));
 end
-
+-- luacheck: globals KSR
     function NGCPDlgList.new()
         local t = NGCPDlgList.init();
         setmetatable( t, NGCPDlgList_MT );
@@ -71,7 +71,7 @@ end
     local function _connect(config)
         local client = redis.connect(config.host,config.port);
         client:select(config.db);
-        KSR.log("dbg", string.format("connected to redis server %s:%d at %s\n",
+        KSR.dbg(string.format("connected to redis server %s:%d at %s\n",
             config.host, config.port, config.db));
         return client;
     end
@@ -81,9 +81,9 @@ end
         local num = self.central:llen(key);
         if num == 0 then
             self.central:del(key);
-            KSR.log("dbg", string.format("central[%s] is empty. Removed\n", key));
+            KSR.dbg(string.format("central[%s] is empty. Removed\n", key));
         else
-            KSR.log("dbg", string.format("central:lrem[%s]=>[%s]\n", key, tostring(num)));
+            KSR.dbg(string.format("central:lrem[%s]=>[%s]\n", key, tostring(num)));
         end
         return num;
     end
@@ -113,15 +113,15 @@ end
             self.central = _connect(self.config.central);
         end
         local pos = self.central:rpush(key, callid);
-        KSR.log("dbg", string.format("central:rpush[%s]=>[%s] %s\n", key, callid, tostring(pos)));
+        KSR.dbg(string.format("central:rpush[%s]=>[%s] %s\n", key, callid, tostring(pos)));
         if not _test_connection(self.pair) then
             self.pair = _connect(self.config.pair);
         end
         if self.config.check_pair_dup and self:is_in_set(callid, key) then
-            KSR.log("warn", string.format("pair:check_pair_dup[%s]=>[%s] already there!\n", callid, key));
+            KSR.warn(string.format("pair:check_pair_dup[%s]=>[%s] already there!\n", callid, key));
         end
         pos = self.pair:lpush("list:"..callid, key);
-        KSR.log("dbg", string.format("pair:lpush[list:%s]=>[%s] %s\n", callid, key, tostring(pos)));
+        KSR.dbg(string.format("pair:lpush[list:%s]=>[%s] %s\n", callid, key, tostring(pos)));
     end
 
     function NGCPDlgList:del(callid, key)
@@ -130,10 +130,10 @@ end
         end
         local num = self.pair:lrem("list:"..callid, 0, key);
         if num == 0 then
-            KSR.log("dbg", string.format("pair:lrem[list:%s] no such key %s found in list", callid, key));
+            KSR.dbg(string.format("pair:lrem[list:%s] no such key %s found in list\n", callid, key));
             return false;
         end
-        KSR.log("dbg", string.format("pair:lrem[%s]=>[%s] %d\n", callid, key, num));
+        KSR.dbg(string.format("pair:lrem[%s]=>[%s] %d\n", callid, key, num));
         if not _test_connection(self.central) then
             self.central = _connect(self.config.central);
         end
@@ -154,7 +154,7 @@ end
         end
         while key do
             self:_del(key, callid);
-            KSR.log("dbg", string.format("pair:lpop[%s]=>[%s]\n", callid, key));
+            KSR.dbg(string.format("pair:lpop[%s]=>[%s]\n", callid, key));
             key = self.pair:lpop("list:"..callid);
         end
     end

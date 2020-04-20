@@ -1,5 +1,5 @@
 --
--- Copyright 2016 SipWise Team <development@sipwise.com>
+-- Copyright 2016-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ NGCPLoop_MT.__tostring = function (t)
     return string.format("config:%s",
         utable.tostring(t.config));
 end
-
+-- luacheck: globals KSR
     function NGCPLoop.new()
         local t = NGCPLoop.init();
         setmetatable( t, NGCPLoop_MT );
@@ -63,7 +63,7 @@ end
     local function _connect(config)
         local client = redis.connect(config.host,config.port);
         client:select(config.db);
-        KSR.log("dbg", string.format("connected to redis server %s:%d at %s\n",
+        KSR.dbg(string.format("connected to redis server %s:%d at %s\n",
             config.host, config.port, config.db));
         return client;
     end
@@ -72,12 +72,14 @@ end
         if not _test_connection(self.client) then
             self.client = _connect(self.config);
         end
-        local key = string.format("%s;%s;%s", tostring(fu), tostring(tu), tostring(ru));
+        local key = string.format("%s;%s;%s",
+            tostring(fu), tostring(tu), tostring(ru));
         local res = self.client:incr(key);
         if res == 1 then
             self.client:expire(key, self.config.expire);
         end
-        KSR.log("dbg", string.format("[%s]=>[%s] expires:%s\n", key, tostring(res), tostring(self.config.expires)));
+        KSR.dbg(string.format("[%s]=>[%s] expires:%s\n",
+            key, tostring(res), tostring(self.config.expires)));
         return res;
     end
 

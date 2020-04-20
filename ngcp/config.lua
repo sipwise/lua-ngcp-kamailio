@@ -1,5 +1,5 @@
 --
--- Copyright 2015 SipWise Team <development@sipwise.com>
+-- Copyright 2015-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ local NGCPConfig = {
      __class__ = 'NGCPConfig'
 }
 local NGCPConfig_MT = { __index = NGCPConfig }
-
+-- luacheck: globals KSR
     function NGCPConfig:new()
         local t = {
             db_host = "127.0.0.1",
@@ -97,11 +97,11 @@ local NGCPConfig_MT = { __index = NGCPConfig }
             local ok,_ = pcall(check_connection, self.con)
             if not ok then
                 self.con = nil
-                KSR.log("dbg", "lost database connection. Reconnecting")
+                KSR.dbg("lost database connection. Reconnecting\n")
             end
         end
         if not self.con then
-            KSR.log("dbg","connecting to mysql")
+            KSR.dbg("connecting to mysql\n")
             self.con = self.env:connect( self.db_database,
                 self.db_username, self.db_pass, self.db_host, self.db_port)
         end
