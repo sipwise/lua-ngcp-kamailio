@@ -34,7 +34,7 @@ function NGCPPrefs.__tostring(self)
     end
     return output
 end
-
+-- luacheck: globals KSR
 function NGCPPrefs:init()
     for _,v in pairs(self.levels) do
         NGCPXAvp.init(v, self.group)
@@ -49,8 +49,8 @@ function NGCPPrefs:_defaults()
     local group = self.group:gsub('_prefs','')
     local defaults = self.config:get_defaults(group)
     local keys = {}
-
-    KSR.dbg(string.format("defaults[%s]:%s", group, utable.tostring(defaults)))
+    local msg = "defaults[%s]:%s\n"
+    KSR.dbg(msg:format(group, utable.tostring(defaults)))
 
     for k,_ in pairs(defaults) do
         table.insert(keys, k)
@@ -66,7 +66,7 @@ function NGCPPrefs:_set_xavp(level, cur, query)
 
     if utable.size(row) > 0 then
         while utable.size(row) > 0 do
-            KSR.dbg(string.format("result:%s row:%s",
+            KSR.dbg(string.format("result:%s row:%s\n",
                 utable.tostring(result), utable.tostring(row)))
             table.insert(result, row)
             utable.add(keys, row.attribute)
@@ -74,13 +74,13 @@ function NGCPPrefs:_set_xavp(level, cur, query)
             row = cur:fetch({}, "a")
         end
     else
-        KSR.dbg(string.format("no results for query:%s", query))
+        KSR.dbg(string.format("no results for query:%s\n", query))
     end
     cur:close()
 
     local xavp = self:xavp(level, result)
     for k,v in pairs(defaults) do
-        KSR.dbg(string.format("setting default[%s]:%s", k, tostring(v)))
+        KSR.dbg(string.format("setting default[%s]:%s\n", k, tostring(v)))
         xavp(k, v)
     end
     return keys

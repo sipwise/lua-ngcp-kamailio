@@ -1,5 +1,5 @@
 --
--- Copyright 2014 SipWise Team <development@sipwise.com>
+-- Copyright 2014-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ NGCPDlgCounters_MT.__tostring = function (t)
         utable.tostring(t.config), utable.tostring(t.central),
         utable.tostring(t.pair));
 end
-
+-- luacheck: globals KSR
     function NGCPDlgCounters.new()
         local t = NGCPDlgCounters.init();
         setmetatable( t, NGCPDlgCounters_MT );
@@ -72,7 +72,7 @@ end
     function NGCPDlgCounters._connect(config)
         local client = redis.connect(config.host,config.port);
         client:select(config.db);
-        KSR.log("dbg", string.format("connected to redis server %s:%d at %s\n",
+        KSR.dbg(string.format("connected to redis server %s:%d at %s\n",
             config.host, config.port, config.db));
         return client;
     end
@@ -81,12 +81,14 @@ end
         local res = self.central:decr(key);
         if res == 0 then
             self.central:del(key);
-            KSR.log("dbg", string.format("central:del[%s] counter is 0\n", key));
+            KSR.dbg(string.format("central:del[%s] counter is 0\n", key));
         elseif res < 0 and not self.config.allow_negative then
             self.central:del(key);
-            KSR.log("warn", string.format("central:del[%s] counter was %s\n", key, tostring(res)));
+            KSR.warn(string.format("central:del[%s] counter was %s\n",
+                key, tostring(res)));
         else
-            KSR.log("dbg", string.format("central:decr[%s]=>[%s]\n", key, tostring(res)));
+            KSR.dbg(string.format("central:decr[%s]=>[%s]\n",
+                key, tostring(res)));
         end
         return res;
     end
@@ -116,15 +118,17 @@ end
             self.central = self._connect(self.config.central);
         end
         local res = self.central:incr(key);
-        KSR.log("dbg", string.format("central:incr[%s]=>%s\n", key, tostring(res)));
+        KSR.dbg(string.format("central:incr[%s]=>%s\n", key, tostring(res)));
         if not self._test_connection(self.pair) then
             self.pair = self._connect(self.config.pair);
         end
         if self.config.check_pair_dup and self:is_in_set(callid, key) then
-            KSR.log("warn", string.format("pair:check_pair_dup[%s]=>[%s] already there!\n", callid, key));
+            local msg = "pair:check_pair_dup[%s]=>[%s] already there!\n";
+            KSR.warn(msg:format(callid, key));
         end
         local pos = self.pair:lpush(callid, key);
-        KSR.log("dbg", string.format("pair:lpush[%s]=>[%s] %s\n", callid, key, tostring(pos)));
+        KSR.dbg(string.format("pair:lpush[%s]=>[%s] %s\n",
+            callid, key, tostring(pos)));
     end
 
     function NGCPDlgCounters:del_key(callid, key)
@@ -133,11 +137,12 @@ end
         end
         local num = self.pair:lrem(callid, 1, key);
         if num == 0 then
-            KSR.log("dbg", string.format("pair:lrem[%s]=>[%s] no such key found in list, skipping decrement",
-                callid, key));
+            local msg = "pair:lrem[%s]=>[%s] no such key found in list, " ..
+                "skipping decrement\n";
+            KSR.dbg(msg:format(callid, key));
             return false;
         end
-        KSR.log("dbg", string.format("pair:lrem[%s]=>[%s] %d\n", callid, key, num));
+        KSR.dbg(string.format("pair:lrem[%s]=>[%s] %d\n", callid, key, num));
         if not self._test_connection(self.central) then
             self.central = self._connect(self.config.central);
         end
@@ -157,7 +162,7 @@ end
         end
         while key do
             self:_decr(key);
-            KSR.log("dbg", string.format("pair:lpop[%s]=>[%s]\n", callid, key));
+            KSR.dbg(string.format("pair:lpop[%s]=>[%s]\n", callid, key));
             key = self.pair:lpop(callid);
         end
     end
@@ -167,7 +172,7 @@ end
             self.central = self._connect(self.config.central);
         end
         local res = self.central:get(key);
-        KSR.log("dbg", string.format("central:get[%s]=>%s\n", key, tostring(res)));
+        KSR.dbg(string.format("central:get[%s]=>%s\n", key, tostring(res)));
         return res;
     end
 -- class

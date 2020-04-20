@@ -123,7 +123,7 @@ function NGCPRealPrefs:_usr_load(level, keys)
         if value then
             real_values[v] = value
         else
-            KSR.err(string.format("key:%s not in user, profile or domain", v))
+            KSR.err(string.format("key:%s not in user, profile or domain\n", v))
         end
     end
     local real_keys = {}
