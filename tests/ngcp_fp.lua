@@ -1,5 +1,5 @@
 --
--- Copyright 2013 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require('luaunit')
+local lu = require('luaunit')
 local lemock = require('lemock')
 local FPFetch = require 'tests_v.fp_vars'
 
@@ -68,21 +68,21 @@ TestNGCPFaxPrefs = {} --class
 
     function TestNGCPFaxPrefs:test_init()
         --print("TestNGCPFaxPrefs:test_init")
-        assertEquals(self.d.db_table, "provisioning.voip_fax_preferences")
+        lu.assertEquals(self.d.db_table, "provisioning.voip_fax_preferences")
     end
 
     function TestNGCPFaxPrefs:test_caller_load_empty()
-        assertEvalToTrue(self.d.config)
-        assertEquals(self.d:caller_load(), {})
+        lu.assertNotNil(self.d.config)
+        lu.assertEquals(self.d:caller_load(), {})
     end
 
     function TestNGCPFaxPrefs:test_callee_load_empty()
-        assertEvalToTrue(self.d.config)
-        assertEquals(self.d:callee_load(), {})
+        lu.assertNotNil(self.d.config)
+        lu.assertEquals(self.d:callee_load(), {})
     end
 
     function TestNGCPFaxPrefs:test_caller_load()
-        assertEvalToTrue(self.d.config)
+        lu.assertNotNil(self.d.config)
         con:execute("SELECT fp.* FROM provisioning.voip_fax_preferences fp, provisioning.voip_subscribers s WHERE s.uuid = 'ah736f72-21d1-4ea6-a3ea-4d7f56b3887c' AND fp.subscriber_id = s.id")  ;mc :returns(self.cur)
         self.cur:getcolnames()        ;mc :returns(fp_vars:val("fp_keys"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(fp_vars:val("fp_1"))
@@ -93,17 +93,17 @@ TestNGCPFaxPrefs = {} --class
         mc:verify()
 
         for k,v in pairs(fp_vars:val("fp_keys")) do
-            assertEquals(keys[k], v)
+            lu.assertEquals(keys[k], v)
         end
 
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"), "caller")
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>active)"), 1)
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>t38)"), 1)
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>ecm)"), 1)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"), "caller")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>active)"), 1)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>t38)"), 1)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>ecm)"), 1)
     end
 
     function TestNGCPFaxPrefs:test_callee_load()
-        assertEvalToTrue(self.d.config)
+        lu.assertNotNil(self.d.config)
         con:execute("SELECT fp.* FROM provisioning.voip_fax_preferences fp, provisioning.voip_subscribers s WHERE s.uuid = 'ah736f72-21d1-4ea6-a3ea-4d7f56b3887c' AND fp.subscriber_id = s.id") ;mc :returns(self.cur)
         self.cur:getcolnames()        ;mc :returns(fp_vars:val("fp_keys"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(fp_vars:val("fp_2"))
@@ -114,27 +114,27 @@ TestNGCPFaxPrefs = {} --class
         mc:verify()
 
         for k,v in pairs(fp_vars:val("fp_keys")) do
-            assertEquals(keys[k], v)
+            lu.assertEquals(keys[k], v)
         end
 
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"), "callee")
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>active)"), 1)
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>t38)"), 0)
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>ecm)"), 0)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"), "callee")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>active)"), 1)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>t38)"), 0)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>ecm)"), 0)
     end
 
     function TestNGCPFaxPrefs:test_clean()
         local xavp = NGCPFaxPrefs:xavp('callee')
         xavp("testid",1)
         xavp("foo","foo")
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>testid)"),1)
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>foo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"),"caller")
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>testid)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>foo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"),"caller")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
         self.d:clean()
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"),"caller")
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
-        assertNil(KSR.pv.get("$xavp(fax)"))
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"),"caller")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
+        lu.assertNil(KSR.pv.get("$xavp(fax)"))
     end
 
     function TestNGCPFaxPrefs:test_callee_clean()
@@ -144,19 +144,19 @@ TestNGCPFaxPrefs = {} --class
         local caller_xavp = NGCPFaxPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>testid)"),1)
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>foo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"),"caller")
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>other)"),1)
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>otherfoo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>testid)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>foo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"),"caller")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>other)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>otherfoo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
         self.d:clean('callee')
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"),'caller')
-        assertNil(KSR.pv.get("$xavp(callee_fax_prefs=>testid)"))
-        assertNil(KSR.pv.get("$xavp(callee_fax_prefs=>foo)"))
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>other)"),1)
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>otherfoo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"),'caller')
+        lu.assertNil(KSR.pv.get("$xavp(callee_fax_prefs=>testid)"))
+        lu.assertNil(KSR.pv.get("$xavp(callee_fax_prefs=>foo)"))
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>other)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>otherfoo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPFaxPrefs:test_caller_clean()
@@ -166,19 +166,19 @@ TestNGCPFaxPrefs = {} --class
         local caller_xavp = NGCPFaxPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>testid)"),1)
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>foo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"),"caller")
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>other)"),1)
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>otherfoo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>testid)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>foo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"),"caller")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>other)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>otherfoo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
         self.d:clean('caller')
-        assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"),"caller")
-        assertNil(KSR.pv.get("$xavp(caller_fax_prefs=>other)"))
-        assertNil(KSR.pv.get("$xavp(caller_fax_prefs=>otherfoo)"))
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>testid)"),1)
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>foo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"),"caller")
+        lu.assertNil(KSR.pv.get("$xavp(caller_fax_prefs=>other)"))
+        lu.assertNil(KSR.pv.get("$xavp(caller_fax_prefs=>otherfoo)"))
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>testid)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>foo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPFaxPrefs:test_tostring()
@@ -188,7 +188,7 @@ TestNGCPFaxPrefs = {} --class
         local caller_xavp = NGCPFaxPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(tostring(self.d), 'caller_fax_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_fax_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n')
+        lu.assertEquals(tostring(self.d), 'caller_fax_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_fax_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n')
     end
 -- class TestNGCPFaxPrefs
 --EOF

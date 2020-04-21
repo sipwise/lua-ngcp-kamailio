@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2015 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require('luaunit')
+local lu = require('luaunit')
 local utils = require 'ngcp.utils'
 
 -- luacheck: ignore TestUtils
@@ -37,170 +37,170 @@ TestUtils = {}
     end
 
     function TestUtils:test_table_deepcopy()
-        assertNotIs(utils.table.deepcopy(self.simple_hash), self.simple_hash)
+        lu.assertNotIs(utils.table.deepcopy(self.simple_hash), self.simple_hash)
         -- if the parameter is not a table... it has te be the same
-        assertIs(utils.table.deepcopy("hola"), "hola")
+        lu.assertIs(utils.table.deepcopy("hola"), "hola")
     end
 
     function TestUtils:test_table_contains()
-        assertTrue(utils.table.contains(self.simple_hash, 3))
-        assertFalse(utils.table.contains(self.simple_hash, 4))
-        assertFalse(utils.table.contains(nil))
-        assertError(utils.table.contains, "hola",1)
+        lu.assertTrue(utils.table.contains(self.simple_hash, 3))
+        lu.assertFalse(utils.table.contains(self.simple_hash, 4))
+        lu.assertFalse(utils.table.contains(nil))
+        lu.assertError(utils.table.contains, "hola",1)
     end
 
     function TestUtils:test_table_add()
-        assertEquals(self.simple_list, {1,2,3})
+        lu.assertEquals(self.simple_list, {1,2,3})
         utils.table.add(self.simple_list, 1)
-        assertEquals(self.simple_list, {1,2,3})
+        lu.assertEquals(self.simple_list, {1,2,3})
         utils.table.add(self.simple_list, 5)
-        assertEquals(self.simple_list, {1,2,3,5})
+        lu.assertEquals(self.simple_list, {1,2,3,5})
         utils.table.add(self.simple_list, 4)
-        assertEquals(self.simple_list, {1,2,3,5,4})
+        lu.assertEquals(self.simple_list, {1,2,3,5,4})
     end
 
     function TestUtils:test_table_del()
-        assertEquals(self.simple_list, {1,2,3})
+        lu.assertEquals(self.simple_list, {1,2,3})
         utils.table.del(self.simple_list, 1)
-        assertEquals(self.simple_list, {2,3})
+        lu.assertEquals(self.simple_list, {2,3})
         utils.table.del(self.simple_list, 3)
-        assertEquals(self.simple_list, {2})
+        lu.assertEquals(self.simple_list, {2})
         utils.table.del(self.simple_list, 2)
-        assertEquals(self.simple_list, {})
+        lu.assertEquals(self.simple_list, {})
     end
 
     function TestUtils:test_table_del_multy()
-        assertEquals(self.simple_list, {1,2,3})
+        lu.assertEquals(self.simple_list, {1,2,3})
         table.insert(self.simple_list, 2)
-        assertEquals(self.simple_list, {1,2,3,2})
+        lu.assertEquals(self.simple_list, {1,2,3,2})
         utils.table.del(self.simple_list, 1)
-        assertEquals(self.simple_list, {2,3,2})
+        lu.assertEquals(self.simple_list, {2,3,2})
         utils.table.del(self.simple_list, 2)
-        assertEquals(self.simple_list, {3})
+        lu.assertEquals(self.simple_list, {3})
         utils.table.del(self.simple_list, 3)
-        assertEquals(self.simple_list, {})
+        lu.assertEquals(self.simple_list, {})
     end
 
     function TestUtils:test_table_del_empty()
         local t = {}
         utils.table.del(t, 4)
-        assertEquals(t, {})
+        lu.assertEquals(t, {})
     end
 
     function TestUtils:test_table_size()
         local t = utils.table.size(nil)
-        assertEquals(t, 0)
+        lu.assertEquals(t, 0)
         t = utils.table.size({1,2})
-        assertEquals(t, 2)
+        lu.assertEquals(t, 2)
         t = utils.table.size({})
-        assertEquals(t, 0)
+        lu.assertEquals(t, 0)
         t = utils.table.size({hola={1,2},adios=2})
-        assertEquals(t, 2)
+        lu.assertEquals(t, 2)
     end
 
     function TestUtils:test_table_shuffle()
-        assertEquals(self.simple_list, {1,2,3})
+        lu.assertEquals(self.simple_list, {1,2,3})
         utils.table.add(self.simple_list, 4)
         utils.table.add(self.simple_list, 5)
         utils.table.add(self.simple_list, 6)
         local tmp = utils.table.shuffle(self.simple_list)
-        assertItemsEquals(self.simple_list, tmp)
-        assertNotEquals(self.simple_list, tmp)
+        lu.assertItemsEquals(self.simple_list, tmp)
+        lu.assertNotEquals(self.simple_list, tmp)
         local tmp2 = utils.table.shuffle(self.simple_list)
-        assertItemsEquals(self.simple_list, tmp2)
+        lu.assertItemsEquals(self.simple_list, tmp2)
         --print(table.tostring(tmp))
         --print(table.tostring(tmp2))
-        assertNotEquals(tmp2, tmp)
+        lu.assertNotEquals(tmp2, tmp)
     end
 
     function TestUtils:test_table_shift()
-        assertEquals(self.simple_list, {1,2,3})
+        lu.assertEquals(self.simple_list, {1,2,3})
         utils.table.add(self.simple_list, 4)
         utils.table.add(self.simple_list, 5)
         utils.table.add(self.simple_list, 6)
         utils.table.shift(self.simple_list, 2)
-        assertEquals(self.simple_list, {3,4,5,6,1,2})
+        lu.assertEquals(self.simple_list, {3,4,5,6,1,2})
     end
 
     function TestUtils:test_table_shift2()
         local tmp = utils.table.deepcopy(self.simple_list)
-        assertEquals(tmp, {1,2,3})
+        lu.assertEquals(tmp, {1,2,3})
         utils.table.shift(tmp, 0)
-        assertEquals(tmp, {1,2,3})
+        lu.assertEquals(tmp, {1,2,3})
         tmp = utils.table.deepcopy(self.simple_list)
         utils.table.shift(tmp, 1)
-        assertEquals(tmp, {2,3,1})
+        lu.assertEquals(tmp, {2,3,1})
         tmp = utils.table.deepcopy(self.simple_list)
         utils.table.shift(tmp, 2)
-        assertEquals(tmp, {3,1,2})
+        lu.assertEquals(tmp, {3,1,2})
         tmp = utils.table.deepcopy(self.simple_list)
         utils.table.shift(tmp, 3)
-        assertEquals(tmp, {1,2,3})
+        lu.assertEquals(tmp, {1,2,3})
         tmp = utils.table.deepcopy(self.simple_list)
         utils.table.shift(tmp, 4)
-        assertEquals(tmp, {2,3,1})
+        lu.assertEquals(tmp, {2,3,1})
     end
 
     function TestUtils:test_table_tostring()
-        assertError(utils.table.tostring, "nil")
-        assertEquals(utils.table.tostring(self.simple_list), "{1,2,3}")
-        assertEvalToTrue(utils.table.tostring(self.simple_hash))
+        lu.assertError(utils.table.tostring, "nil")
+        lu.assertEquals(utils.table.tostring(self.simple_list), "{1,2,3}")
+        lu.assertEvalToTrue(utils.table.tostring(self.simple_hash))
         --print(table.tostring(self.simple_hash) .. "\n")
-        assertEvalToTrue(utils.table.tostring(self.complex_hash))
+        lu.assertEvalToTrue(utils.table.tostring(self.complex_hash))
         --print(table.tostring(self.complex_hash))
     end
 
     function TestUtils:test_implode()
-        assertEquals(utils.implode(',', self.simple_list, "'"), "'1','2','3'")
-        assertError(utils.implode, nil, self.simple_list, "'")
-        assertError(utils.implode, ',', nil, "'")
+        lu.assertEquals(utils.implode(',', self.simple_list, "'"), "'1','2','3'")
+        lu.assertError(utils.implode, nil, self.simple_list, "'")
+        lu.assertError(utils.implode, ',', nil, "'")
     end
 
     function TestUtils:test_explode()
-        assertItemsEquals(utils.explode(',',"1,2,3"), {'1','2','3'})
-        assertItemsEquals(utils.explode('=>',"1=>2=>3"), {'1','2','3'})
+        lu.assertItemsEquals(utils.explode(',',"1,2,3"), {'1','2','3'})
+        lu.assertItemsEquals(utils.explode('=>',"1=>2=>3"), {'1','2','3'})
     end
 
     function TestUtils:test_string_explode_values()
-        assertError(utils.string.explode_values, nil)
-        assertItemsEquals(utils.string.explode_values(''), {})
-        assertItemsEquals(utils.string.explode_values('1'), {'1'})
-        assertItemsEquals(utils.string.explode_values('123'), {'1','12','123'})
+        lu.assertError(utils.string.explode_values, nil)
+        lu.assertItemsEquals(utils.string.explode_values(''), {})
+        lu.assertItemsEquals(utils.string.explode_values('1'), {'1'})
+        lu.assertItemsEquals(utils.string.explode_values('123'), {'1','12','123'})
     end
 
     function TestUtils:test_starts()
-        assertError(utils.string.stats, nil, "g")
-        assertTrue(utils.string.starts("goga", "g"))
-        assertTrue(utils.string.starts("goga", "go"))
-        assertTrue(utils.string.starts("goga", "gog"))
-        assertTrue(utils.string.starts("goga", "goga"))
-        assertFalse(utils.string.starts("goga", "a"))
-        assertError(utils.string.starts, "goga", nil)
-        assertTrue(utils.string.starts("$goga", "$"))
-        assertTrue(utils.string.starts("(goga)", "("))
+        lu.assertError(utils.string.stats, nil, "g")
+        lu.assertTrue(utils.string.starts("goga", "g"))
+        lu.assertTrue(utils.string.starts("goga", "go"))
+        lu.assertTrue(utils.string.starts("goga", "gog"))
+        lu.assertTrue(utils.string.starts("goga", "goga"))
+        lu.assertFalse(utils.string.starts("goga", "a"))
+        lu.assertError(utils.string.starts, "goga", nil)
+        lu.assertTrue(utils.string.starts("$goga", "$"))
+        lu.assertTrue(utils.string.starts("(goga)", "("))
     end
 
     function TestUtils:test_ends()
-        assertError(utils.string.ends, nil, "g")
-        assertTrue(utils.string.ends("goga", "a"))
-        assertTrue(utils.string.ends("goga", "ga"))
-        assertTrue(utils.string.ends("goga", "oga"))
-        assertTrue(utils.string.ends("goga", "goga"))
-        assertFalse(utils.string.ends("goga", "f"))
-        assertError(utils.string.ends, "goga", nil)
+        lu.assertError(utils.string.ends, nil, "g")
+        lu.assertTrue(utils.string.ends("goga", "a"))
+        lu.assertTrue(utils.string.ends("goga", "ga"))
+        lu.assertTrue(utils.string.ends("goga", "oga"))
+        lu.assertTrue(utils.string.ends("goga", "goga"))
+        lu.assertFalse(utils.string.ends("goga", "f"))
+        lu.assertError(utils.string.ends, "goga", nil)
     end
 
     function TestUtils:test_table_merge()
-        assertEquals(self.simple_list, {1,2,3})
+        lu.assertEquals(self.simple_list, {1,2,3})
         utils.table.merge(self.simple_list, {1})
-        assertEquals(self.simple_list, {1,2,3})
+        lu.assertEquals(self.simple_list, {1,2,3})
         utils.table.merge(self.simple_list, {5})
-        assertEquals(self.simple_list, {1,2,3,5})
+        lu.assertEquals(self.simple_list, {1,2,3,5})
         utils.table.merge(self.simple_list, {5,4})
-        assertEquals(self.simple_list, {1,2,3,5,4})
+        lu.assertEquals(self.simple_list, {1,2,3,5,4})
         utils.table.merge(nil, nil)
         utils.table.merge(nil, {})
         local tmp = {}
         utils.table.merge(tmp, {1,2,3,5,4})
-        assertEquals(tmp, {1,2,3,5,4})
+        lu.assertEquals(tmp, {1,2,3,5,4})
     end

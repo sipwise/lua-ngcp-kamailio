@@ -1,5 +1,5 @@
 --
--- Copyright 2015 SipWise Team <development@sipwise.com>
+-- Copyright 2015-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require('luaunit')
+local lu = require('luaunit')
 local ksrMock = require 'mocks.ksr'
 local NGCPDlgVar = require 'ngcp.dlg_var'
 
@@ -33,27 +33,27 @@ TestNGCPDlgVar = {} --class
     end
 
     function TestNGCPDlgVar:test_dlg_var_id()
-        assertEquals(self.var.id, "$dlg_var(testid)")
+        lu.assertEquals(self.var.id, "$dlg_var(testid)")
     end
 
     function TestNGCPDlgVar:test_dlg_var_get()
         KSR.pv.sets("$dlg_var(testid)", "value")
-        assertEquals(self.var(), "value")
+        lu.assertEquals(self.var(), "value")
         KSR.pv.sets("$dlg_var(testid)", "1")
-        assertItemsEquals(self.var(), "1")
+        lu.assertItemsEquals(self.var(), "1")
     end
 
     function TestNGCPDlgVar:test_dlg_var_set()
         self.var(1)
-        assertEquals(self.var(),1)
+        lu.assertEquals(self.var(),1)
         self.var("a")
-        assertEquals(self.var(), "a")
+        lu.assertEquals(self.var(), "a")
     end
 
     function TestNGCPDlgVar:test_clean()
         self.var(1)
         self.var:clean()
-        assertNil(self.var())
+        lu.assertNil(self.var())
     end
 
     function TestNGCPDlgVar:test_log()
@@ -62,9 +62,9 @@ TestNGCPDlgVar = {} --class
 
     function TestNGCPDlgVar:test_tostring()
         self.var(1)
-        assertEquals(tostring(self.var), "$dlg_var(testid):1")
+        lu.assertEquals(tostring(self.var), "$dlg_var(testid):1")
         self.var("hola")
-        assertEquals(tostring(self.var), "$dlg_var(testid):hola")
+        lu.assertEquals(tostring(self.var), "$dlg_var(testid):hola")
     end
 -- class TestNGCPDlgVar
 --EOF

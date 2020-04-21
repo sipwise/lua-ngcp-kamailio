@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2015 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 
-require('luaunit')
+local lu = require('luaunit')
 local hdrMock = require 'mocks.hdr'
 
 -- luacheck: ignore TestHDRMock
@@ -33,36 +33,36 @@ TestHDRMock = {}
     end
 
     function TestHDRMock:test_is_header()
-        assertTrue(self.hdr._is_header("From: hi@there.com\r\n"))
-        assertFalse(self.hdr._is_header("From hi@there.com\r\n"))
-        assertFalse(self.hdr._is_header("From: hi@there.com\r"))
-        assertFalse(self.hdr._is_header("From : hi@there.com\n"))
-        assertFalse(self.hdr._is_header("From : hi@there.com\n\r"))
-        assertTrue(self.hdr._is_header("From: hi@there.com:8080\r\n"))
+        lu.assertTrue(self.hdr._is_header("From: hi@there.com\r\n"))
+        lu.assertFalse(self.hdr._is_header("From hi@there.com\r\n"))
+        lu.assertFalse(self.hdr._is_header("From: hi@there.com\r"))
+        lu.assertFalse(self.hdr._is_header("From : hi@there.com\n"))
+        lu.assertFalse(self.hdr._is_header("From : hi@there.com\n\r"))
+        lu.assertTrue(self.hdr._is_header("From: hi@there.com:8080\r\n"))
     end
 
     function TestHDRMock:test_append()
-        assertNil(self.hdr._get_header("From"))
+        lu.assertNil(self.hdr._get_header("From"))
         self.hdr.append("From: hi@there.com\r\n")
-        assertEquals(self.hdr.headers, {"From: hi@there.com\r\n"})
+        lu.assertEquals(self.hdr.headers, {"From: hi@there.com\r\n"})
         self.hdr.append("To: bye@there.com\r\n")
-        assertEquals(self.hdr.headers, {"From: hi@there.com\r\n", "To: bye@there.com\r\n"})
+        lu.assertEquals(self.hdr.headers, {"From: hi@there.com\r\n", "To: bye@there.com\r\n"})
     end
 
     function TestHDRMock:test_insert()
-        assertNil(self.hdr._get_header("From"))
+        lu.assertNil(self.hdr._get_header("From"))
         self.hdr.insert("From: hi@there.com\r\n")
-        assertEquals(self.hdr.headers, {"From: hi@there.com\r\n"})
+        lu.assertEquals(self.hdr.headers, {"From: hi@there.com\r\n"})
         self.hdr.insert("To: bye@there.com\r\n")
-        assertEquals(self.hdr.headers, {"To: bye@there.com\r\n", "From: hi@there.com\r\n"})
+        lu.assertEquals(self.hdr.headers, {"To: bye@there.com\r\n", "From: hi@there.com\r\n"})
     end
 
     function TestHDRMock:test_get_header()
         self:test_append()
-        assertEquals(self.hdr._get_header("From"), "hi@there.com")
+        lu.assertEquals(self.hdr._get_header("From"), "hi@there.com")
     end
 
     function TestHDRMock:test_hdr_get()
         self.hdr.insert("From: hola\r\n")
-        assertEquals(self.hdr.headers, {"From: hola\r\n"})
+        lu.assertEquals(self.hdr.headers, {"From: hola\r\n"})
     end

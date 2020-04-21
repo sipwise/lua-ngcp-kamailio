@@ -1,5 +1,5 @@
 --
--- Copyright 2014 SipWise Team <development@sipwise.com>
+-- Copyright 2014-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 
-require('luaunit')
+local lu = require('luaunit')
 local lemock = require('lemock')
 local ksrMock = require 'mocks.ksr'
 
@@ -37,7 +37,7 @@ TestNGCPAPIClient = {} --class
         local NGCPAPIClient = require 'ngcp.api_client'
 
         self.client = NGCPAPIClient.new()
-        assertEvalToTrue(self.client)
+        lu.assertNotNil(self.client)
 
         self.client.c = self.c;
         self.client.j = self.j;
@@ -81,8 +81,8 @@ TestNGCPAPIClient = {} --class
         local res = self.client:request(method, request)
         mc:verify()
 
-        assertEvalToTrue(res)
-        assertIs(self.client.c, self.c)
+        lu.assertNotNil(res)
+        lu.assertIs(self.client.c, self.c)
     end
 
 -- class TestNGCAPIClient

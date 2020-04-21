@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2016 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require('luaunit')
+local lu = require('luaunit')
 local lemock = require('lemock')
 local CPFetch = require 'tests_v.cp_vars'
 
@@ -69,21 +69,21 @@ TestNGCPContractPrefs = {} --class
 
     function TestNGCPContractPrefs:test_init()
         --print("TestNGCPContractPrefs:test_init")
-        assertEquals(self.d.db_table, "contract_preferences")
+        lu.assertEquals(self.d.db_table, "contract_preferences")
     end
 
     function TestNGCPContractPrefs:test_caller_load_empty()
-        assertEvalToTrue(self.d.config)
-        assertEquals(self.d:caller_load(), {})
+        lu.assertNotNil(self.d.config)
+        lu.assertEquals(self.d:caller_load(), {})
     end
 
     function TestNGCPContractPrefs:test_callee_load_empty()
-        assertEvalToTrue(self.d.config)
-        assertEquals(self.d:callee_load(), {})
+        lu.assertNotNil(self.d.config)
+        lu.assertEquals(self.d:callee_load(), {})
     end
 
     function TestNGCPContractPrefs:test_caller_load()
-        assertEvalToTrue(self.d.config)
+        lu.assertNotNil(self.d.config)
         con:execute("SELECT * FROM contract_preferences WHERE uuid ='1' AND location_id IS NULL")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(cp_vars:val("cp_1"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
@@ -93,13 +93,13 @@ TestNGCPContractPrefs = {} --class
         local keys = self.d:caller_load("1")
         mc:verify()
 
-        assertItemsEquals(keys, {"sst_enable"})
-        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>sst_enable)"),"no")
-        assertNil(KSR.pv.get("$xavp(callee_contract_prefs=>location_id)"))
+        lu.assertItemsEquals(keys, {"sst_enable"})
+        lu.assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>sst_enable)"),"no")
+        lu.assertNil(KSR.pv.get("$xavp(callee_contract_prefs=>location_id)"))
     end
 
     function TestNGCPContractPrefs:test_callee_load()
-        assertEvalToTrue(self.d.config)
+        lu.assertNotNil(self.d.config)
         local query = NGCPContractPrefs.query_location_id:format("2", "ipv4", "172.16.15.1", "ipv4", "172.16.15.1")
         con:execute(query)  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns({location_id = 1 })
@@ -113,23 +113,23 @@ TestNGCPContractPrefs = {} --class
         local keys = self.d:callee_load("2", '172.16.15.1')
         mc:verify()
 
-        assertItemsEquals(keys, {"sst_enable"})
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>sst_enable)"),"yes")
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>location_id)"),1)
+        lu.assertItemsEquals(keys, {"sst_enable"})
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>sst_enable)"),"yes")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>location_id)"),1)
     end
 
     function TestNGCPContractPrefs:test_clean()
         local xavp = NGCPContractPrefs:xavp('callee')
         xavp("testid",1)
         xavp("foo","foo")
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
         self.d:clean()
-        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
-        assertNil(KSR.pv.get("$xavp(prof)"))
+        lu.assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
+        lu.assertNil(KSR.pv.get("$xavp(prof)"))
     end
 
     function TestNGCPContractPrefs:test_callee_clean()
@@ -139,19 +139,19 @@ TestNGCPContractPrefs = {} --class
         local caller_xavp = NGCPContractPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
-        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>other)"),1)
-        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>otherfoo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>other)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>otherfoo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
         self.d:clean('callee')
-        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),'caller')
-        assertNil(KSR.pv.get("$xavp(callee_contract_prefs=>testid)"))
-        assertNil(KSR.pv.get("$xavp(callee_contract_prefs=>foo)"))
-        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>other)"),1)
-        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>otherfoo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),'caller')
+        lu.assertNil(KSR.pv.get("$xavp(callee_contract_prefs=>testid)"))
+        lu.assertNil(KSR.pv.get("$xavp(callee_contract_prefs=>foo)"))
+        lu.assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>other)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>otherfoo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPContractPrefs:test_caller_clean()
@@ -161,19 +161,19 @@ TestNGCPContractPrefs = {} --class
         local caller_xavp = NGCPContractPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
-        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>other)"),1)
-        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>otherfoo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>other)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>otherfoo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
         self.d:clean('caller')
-        assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
-        assertNil(KSR.pv.get("$xavp(caller_contract_prefs=>other)"))
-        assertNil(KSR.pv.get("$xavp(caller_contract_prefs=>otherfoo)"))
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_contract_prefs=>dummy)"),"caller")
+        lu.assertNil(KSR.pv.get("$xavp(caller_contract_prefs=>other)"))
+        lu.assertNil(KSR.pv.get("$xavp(caller_contract_prefs=>otherfoo)"))
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>testid)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>foo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_contract_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPContractPrefs:test_tostring()
@@ -183,7 +183,7 @@ TestNGCPContractPrefs = {} --class
         local caller_xavp = NGCPContractPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(tostring(self.d), 'caller_contract_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_contract_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n')
+        lu.assertEquals(tostring(self.d), 'caller_contract_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_contract_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n')
     end
 -- class TestNGCPContractPrefs
 --EOF

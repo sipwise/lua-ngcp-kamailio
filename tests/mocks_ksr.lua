@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2015 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 
-require('luaunit')
+local lu = require('luaunit')
 local ksrMock = require 'mocks.ksr'
 
 -- luacheck: ignore TestKEMIMock
@@ -29,12 +29,12 @@ TestKEMIMock = {}
 
     function TestKEMIMock:test_hdr_get()
         self.KSR.hdr.insert("From: hola\r\n")
-        assertEquals(self.KSR.hdr.headers, {"From: hola\r\n"})
-        assertEquals(self.KSR.pv.get("$hdr(From)"), "hola")
+        lu.assertEquals(self.KSR.hdr.headers, {"From: hola\r\n"})
+        lu.assertEquals(self.KSR.pv.get("$hdr(From)"), "hola")
     end
 
     function TestKEMIMock:test_log()
-        assertEvalToTrue(self.KSR.log)
+        lu.assertNotNil(self.KSR.log)
         self.KSR.log("dbg", "Hi dude!")
-        assertError(self.KSR.log, "debug", "Hi dude!")
+        lu.assertError(self.KSR.log, "debug", "Hi dude!")
     end

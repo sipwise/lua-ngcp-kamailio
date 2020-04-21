@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2017 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 --
 
 local lemock = require('lemock')
-require('luaunit')
+local lu = require('luaunit')
 
 local ksrMock = require 'mocks.ksr'
 KSR = ksrMock:new()
@@ -39,7 +39,7 @@ function TestNGCPDlgList:setUp()
     local NGCPDlgList = require 'ngcp.dlglist'
 
     self.dlg = NGCPDlgList.new()
-    assertEvalToTrue(self.dlg)
+    lu.assertEvalToTrue(self.dlg)
 
     self.dlg.central = self.central;
     self.dlg.pair = self.pair
@@ -53,7 +53,7 @@ function TestNGCPDlgList:test_exists_ok()
     local ok = self.dlg:exists('fakeAAA')
     mc:verify()
 
-    assertTrue(ok)
+    lu.assertTrue(ok)
 end
 
 function TestNGCPDlgList:test_exists_ko()
@@ -64,7 +64,7 @@ function TestNGCPDlgList:test_exists_ko()
     local ok = self.dlg:exists('fakeAAA')
     mc:verify()
 
-    assertFalse(ok)
+    lu.assertFalse(ok)
 end
 
 function TestNGCPDlgList:test_add()
@@ -106,8 +106,8 @@ function TestNGCPDlgList:test_is_in_set()
     local ko = self.dlg:is_in_set(callid, 'key3')
     mc:verify()
 
-    assertTrue(ok)
-    assertFalse(ko)
+    lu.assertTrue(ok)
+    lu.assertFalse(ko)
 end
 
 function TestNGCPDlgList:test_destroy_empty()
@@ -117,7 +117,7 @@ function TestNGCPDlgList:test_destroy_empty()
     self.pair:del("list:"..callid) ;mc :returns(true)
 
     mc:replay()
-    assertError(self.dlg.destroy, self.dlg, callid)
+    lu.assertError(self.dlg.destroy, self.dlg, callid)
     mc:verify()
 end
 

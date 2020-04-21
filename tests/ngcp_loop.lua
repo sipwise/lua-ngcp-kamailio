@@ -1,5 +1,5 @@
 --
--- Copyright 2016 SipWise Team <development@sipwise.com>
+-- Copyright 2016-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 --
 
 local lemock = require('lemock')
-require('luaunit')
+local lu = require('luaunit')
 
 local ksrMock = require 'mocks.ksr'
 KSR = ksrMock:new()
@@ -38,7 +38,7 @@ function TestNGCPLoop:setUp()
     local NGCPLoop = require 'ngcp.loop'
 
     self.loop = NGCPLoop.new()
-    assertEvalToTrue(self.loop)
+    lu.assertNotNil(self.loop)
 
     self.loop.client = self.client;
     self.loop.config.max = 5;
@@ -59,7 +59,7 @@ function TestNGCPLoop:test_add()
     local res = self.loop:add(fu, tu, ru)
     mc:verify()
 
-    assertEquals(res, 1)
+    lu.assertEquals(res, 1)
 end
 
 function TestNGCPLoop:test_detect_false()
@@ -76,7 +76,7 @@ function TestNGCPLoop:test_detect_false()
     local res = self.loop:detect(fu, tu, ru)
     mc:verify()
 
-    assertFalse(res)
+    lu.assertFalse(res)
 end
 
 function TestNGCPLoop:test_detect_ko()
@@ -92,7 +92,7 @@ function TestNGCPLoop:test_detect_ko()
     local res = self.loop:detect(fu, tu, ru)
     mc:verify()
 
-    assertFalse(res)
+    lu.assertFalse(res)
 end
 
 function TestNGCPLoop:test_detect()
@@ -108,6 +108,6 @@ function TestNGCPLoop:test_detect()
     local res = self.loop:detect(fu, tu, ru)
     mc:verify()
 
-    assertTrue(res)
+    lu.assertTrue(res)
 end
 -- class

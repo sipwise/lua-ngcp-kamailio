@@ -1,5 +1,5 @@
 --
--- Copyright 2014-2015 SipWise Team <development@sipwise.com>
+-- Copyright 2014-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 local lemock = require('lemock')
-require('luaunit')
+local lu = require('luaunit')
 
 local ksrMock = require 'mocks.ksr'
 KSR = ksrMock:new()
@@ -37,7 +37,7 @@ TestNGCPDlgCnt = {} --class
         local NGCPDlg = require 'ngcp.dlgcnt'
 
         self.dlg = NGCPDlg.new()
-        assertEvalToTrue(self.dlg)
+        lu.assertEvalToTrue(self.dlg)
 
         self.dlg.central = self.central;
         self.dlg.pair = self.pair
@@ -51,8 +51,8 @@ TestNGCPDlgCnt = {} --class
         local ok = self.dlg._test_connection(self.central)
         mc:verify()
 
-        assertTrue(ok)
-        assertIs(prev, self.central)
+        lu.assertTrue(ok)
+        lu.assertIs(prev, self.central)
     end
 
     function TestNGCPDlgCnt:test_connection_fail()
@@ -63,8 +63,8 @@ TestNGCPDlgCnt = {} --class
         local res = self.dlg._test_connection(self.central)
         mc:verify()
 
-        assertFalse(res)
-        assertIs(prev, self.central)
+        lu.assertFalse(res)
+        lu.assertIs(prev, self.central)
     end
 
     function TestNGCPDlgCnt:test_connect_ok()
@@ -75,7 +75,7 @@ TestNGCPDlgCnt = {} --class
         mc:replay()
         local res = self.dlg._connect(c.pair)
         mc:verify()
-        assertIs(res, self.pair)
+        lu.assertIs(res, self.pair)
     end
 
     function TestNGCPDlgCnt:test_set_1()
@@ -120,8 +120,8 @@ TestNGCPDlgCnt = {} --class
         self.dlg:del("callid0")
         mc:verify()
 
-        assertIs(self.dlg.central, self.central)
-        assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central, self.central)
+        lu.assertIs(self.dlg.pair, self.pair)
     end
 
     function TestNGCPDlgCnt:test_del_zero()
@@ -137,8 +137,8 @@ TestNGCPDlgCnt = {} --class
         self.dlg:del("callid0")
         mc:verify()
 
-        assertIs(self.dlg.central, self.central)
-        assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central, self.central)
+        lu.assertIs(self.dlg.pair, self.pair)
     end
 
     function TestNGCPDlgCnt:test_del_negative()
@@ -156,8 +156,8 @@ TestNGCPDlgCnt = {} --class
         self.dlg:del("callid0")
         mc:verify()
 
-        assertIs(self.dlg.central, self.central)
-        assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central, self.central)
+        lu.assertIs(self.dlg.pair, self.pair)
     end
 
     function TestNGCPDlgCnt:test_del_negative_ok()
@@ -174,8 +174,8 @@ TestNGCPDlgCnt = {} --class
         self.dlg:del("callid0")
         mc:verify()
 
-        assertIs(self.dlg.central, self.central)
-        assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central, self.central)
+        lu.assertIs(self.dlg.pair, self.pair)
     end
 
     function TestNGCPDlgCnt:test_del_multy()
@@ -200,8 +200,8 @@ TestNGCPDlgCnt = {} --class
         self.dlg:del("callid0")
         mc:verify()
 
-        assertIs(self.dlg.central, self.central)
-        assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central, self.central)
+        lu.assertIs(self.dlg.pair, self.pair)
     end
 
     function TestNGCPDlgCnt:test_is_in_set_fail()
@@ -212,9 +212,9 @@ TestNGCPDlgCnt = {} --class
         local res = self.dlg:is_in_set("callid0", "fake")
         mc:verify()
 
-        assertIs(self.dlg.central, self.central)
-        assertIs(self.dlg.pair, self.pair)
-        assertFalse(res)
+        lu.assertIs(self.dlg.central, self.central)
+        lu.assertIs(self.dlg.pair, self.pair)
+        lu.assertFalse(res)
     end
 
     function TestNGCPDlgCnt:test_is_in_set_ok()
@@ -225,9 +225,9 @@ TestNGCPDlgCnt = {} --class
         local res = self.dlg:is_in_set("callid0", "fake")
         mc:verify()
 
-        assertIs(self.dlg.central, self.central)
-        assertIs(self.dlg.pair, self.pair)
-        assertTrue(res)
+        lu.assertIs(self.dlg.central, self.central)
+        lu.assertIs(self.dlg.pair, self.pair)
+        lu.assertTrue(res)
     end
 
     function TestNGCPDlgCnt:test_del_key()
@@ -241,8 +241,8 @@ TestNGCPDlgCnt = {} --class
         self.dlg:del_key("callid0", "key1")
         mc:verify()
 
-        assertIs(self.dlg.central, self.central)
-        assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central, self.central)
+        lu.assertIs(self.dlg.pair, self.pair)
     end
 
 -- class TestNGCPDlgCnt

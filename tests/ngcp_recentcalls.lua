@@ -1,5 +1,5 @@
 --
--- Copyright 2014 SipWise Team <development@sipwise.com>
+-- Copyright 2014-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 
-require('luaunit')
+local lu = require('luaunit')
 local lemock = require('lemock')
 local ksrMock = require 'mocks.ksr'
 
@@ -38,7 +38,7 @@ TestNGCPRecentCalls = {} --class
         local NGCPRecentCalls = require 'ngcp.recentcalls'
 
         self.rcalls = NGCPRecentCalls.new()
-        assertEvalToTrue(self.rcalls)
+        lu.assertNotNil(self.rcalls)
 
         self.rcalls.central = self.central;
     end
@@ -51,8 +51,8 @@ TestNGCPRecentCalls = {} --class
         local ok = self.rcalls._test_connection(self.central)
         mc:verify()
 
-        assertTrue(ok)
-        assertIs(prev, self.central)
+        lu.assertTrue(ok)
+        lu.assertIs(prev, self.central)
     end
 
     function TestNGCPRecentCalls:test_connection_fail()
@@ -63,8 +63,8 @@ TestNGCPRecentCalls = {} --class
         local res = self.rcalls._test_connection(self.central)
         mc:verify()
 
-        assertFalse(res)
-        assertIs(prev, self.central)
+        lu.assertFalse(res)
+        lu.assertIs(prev, self.central)
     end
 
     function TestNGCPRecentCalls:test_set_by_key()
@@ -97,8 +97,8 @@ TestNGCPRecentCalls = {} --class
                                             source)
         mc:verify()
 
-        assertTrue(res)
-        assertIs(self.rcalls.central, self.central)
+        lu.assertTrue(res)
+        lu.assertIs(self.rcalls.central, self.central)
     end
 
 -- class TestNGCPRecentCalls

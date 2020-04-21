@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2016 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require('luaunit')
+local lu = require('luaunit')
 local NGCPXAvp = require 'ngcp.xavp'
 local NGCPAvp = require 'ngcp.avp'
 
@@ -40,9 +40,9 @@ function TestUseCases:test_copy_avp()
 	for i=1,#vals do
 		avp(vals[i])
 	end
-	assertItemsEquals(avp:all(), okvals)
+	lu.assertItemsEquals(avp:all(), okvals)
 	xavp:clean('cfu')
-	assertItemsEquals(xavp:all('cfu'), nil)
+	lu.assertItemsEquals(xavp:all('cfu'), nil)
 	xavp('cfu', avp:all())
-	assertItemsEquals(xavp:all('cfu'), okvals)
+	lu.assertItemsEquals(xavp:all('cfu'), okvals)
 end

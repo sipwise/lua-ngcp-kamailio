@@ -31,21 +31,19 @@ function  do_test() {
 	echo "testing $1 -> ${RES}"
 	if ${OUT_FORCE} ; then
 		cat<<EOF |lua5.1 - > "${RES}"
-EXPORT_ASSERT_TO_GLOBALS = true
+local lu = require('luaunit')
 require "tests/${1}"
 ---- Control test output:
-local lu = LuaUnit
-lu:setOutputType('${FORMAT}')
-lu:run()
+lu.LuaUnit:setOutputType('${FORMAT}')
+lu.LuaUnit:run()
 EOF
 	else
 		cat<<EOF |lua5.1 - --name "${RES}"
-EXPORT_ASSERT_TO_GLOBALS = true
+local lu = require('luaunit')
 require "tests/${1}"
 ---- Control test output:
-local lu = LuaUnit
-lu:setOutputType('${FORMAT}')
-lu:run()
+lu.LuaUnit:setOutputType('${FORMAT}')
+lu.LuaUnit:run()
 EOF
 		if [[ "${FORMAT}" = "JUNIT" ]] ; then
 			fix_id "${RES}"

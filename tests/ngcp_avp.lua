@@ -1,5 +1,5 @@
 --
--- Copyright 2013 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require('luaunit')
+local lu = require('luaunit')
 local ksrMock = require 'mocks.ksr'
 local NGCPAvp = require 'ngcp.avp'
 
@@ -34,15 +34,15 @@ TestNGCPAvp = {} --class
     end
 
     function TestNGCPAvp:test_avp_id()
-        assertEquals(self.avp.id, "$avp(s:testid)")
+        lu.assertEquals(self.avp.id, "$avp(s:testid)")
     end
 
     function TestNGCPAvp:test_avp_get()
         KSR.pv.sets("$avp(s:testid)", "value")
-        assertEquals(self.avp(), "value")
+        lu.assertEquals(self.avp(), "value")
         KSR.pv.sets("$avp(s:testid)", "1")
-        assertItemsEquals(self.avp(), "1")
-        assertItemsEquals(self.avp:all(),{"1","value"})
+        lu.assertItemsEquals(self.avp(), "1")
+        lu.assertItemsEquals(self.avp:all(),{"1","value"})
     end
 
     function TestNGCPAvp:test_avp_set()
@@ -50,9 +50,9 @@ TestNGCPAvp = {} --class
         local okvals = {3,2,1}
         for i=1,#vals do
             self.avp(vals[i])
-            assertEquals(self.avp(),vals[i])
+            lu.assertEquals(self.avp(),vals[i])
         end
-        assertEquals(self.avp:all(), okvals)
+        lu.assertEquals(self.avp:all(), okvals)
     end
 
     function TestNGCPAvp:test_avp_set2()
@@ -60,9 +60,9 @@ TestNGCPAvp = {} --class
         local okvals = {"3",2,1}
         for i=1,#vals do
             self.avp(vals[i])
-            assertEquals(self.avp(),vals[i])
+            lu.assertEquals(self.avp(),vals[i])
         end
-        assertEquals(self.avp:all(), okvals)
+        lu.assertEquals(self.avp:all(), okvals)
     end
 
     function TestNGCPAvp:test_avp_set_list()
@@ -72,7 +72,7 @@ TestNGCPAvp = {} --class
         for i=1,#vals do
             self.avp(vals[i])
         end
-        assertItemsEquals(self.avp:all(), okvals)
+        lu.assertItemsEquals(self.avp:all(), okvals)
     end
 
     function TestNGCPAvp:test_avp_del()
@@ -82,25 +82,25 @@ TestNGCPAvp = {} --class
         for i=1,#vals do
             self.avp(vals[i])
         end
-        assertItemsEquals(self.avp:all(), okvals)
+        lu.assertItemsEquals(self.avp:all(), okvals)
         self.avp:del(1)
-        assertItemsEquals(self.avp:all(), {4, "3", 2})
+        lu.assertItemsEquals(self.avp:all(), {4, "3", 2})
         self.avp:del(4)
-        assertItemsEquals(self.avp:all(), {"3", 2})
+        lu.assertItemsEquals(self.avp:all(), {"3", 2})
         self.avp:del(1)
-        assertItemsEquals(self.avp:all(), {"3", 2})
+        lu.assertItemsEquals(self.avp:all(), {"3", 2})
         self.avp:del("3")
-        assertItemsEquals(self.avp:all(), {2})
+        lu.assertItemsEquals(self.avp:all(), {2})
         self.avp:del(2)
-        assertNil(self.avp:all())
+        lu.assertNil(self.avp:all())
         self.avp:del(nil)
-        assertNil(self.avp:all())
+        lu.assertNil(self.avp:all())
     end
 
     function TestNGCPAvp:test_clean()
         self.avp(1)
         self.avp:clean()
-        assertNil(self.avp())
+        lu.assertNil(self.avp())
     end
 
     function TestNGCPAvp:test_log()
@@ -109,9 +109,9 @@ TestNGCPAvp = {} --class
 
     function TestNGCPAvp:test_tostring()
         self.avp(1)
-        assertEquals(tostring(self.avp), "$avp(s:testid):1")
+        lu.assertEquals(tostring(self.avp), "$avp(s:testid):1")
         self.avp("hola")
-        assertEquals(tostring(self.avp), "$avp(s:testid):hola")
+        lu.assertEquals(tostring(self.avp), "$avp(s:testid):hola")
     end
 -- class TestNGCPAvp
 --EOF

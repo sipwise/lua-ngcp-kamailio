@@ -1,5 +1,5 @@
 --
--- Copyright 2013 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-require('luaunit')
+local lu = require('luaunit')
 local lemock = require('lemock')
 local utils = require 'ngcp.utils'
 local utable = utils.table
@@ -71,26 +71,26 @@ TestNGCPUserPrefs = {} --class
     end
 
     function TestNGCPUserPrefs:test_caller_load_empty()
-        assertEvalToTrue(self.d.config)
-        assertEquals(self.d:caller_load(), {})
+        lu.assertNotNil(self.d.config)
+        lu.assertEquals(self.d:caller_load(), {})
     end
 
     function TestNGCPUserPrefs:test_callee_load_empty()
-        assertEvalToTrue(self.d.config)
-        assertEquals(self.d:callee_load(), {})
+        lu.assertNotNil(self.d.config)
+        lu.assertEquals(self.d:callee_load(), {})
     end
 
     function TestNGCPUserPrefs:test_init()
-        assertEquals(self.d.group, 'usr_prefs')
-        assertNotNil(self.d.query)
-        assertNotNil(self.d.config)
-        assertEquals(self.d.__class__, 'NGCPUserPrefs')
-        assertEquals(self.d.db_table, "usr_preferences")
+        lu.assertEquals(self.d.group, 'usr_prefs')
+        lu.assertNotNil(self.d.query)
+        lu.assertNotNil(self.d.config)
+        lu.assertEquals(self.d.__class__, 'NGCPUserPrefs')
+        lu.assertEquals(self.d.db_table, "usr_preferences")
     end
 
     function TestNGCPUserPrefs:test_query_format()
         local query = self.d.query:format(self.d.db_table, "uuid")
-        assertEquals( query,
+        lu.assertEquals( query,
             "SELECT * FROM usr_preferences WHERE uuid ='uuid' ORDER BY id DESC"
         )
     end
@@ -109,13 +109,13 @@ TestNGCPUserPrefs = {} --class
 
         for k,v in pairs(defaults) do
             utable.add(keys_expected, k)
-            assertEquals(KSR.pv.get("$xavp("..level.."_usr_prefs=>"..k..")"), v)
+            lu.assertEquals(KSR.pv.get("$xavp("..level.."_usr_prefs=>"..k..")"), v)
         end
         return keys_expected
     end
 
     function TestNGCPUserPrefs:test_caller_load()
-        assertEvalToTrue(self.d.config)
+        lu.assertNotNil(self.d.config)
         con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c' ORDER BY id DESC")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
@@ -138,17 +138,17 @@ TestNGCPUserPrefs = {} --class
             "ac"
         }
 
-        assertItemsEquals(keys, lkeys)
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>account_id)"),2)
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>cli)"),"4311001")
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>cc)"),"43")
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>ac)"),"1")
+        lu.assertItemsEquals(keys, lkeys)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>account_id)"),2)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>cli)"),"4311001")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>cc)"),"43")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>ac)"),"1")
         --assertEquals(KSR.pv.get("$xavp(caller_real_prefs=>ringtimeout)"), self.d.config.default.usr.ringtimeout)
-        assertItemsEquals(keys, TestNGCPUserPrefs:get_defaults("caller", {"account_id", "cli", "cc", "ac", "ringtimeout"}))
+        lu.assertItemsEquals(keys, TestNGCPUserPrefs:get_defaults("caller", {"account_id", "cli", "cc", "ac", "ringtimeout"}))
     end
 
     function TestNGCPUserPrefs:test_callee_load()
-        assertEvalToTrue(self.d.config)
+        lu.assertNotNil(self.d.config)
         con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c' ORDER BY id DESC")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
@@ -171,25 +171,25 @@ TestNGCPUserPrefs = {} --class
             "ac"
         }
 
-        assertItemsEquals(keys, lkeys)
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>account_id)"),2)
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>cli)"),"4311001")
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>cc)"),"43")
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>ac)"),"1")
+        lu.assertItemsEquals(keys, lkeys)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>account_id)"),2)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>cli)"),"4311001")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>cc)"),"43")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>ac)"),"1")
         --assertEquals(KSR.pv.get("$xavp(callee_real_prefs=>ringtimeout)"), self.d.config.default.usr.ringtimeout)
-        assertItemsEquals(keys, TestNGCPUserPrefs:get_defaults("callee", {"account_id", "cli", "cc", "ac", "ringtimeout"}))
+        lu.assertItemsEquals(keys, TestNGCPUserPrefs:get_defaults("callee", {"account_id", "cli", "cc", "ac", "ringtimeout"}))
     end
 
     function TestNGCPUserPrefs:test_clean()
         local xavp = NGCPUserPrefs:xavp('callee')
         xavp("testid",1)
         xavp("foo","foo")
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>testid)"),1)
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>foo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>testid)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>foo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
         self.d:clean()
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>dummy)"), "caller")
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>dummy)"), "callee")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>dummy)"), "caller")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>dummy)"), "callee")
     end
 
     function TestNGCPUserPrefs:test_callee_clean()
@@ -199,19 +199,19 @@ TestNGCPUserPrefs = {} --class
         local caller_xavp = NGCPUserPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>testid)"),1)
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>foo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>other)"),1)
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>otherfoo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>testid)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>foo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>other)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>otherfoo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
         self.d:clean('callee')
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>dummy)"),'caller')
-        assertNil(KSR.pv.get("$xavp(callee_usr_prefs=>testid)"))
-        assertNil(KSR.pv.get("$xavp(callee_usr_prefs=>foo)"))
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>other)"),1)
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>otherfoo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>dummy)"),'caller')
+        lu.assertNil(KSR.pv.get("$xavp(callee_usr_prefs=>testid)"))
+        lu.assertNil(KSR.pv.get("$xavp(callee_usr_prefs=>foo)"))
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>other)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>otherfoo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPUserPrefs:test_caller_clean()
@@ -221,19 +221,19 @@ TestNGCPUserPrefs = {} --class
         local caller_xavp = NGCPUserPrefs:xavp('caller')
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>testid)"),1)
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>foo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>other)"),1)
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>otherfoo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>testid)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>foo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>other)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>otherfoo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
         self.d:clean('caller')
-        assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
-        assertNil(KSR.pv.get("$xavp(caller_usr_prefs=>other)"))
-        assertNil(KSR.pv.get("$xavp(caller_usr_prefs=>otherfoo)"))
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>testid)"),1)
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>foo)"),"foo")
-        assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>dummy)"),"caller")
+        lu.assertNil(KSR.pv.get("$xavp(caller_usr_prefs=>other)"))
+        lu.assertNil(KSR.pv.get("$xavp(caller_usr_prefs=>otherfoo)"))
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>testid)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>foo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>dummy)"),"callee")
     end
 
     function TestNGCPUserPrefs:test_tostring()
@@ -244,7 +244,7 @@ TestNGCPUserPrefs = {} --class
         caller_xavp("other",1)
         caller_xavp("otherfoo","foo")
         local expected = 'caller_usr_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_usr_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n'
-        assertEquals(self.d:__tostring(), expected)
-        assertEquals(tostring(self.d), expected)
+        lu.assertEquals(self.d:__tostring(), expected)
+        lu.assertEquals(tostring(self.d), expected)
     end
 -- class TestNGCPUserPrefs
