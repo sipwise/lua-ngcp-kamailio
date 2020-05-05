@@ -15,7 +15,7 @@ Depends:
  lua-cjson,
  lua-curl,
  lua-sql-mysql,
- lua5.1,
+ lua5.2,
  ngcp-system-tools-ce | ngcp-system-tools,
  ${misc:Depends},
  ${shlibs:Depends},
@@ -29,12 +29,11 @@ Description: lua framework for ngcp-kamailio config
 Package: lua-ngcp-kamailio-dev
 Architecture: any
 Depends:
+ lua-busted,
  lua-cjson,
  lua-curl,
- lua-lemock,
  lua-logging,
  lua-sql-mysql,
- lua-unit,
  ${misc:Depends},
  ${shlibs:Depends},
 Provides:

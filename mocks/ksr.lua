@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2015 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 
 local logging = require ('logging')
 local log_file = require ('logging.file')
-local lemock = require ('lemock')
 
 local hdrMock = require 'mocks.hdr'
 local pvMock = require 'mocks.pv'
@@ -37,7 +36,7 @@ local ksrMock = {
         crit = logging.FATAL
     }
 }
-local ksrMock_MT = { __index = ksrMock, __newindex = lemock.controller():mock() }
+local ksrMock_MT = { __index = ksrMock }
     function ksrMock.new()
         local t = {}
         t.hdr = hdrMock.new()

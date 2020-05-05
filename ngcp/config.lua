@@ -19,11 +19,8 @@
 --
 
 -- load drivers
-local driver = require "luasql.mysql"
--- luacheck: ignore luasql
-if not luasql then
-    luasql = driver
-end
+local luasql = require "luasql.mysql"
+
 -- class NGCPConfig
 local NGCPConfig = {
      __class__ = 'NGCPConfig'
@@ -91,7 +88,7 @@ local NGCPConfig_MT = { __index = NGCPConfig }
 
     function NGCPConfig:getDBConnection()
         if not self.env then
-            self.env = assert (luasql.mysql())
+            self.env = luasql()
         end
         if self.con then
             local ok,_ = pcall(check_connection, self.con)

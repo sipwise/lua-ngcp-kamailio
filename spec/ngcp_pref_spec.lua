@@ -1,5 +1,5 @@
 --
--- Copyright 2013 SipWise Team <development@sipwise.com>
+-- Copyright 2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,27 +17,28 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-local lu = require('luaunit')
-local NGCPPrefs = require 'ngcp.pref'
--- luacheck: globals KSR
-local ksrMock = require 'mocks.ksr'
-KSR = ksrMock.new()
 
--- luacheck: ignore TestNGCPPrefs
-TestNGCPPrefs = {} --class
+describe("preferences", function()
+    local NGCPPrefs = require 'ngcp.pref'
 
-    function TestNGCPPrefs:tearDown()
-        KSR.pv.vars = {}
-    end
+    setup(function()
+        local ksrMock = require 'mocks.ksr'
+        _G.KSR = ksrMock.new()
+    end)
 
-    function TestNGCPPrefs:test_check_level()
-        lu.assertTrue(NGCPPrefs:check_level("caller"))
-        lu.assertTrue(NGCPPrefs:check_level("callee"))
-        lu.assertFalse(NGCPPrefs:check_level("what"))
-    end
+    after_each(function()
+        _G.KSR.pv.vars = {}
+    end)
 
-    function TestNGCPPrefs:test_xavp_wrong_level()
+    it("check_level", function()
+        assert.True(NGCPPrefs:check_level("caller"))
+        assert.True(NGCPPrefs:check_level("callee"))
+        assert.False(NGCPPrefs:check_level("what"))
+    end)
+
+    it("xavp_wrong_level", function()
         local pref = NGCPPrefs:create()
-        lu.assertErrorMsgContains("unknown level", pref.xavp, pref, 'what')
-    end
--- class TestNGCP
+        assert.has_errors(function() pref.xavp(pref, 'what') end)
+    end)
+
+end)
