@@ -17,5 +17,5 @@ else
   mkdir -p "${RESULTS}"
 fi
 
-RESULTS=${RESULTS} FORMAT=JUNIT ./run_tests.sh
+busted -o junit > ${RESULTS}/reports/test_busted.xml
 WORKSPACE=${RESULTS}/tmp py.test-3 --junit-xml=${RESULTS}/reports/test_dlgcnt.xml ./tests/test_dlgcnt.py
