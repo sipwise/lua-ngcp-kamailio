@@ -1,4 +1,4 @@
-#!/usr/bin/env lua5.1
+#!/usr/bin/env lua5.2
 --local ut = require 'ngcp.utils'.table
 local NGCPDlgList = require 'ngcp.dlglist'
 local config = "/etc/kamailio/proxy/dlgcnt.lua.cfg"
