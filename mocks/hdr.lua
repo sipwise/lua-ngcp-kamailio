@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2015 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 local logging = require('logging')
 local log_file = require('logging.file')
+local ut = require('ngcp.utils')
 
 local hdrMock = {
     __class__ = 'hdrMock',
@@ -82,7 +83,7 @@ local hdrMock = {
         function t.remove(text)
             if text then
                 for i,v in ipairs(t.headers) do
-                    if string.starts(v, text .. ":") then
+                    if ut.string.starts(v, text .. ":") then
                         table.remove(t.headers, i)
                         return
                     end
