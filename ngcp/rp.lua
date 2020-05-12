@@ -88,6 +88,7 @@ end
 
 function NGCPRealPrefs:_peer_load(level, keys)
     local xavp = {
+        real = NGCPRealPrefs:xavp(level),
         peer  = NGCPPeerPrefs:xavp(level),
     }
     local peer_keys = {}
@@ -96,6 +97,7 @@ function NGCPRealPrefs:_peer_load(level, keys)
         local value = values[v]
         if value then
             utable.add(peer_keys, v)
+            xavp.real(v, value)
         end
     end
     return peer_keys
