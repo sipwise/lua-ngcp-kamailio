@@ -45,6 +45,26 @@ TestNGCPRealPrefs = {} --class
         lu.assertError(self.real.callee_load, nil)
     end
 
+    function TestNGCPRealPrefs:test_caller_mix_load()
+        local keys = {"uno"}
+        local xavp = {
+            domain  = NGCPDomainPrefs:xavp("caller"),
+            user    = NGCPUserPrefs:xavp("caller"),
+            peer    = NGCPPeerPrefs:xavp("caller"),
+            real    = NGCPRealPrefs:xavp("caller")
+        }
+        xavp.user("uno",1)
+        local real_keys = self.real:caller_usr_load(keys)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>uno)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_prefs=>uno)"),1)
+
+        xavp.peer("uno",3)
+        real_keys = self.real:caller_peer_load(keys)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>uno)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>uno)"),3)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_prefs=>uno)"),3)
+    end
+
     function TestNGCPRealPrefs:test_caller_peer_load()
         local keys = {"uno"}
         local xavp = {
@@ -58,10 +78,15 @@ TestNGCPRealPrefs = {} --class
         xavp.user("uno",2)
         lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>uno)"),2)
         xavp.peer("uno",3)
+
+        lu.assertIsNil(KSR.pv.get("$xavp(caller_prefs=>dummy)"))
+
         local real_keys = self.real:caller_peer_load(keys)
         lu.assertEquals(real_keys, keys)
         lu.assertEquals(xavp.real("uno"),nil)
         lu.assertEquals(xavp.peer("uno"),3)
+
+        lu.assertEquals(KSR.pv.get("$xavp(caller_prefs=>uno)"),3)
     end
 
     function TestNGCPRealPrefs:test_caller_usr_load()
@@ -75,9 +100,13 @@ TestNGCPRealPrefs = {} --class
         lu.assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>uno)"),1)
         xavp.user("uno",2)
         lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>uno)"),2)
+
+        lu.assertIsNil(KSR.pv.get("$xavp(caller_prefs=>dummy)"))
+
         local real_keys = self.real:caller_usr_load(keys)
         lu.assertEquals(real_keys, keys)
         lu.assertEquals(xavp.real("uno"),2)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_prefs=>uno)"),2)
     end
 
     function TestNGCPRealPrefs:test_caller_usr_load1()
@@ -91,10 +120,15 @@ TestNGCPRealPrefs = {} --class
         lu.assertEquals(KSR.pv.get("$xavp(caller_dom_prefs=>uno)"),1)
         xavp.user("dos",2)
         lu.assertEquals(KSR.pv.get("$xavp(caller_usr_prefs=>dos)"),2)
+
+        lu.assertIsNil(KSR.pv.get("$xavp(caller_prefs=>dummy)"))
+
         local real_keys = self.real:caller_usr_load(keys)
         lu.assertItemsEquals(real_keys, keys)
         lu.assertEquals(xavp.real("uno"),1)
         lu.assertEquals(xavp.real("dos"),2)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_prefs=>uno)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_prefs=>dos)"),2)
     end
 
     function TestNGCPRealPrefs:test_callee_usr_load()
@@ -108,9 +142,13 @@ TestNGCPRealPrefs = {} --class
         lu.assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>uno)"),1)
         xavp.user("uno",2)
         lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>uno)"),2)
+
+        lu.assertIsNil(KSR.pv.get("$xavp(callee_prefs=>dummy)"))
+
         local real_keys = self.real:callee_usr_load(keys)
         lu.assertEquals(real_keys, keys)
         lu.assertEquals(xavp.real("uno"),2)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_prefs=>uno)"),2)
     end
 
     function TestNGCPRealPrefs:test_callee_usr_load1()
@@ -124,10 +162,15 @@ TestNGCPRealPrefs = {} --class
         lu.assertEquals(KSR.pv.get("$xavp(callee_dom_prefs=>uno)"),1)
         xavp.user("dos",2)
         lu.assertEquals(KSR.pv.get("$xavp(callee_usr_prefs=>dos)"),2)
+
+        lu.assertIsNil(KSR.pv.get("$xavp(callee_prefs=>dummy)"))
+
         local real_keys = self.real:callee_usr_load(keys)
         lu.assertItemsEquals(real_keys, keys)
         lu.assertEquals(xavp.real("uno"),1)
         lu.assertEquals(xavp.real("dos"),2)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_prefs=>uno)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_prefs=>dos)"),2)
     end
 
     function TestNGCPRealPrefs:test_set()
