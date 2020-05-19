@@ -19,6 +19,7 @@
 --
 local utils = require 'ngcp.utils'
 local utable = utils.table
+local NGCPXAvp = require 'ngcp.xavp'
 local NGCPPrefs = require 'ngcp.pref'
 local NGCPDomainPrefs = require 'ngcp.dp'
 local NGCPPeerPrefs = require 'ngcp.pp'
@@ -39,11 +40,11 @@ function NGCPRealPrefs:new(config)
     return instance
 end
 
-function NGCPRealPrefs:caller_load(uuid)
+function NGCPRealPrefs:caller_load(_)
     error("Not implemented")
 end
 
-function NGCPRealPrefs:callee_load(uuid)
+function NGCPRealPrefs:callee_load(_)
     error("Not implemented")
 end
 
@@ -90,12 +91,14 @@ function NGCPRealPrefs:_peer_load(level, keys)
     local xavp = {
         peer  = NGCPPeerPrefs:xavp(level),
     }
+    xavp[level] = NGCPXAvp:new(level, 'prefs')
     local peer_keys = {}
     local values = KSR.pvx.xavp_getd_p1(xavp.peer.name, 0)
     for _,v in pairs(keys) do
         local value = values[v]
         if value then
             utable.add(peer_keys, v)
+            xavp[level](v, value)
         end
     end
     return peer_keys
@@ -108,6 +111,7 @@ function NGCPRealPrefs:_usr_load(level, keys)
         prof = NGCPProfilePrefs:xavp(level),
         usr  = NGCPUserPrefs:xavp(level)
     }
+    xavp[level] = NGCPXAvp:new(level, 'prefs')
     local real_values = {}
     local dom_values = KSR.pvx.xavp_getd_p1(xavp.dom.name, 0)
     local prof_values = KSR.pvx.xavp_getd_p1(xavp.prof.name, 0)
@@ -122,6 +126,7 @@ function NGCPRealPrefs:_usr_load(level, keys)
         end
         if value then
             real_values[v] = value
+            xavp[level](v, value)
         else
             KSR.err(string.format("key:%s not in user, profile or domain\n", v))
         end
@@ -132,6 +137,19 @@ function NGCPRealPrefs:_usr_load(level, keys)
         xavp.real(k, v)
     end
     return real_keys
+end
+
+function NGCPRealPrefs:clean(vtype)
+    NGCPPrefs.clean(self, vtype)
+    if not vtype then
+        self:xavp('callee'):clean()
+        self:xavp('caller'):clean()
+        NGCPXAvp:new('callee', 'prefs'):clean()
+        NGCPXAvp:new('caller', 'prefs'):clean()
+    else
+        self:xavp(vtype):clean()
+        NGCPXAvp:new(vtype, 'prefs'):clean()
+    end
 end
 
 -- class
