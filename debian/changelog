@@ -1,3 +1,14 @@
+lua-ngcp-kamailio (8.4.1.0+0~mr8.4.1.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [dc1ba69] TT#78651 migrate to new KEMI interface
+  * [2b57bbe] TT#78651 migrate to new KEMI pvx interface
+  * [48b0d4d] TT#78651 Refactor code
+  * [72b9ed4] TT#78651 log strings need to end with '\n'
+  * [46499f4] TT#64357 tests: remove use of luaunit globals
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 19 May 2020 11:08:43 +0200
+
 lua-ngcp-kamailio (8.4.0.0+0~mr8.4.0.0) unstable; urgency=medium
 
   * New release.
