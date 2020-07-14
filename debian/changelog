@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (8.5.1.0+0~mr8.5.1.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [68ee236] TT#81207 [caller|callee]_prefs from usr and peer loads
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 14 Jul 2020 11:52:23 +0200
+
 lua-ngcp-kamailio (8.5.0.0+0~mr8.5.0.0) unstable; urgency=medium
 
   [ Victor Seva ]
