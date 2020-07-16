@@ -25,7 +25,9 @@ local NGCPProfilePrefs = utils.inheritsFrom(NGCPPrefs)
 NGCPProfilePrefs.__class__ = 'NGCPProfilePrefs'
 NGCPProfilePrefs.group = "prof_prefs"
 NGCPProfilePrefs.db_table = "prof_preferences"
-NGCPProfilePrefs.query = "SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN %s AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = '%s'"
+NGCPProfilePrefs.query = "SELECT prefs.* FROM provisioning.voip_subscribers "..
+    "as usr LEFT JOIN %s AS prefs ON usr.profile_id = prefs.uuid "..
+    "WHERE usr.uuid = '%s'"
 -- luacheck: globals KSR
 function NGCPProfilePrefs:new(config)
     local instance = NGCPProfilePrefs:create()
