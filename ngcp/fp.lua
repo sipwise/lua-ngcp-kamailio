@@ -27,7 +27,8 @@ local NGCPFaxPrefs = utils.inheritsFrom(NGCPPrefs)
 NGCPFaxPrefs.__class__ = 'NGCPFaxPrefs'
 NGCPFaxPrefs.group = "fax_prefs"
 NGCPFaxPrefs.db_table = "provisioning.voip_fax_preferences"
-NGCPFaxPrefs.query = "SELECT fp.* FROM %s fp, provisioning.voip_subscribers s WHERE s.uuid = '%s' AND fp.subscriber_id = s.id"
+NGCPFaxPrefs.query = "SELECT fp.* FROM %s fp, provisioning.voip_subscribers s"..
+    " WHERE s.uuid = '%s' AND fp.subscriber_id = s.id"
 -- luacheck: globals KSR
 function NGCPFaxPrefs:new(config)
     local instance = NGCPFaxPrefs:create()
