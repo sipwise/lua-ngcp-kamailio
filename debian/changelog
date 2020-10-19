@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (8.5.2.1+0~mr8.5.2.1) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [459c50b] TT#78651 fix luacheck errors
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 19 Oct 2020 14:28:08 +0200
+
 lua-ngcp-kamailio (8.5.2.0+0~mr8.5.2.0) unstable; urgency=medium
 
   * New release.
