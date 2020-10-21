@@ -42,10 +42,13 @@ local pvMock = {
         -- fake pseudo vars go here
         t.vars_pv = {
             ro = {
+                ci = "fake_ci",
+                ua = "fake agent",
                 si = "127.0.0.1",
                 sp = "9090"
             },
             rw = {
+                ru = "sip:noname@nodomain.com:5060;transport=udp",
                 rU = "noname"
             }
         }
@@ -240,6 +243,22 @@ local pvMock = {
             elseif result.type == 'pv' then
                 return t.vars_pv[result.mode][result.id]
             end
+        end
+
+        function t.gete(id)
+            return t.get(id) or ""
+        end
+
+        function t.getvn(id, default)
+            return t.get(id) or default
+        end
+
+        function t.getvs(id, default)
+            return t.get(id) or tostring(default)
+        end
+
+        function t.getvw(id)
+            return t.get(id) or "<<null>>"
         end
 
         function t._addvalue_new(result, value)

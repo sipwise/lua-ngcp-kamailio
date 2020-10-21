@@ -488,3 +488,27 @@ TestPVMock = {}
         lu.assertEquals(self.pv.get("$avp(s:hithere)"), 1)
         lu.assertEquals(self.pv.get("$(avp(s:hithere)[*])"), {1})
     end
+
+    function TestPVMock:test_pv_gete()
+        lu.assertEquals(self.pv.gete("$avp(hithere)"), "")
+        self.pv.seti("$avp(hithere)", 0)
+        lu.assertEquals(self.pv.gete("$avp(hithere)"), 0)
+    end
+
+    function TestPVMock:test_pv_getvn()
+        lu.assertEquals(self.pv.getvn("$avp(hithere)", 1), 1)
+        self.pv.seti("$avp(hithere)", 0)
+        lu.assertEquals(self.pv.getvn("$avp(hithere)", 1), 0)
+    end
+
+    function TestPVMock:test_pv_getvs()
+        lu.assertEquals(self.pv.getvs("$avp(hithere)", "1"), "1")
+        self.pv.seti("$avp(hithere)", 0)
+        lu.assertEquals(self.pv.getvs("$avp(hithere)", "1"), 0)
+    end
+
+    function TestPVMock:test_pv_getvw()
+        lu.assertEquals(self.pv.getvw("$avp(hithere)"), "<<null>>")
+        self.pv.seti("$avp(hithere)", 0)
+        lu.assertEquals(self.pv.getvw("$avp(hithere)"), 0)
+    end
