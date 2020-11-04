@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (9.0.1.2+0~mr9.0.1.2) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [cab1b96] TT#78651 scripts: fix missing KSR short log functions
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 04 Nov 2020 15:05:08 +0100
+
 lua-ngcp-kamailio (9.0.1.1+0~mr9.0.1.1) unstable; urgency=medium
 
   * New release.
