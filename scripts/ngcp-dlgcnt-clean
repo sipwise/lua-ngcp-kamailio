@@ -18,6 +18,24 @@ KSR = {}
 KSR.log = function (level, str)
 	print(string.format("[%s] %s", level, str))
 end
+function KSR.dbg(message)
+	KSR.log("debug", message)
+end
+function KSR.err(message)
+	KSR.log("error", message)
+end
+function KSR.info(message)
+	KSR.log("info", message)
+end
+function KSR.notice(message)
+	KSR.log("info", message)
+end
+function KSR.warn(message)
+	KSR.log("warn", message)
+end
+function KSR.crit(message)
+	KSR.log("fatal", message)
+end
 
 local function get_config()
 	if os.getenv('DLG_CONFIG') then
