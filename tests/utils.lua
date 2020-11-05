@@ -98,6 +98,20 @@ TestUtils = {}
         lu.assertEquals(t, 2)
     end
 
+    function TestUtils:test_table_keys_nil()
+        lu.assertError(utils.table.keys, nil)
+    end
+
+    function TestUtils:test_table_keys_array()
+        local t = utils.table.keys({'a','b'})
+        lu.assertItemsEquals(t, {1,2})
+    end
+
+    function TestUtils:test_table_keys_ok()
+        t = utils.table.keys({hola={1,2},adios=2})
+        lu.assertItemsEquals(t, {'hola', 'adios'})
+    end
+
     function TestUtils:test_table_shuffle()
         lu.assertEquals(self.simple_list, {1,2,3})
         utils.table.add(self.simple_list, 4)

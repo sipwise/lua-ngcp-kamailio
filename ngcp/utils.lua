@@ -1,5 +1,5 @@
 --
--- Copyright 2013 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2020 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -159,6 +159,17 @@ function ut.size(t)
   return 0
 end
 
+function ut.keys(t)
+  local keys = {}
+  local n = 0
+
+  for k,_ in pairs(t) do
+    n = n+1
+    keys[n] = k
+  end
+  return keys
+end
+
 function ut.val_to_str ( v )
   if "string" == type( v ) then
     v = string.gsub( v, "\n", "\\n" )
@@ -257,11 +268,11 @@ function utils.implode(delimiter, list, quoter)
     if not quoter then
         quoter = ""
     end
-    local string = quoter .. list[1] .. quoter
+    local str = quoter .. list[1] .. quoter
     for i = 2, len do
-        string = string .. delimiter .. quoter .. list[i] .. quoter
+        str = str .. delimiter .. quoter .. list[i] .. quoter
     end
-    return string
+    return str
 end
 
 -- from string to table
