@@ -1,3 +1,12 @@
+lua-ngcp-kamailio (8.5.2.3+0~mr8.5.2.3) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [8e80bf3] TT#95650 mocks/pv: add missing KSR.pv.get* functions
+  * [c05b203] TT#99900 utils: add table.keys()
+  * [f93379d] TT#99900 add support for lua5.2
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 06 Nov 2020 01:08:27 +0100
+
 lua-ngcp-kamailio (8.5.2.2+0~mr8.5.2.2) unstable; urgency=medium
 
   [ Victor Seva ]
