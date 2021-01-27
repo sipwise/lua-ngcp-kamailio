@@ -88,7 +88,7 @@ end
             self.central:expire(key, self.config.expire)
         end
         local msg = "central:hset[%s]=>[%s] callid: %s uuid: %s " ..
-            "start_time: %s duration: %d caller: %s callee: %s source: %s expire: %d\n"
+            "start_time: %s duration: %s caller: %s callee: %s source: %s expire: %d\n"
         KSR.info(msg:format(key, tostring(res),
                             callid, uuid,
                             start_time, duration,
