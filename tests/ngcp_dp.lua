@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2020 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2021 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ KSR = ksrMock.new()
 
 local mc,env,con
 local dp_vars = DPFetch:new()
+local bp_vars = require 'tests_v.bp_vars'
 
 package.loaded.luasql = nil
 package.preload['luasql.mysql'] = function ()
@@ -186,5 +187,27 @@ TestNGCPDomainPrefs = {} --class
         caller_xavp("otherfoo","foo")
         lu.assertEquals(tostring(self.d), 'caller_dom_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_dom_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n')
     end
+
+    function TestNGCPDomainPrefs:test_caller_load_blob()
+        lu.assertNotNil(self.d.config)
+        con:execute("SELECT * FROM dom_preferences WHERE domain ='192.168.51.57'")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(dp_vars:val("d_192_168_51_57"))
+        con:execute("SELECT * FROM provisioning.voip_dom_preferences_blob WHERE id = 2")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(bp_vars[2])
+        self.cur:close()
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+
+        mc:replay()
+        local keys = self.d:caller_load("192.168.51.57")
+        mc:verify()
+
+        lu.assertTrue(utable.contains(keys, "emergency_provider_info"))
+        lu.assertStrMatches(
+            KSR.pv.get("$xavp(caller_dom_prefs=>emergency_provider_info)"),
+            '^<.xml.+'
+        )
+    end
+
 -- class TestNGCPDomainPrefs
 --EOF

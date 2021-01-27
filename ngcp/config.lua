@@ -72,6 +72,11 @@ local NGCPConfig_MT = { __index = NGCPConfig }
                     ext_contract_id = "",
                     ringtimeout = 180,
                 }
+            },
+            -- blob prefs to be loaded automaticaly
+            blob_prefs = {
+                emergency_provider_info = true,
+                emergency_location_object = true,
             }
         }
         setmetatable( t, NGCPConfig_MT )

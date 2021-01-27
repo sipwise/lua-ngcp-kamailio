@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2020 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2021 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ local NGCPXAvp = require 'ngcp.xavp'
 local NGCPPrefs = utils.inheritsFrom()
 NGCPPrefs.__class__ = 'NGCPPrefs'
 NGCPPrefs.levels = {"caller", "callee"}
+NGCPPrefs.query_blob = "SELECT * FROM provisioning.voip_%s_blob WHERE id = %s"
 
 function NGCPPrefs.__tostring(self)
     local output, msg = '', "%s_%s:%s\n"
@@ -58,6 +59,37 @@ function NGCPPrefs:_defaults()
     return keys, defaults
 end
 
+function NGCPPrefs:pref_is_blob(attribute, value_type)
+    local vtype = value_type
+
+    if type(value_type) == "string" then
+        vtype = tonumber(value_type)
+    end
+    if vtype == 2 then
+        if self.config.blob_prefs[attribute] then return true end
+        KSR.dbg(string.format("skip load of blob value of attribute:%s\n",
+            attribute))
+    end
+    return false
+end
+
+function  NGCPPrefs:_get_blob(blob_id)
+    local result
+    local con = assert (self.config:getDBConnection())
+    local query = self.query_blob:format(self.db_table, blob_id)
+    local cur = assert (con:execute(query))
+    local row = cur:fetch({}, "a")
+
+    if utable.size(row) > 0 then
+        KSR.dbg(string.format("row content_type:%s\n", row.content_type))
+        result = row.value
+    else
+        KSR.dbg(string.format("no results for query:%s\n", query))
+    end
+    cur:close()
+    return result
+end
+
 function NGCPPrefs:_set_xavp(level, cur, query)
     local result = {}
     local row = cur:fetch({}, "a")
@@ -66,8 +98,12 @@ function NGCPPrefs:_set_xavp(level, cur, query)
 
     if utable.size(row) > 0 then
         while utable.size(row) > 0 do
-            KSR.dbg(string.format("result:%s row:%s\n",
-                utable.tostring(result), utable.tostring(row)))
+            if self:pref_is_blob(row.attribute, row.type) then
+                row.value = self:_get_blob(row.value)
+                row.type = 0
+            end
+            KSR.dbg(string.format("row attribute:%s\n",
+                tostring(row.attribute)))
             table.insert(result, row)
             utable.add(keys, row.attribute)
             defaults[row.attribute] = nil

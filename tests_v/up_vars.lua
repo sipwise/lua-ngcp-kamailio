@@ -133,6 +133,28 @@ local up_vars = {
           value = "no",
           last_modified = "1900-01-01 00:00:01"
         },
+    },
+    b3431971_79ab_466e_adbb_81d92a9c94fa = {
+        {
+          id = 1,
+          uuid = "b3431971-79ab-466e-adbb-81d92a9c94fa",
+          username = "testuser3",
+          domain = "192.168.51.57",
+          attribute = "emergency_location_format",
+          type = 0,
+          value = "PIDF-LO",
+          last_modified = "1900-01-01 00:00:01"
+        },
+        {
+          id = 2,
+          uuid = "b3431971-79ab-466e-adbb-81d92a9c94fa",
+          username = "testuser3",
+          domain = "192.168.51.57",
+          attribute = "emergency_location_object",
+          type = 2,
+          value = 1,
+          last_modified = "1900-01-01 00:00:01"
+        },
     }
 }
 

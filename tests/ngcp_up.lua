@@ -22,6 +22,7 @@ local lemock = require('lemock')
 local utils = require 'ngcp.utils'
 local utable = utils.table
 local UPFetch = require 'tests_v.up_vars'
+local bp_vars = require 'tests_v.bp_vars'
 
 local ksrMock = require 'mocks.ksr'
 KSR = ksrMock.new()
@@ -246,5 +247,40 @@ TestNGCPUserPrefs = {} --class
         local expected = 'caller_usr_prefs:{other={1},otherfoo={"foo"},dummy={"caller"}}\ncallee_usr_prefs:{dummy={"callee"},testid={1},foo={"foo"}}\n'
         lu.assertEquals(self.d:__tostring(), expected)
         lu.assertEquals(tostring(self.d), expected)
+    end
+
+    function TestNGCPUserPrefs:test_callee_load_blob()
+        lu.assertNotNil(self.d.config)
+        con:execute("SELECT * FROM usr_preferences WHERE uuid ='b3431971-79ab-466e-adbb-81d92a9c94fa' ORDER BY id DESC")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("b3431971_79ab_466e_adbb_81d92a9c94fa"))
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("b3431971_79ab_466e_adbb_81d92a9c94fa"))
+        con:execute("SELECT * FROM provisioning.voip_usr_preferences_blob WHERE id = 1")  ;mc :returns(self.cur)
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(bp_vars[1])
+        self.cur:close()
+        self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
+        self.cur:close()
+
+        mc:replay()
+        local keys = self.d:callee_load("b3431971-79ab-466e-adbb-81d92a9c94fa")
+        mc:verify()
+
+        local lkeys = {
+            "ext_subscriber_id",
+            "ringtimeout",
+            "account_id",
+            "ext_contract_id",
+            "emergency_location_format",
+            "emergency_location_object"
+        }
+
+        lu.assertItemsEquals(keys, lkeys)
+        lu.assertEquals(
+            KSR.pv.get("$xavp(callee_usr_prefs=>emergency_location_format)"),
+            "PIDF-LO"
+        )
+        lu.assertStrMatches(
+            KSR.pv.get("$xavp(callee_usr_prefs=>emergency_location_object)"),
+            '^<.xml.+'
+        )
     end
 -- class TestNGCPUserPrefs

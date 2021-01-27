@@ -152,6 +152,18 @@ local dp_vars = {
         value = "4",
         last_modified = "1900-01-01 00:00:01"
       }
+    },
+    d_192_168_51_57 = {
+      {
+        id = 14,
+        uuid = "",
+        username = "0",
+        domain = "192.168.51.57",
+        attribute = "emergency_provider_info",
+        type = 2,
+        value = 2,
+        last_modified = "1900-01-01 00:00:01"
+      },
     }
 }
 
