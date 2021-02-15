@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (9.3.1.0+0~mr9.3.1.0) unstable; urgency=medium
+
+  [ Marco Capetta ]
+  * [d81fe77] TT#109306 Fix duration variable type when printing log of recentcalls
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 15 Feb 2021 17:52:31 +0100
+
 lua-ngcp-kamailio (9.3.0.0+0~mr9.3.0.0) unstable; urgency=medium
 
   * New release.
