@@ -66,8 +66,8 @@ function NGCPPrefs:_set_xavp(level, cur, query)
 
     if utable.size(row) > 0 then
         while utable.size(row) > 0 do
-            KSR.dbg(string.format("result:%s row:%s\n",
-                utable.tostring(result), utable.tostring(row)))
+            -- KSR.dbg(string.format("result:%s row:%s\n",
+            --    utable.tostring(result), utable.tostring(row)))
             table.insert(result, row)
             utable.add(keys, row.attribute)
             defaults[row.attribute] = nil
