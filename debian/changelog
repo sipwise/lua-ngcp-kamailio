@@ -1,3 +1,13 @@
+lua-ngcp-kamailio (8.5.5.0+0~mr8.5.5.0) unstable; urgency=medium
+
+  [ Marco Capetta ]
+  * [b397377] TT#109306 Fix duration variable type when printing log of recentcalls
+
+  [ Victor Seva ]
+  * [0a1921c] TT#110300 ngcp/prefs: remove really long debug log
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 05 Apr 2021 14:28:56 +0200
+
 lua-ngcp-kamailio (8.5.4.0+0~mr8.5.4.0) unstable; urgency=medium
 
   [ Victor Seva ]
