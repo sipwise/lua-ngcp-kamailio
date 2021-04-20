@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (9.5.0.0+0~mr9.5.0.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [13fede9] TT#109103 prefs: add support for blob type
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 20 Apr 2021 11:57:28 +0200
+
 lua-ngcp-kamailio (9.4.0.0+0~mr9.4.0.0) unstable; urgency=medium
 
   [ Marco Capetta ]
