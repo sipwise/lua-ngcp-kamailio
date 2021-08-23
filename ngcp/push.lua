@@ -85,7 +85,7 @@ function NGCPPush:len(key, node)
 end
 
 local function value_base(v)
-    return v.idx .. separator .. v.label .. separator .. v.node .. separator .. v.node_uri
+    return v.idx .. separator .. v.label .. separator .. v.node .. separator .. v.node_uri .. separator .. v.mode
 end
 
 function NGCPPush:add(v)
@@ -112,12 +112,12 @@ end
 
 local function split_val(value)
     local t = utils.explode(separator, value);
-    return t[1], t[2], t[3], t[4], t[5];
+    return t[1], t[2], t[3], t[4], t[5], t[6];
 end
 
 local function insert_val(res, v, key_name)
-    local key, idx, label, node, node_uri = split_val(v)
-    local val = {idx=idx, label=label, node=node, node_uri=node_uri}
+    local key, idx, label, node, node_uri, mode = split_val(v)
+    local val = {idx=idx, label=label, node=node, node_uri=node_uri, mode=mode}
     val[key_name] = key
     table.insert(res, val)
 end
