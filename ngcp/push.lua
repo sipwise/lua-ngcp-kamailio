@@ -103,8 +103,8 @@ function NGCPPush:add(v)
     KSR.dbg(string.format("lpush[%s]=>[%s] %s\n",
         v.callid, val, tostring(pos)));
     if v.expire then
-        self.client.expire(v.key, v.expire)
-        self.client.expire(v.callid, v.expire)
+        self.client:expire(v.key, v.expire)
+        self.client:expire(v.callid, v.expire)
         KSR.dbg(string.format(
             "set expire %d for keys:[%s, %s]", v.expire, v.key, v.callid));
     end
