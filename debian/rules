@@ -12,8 +12,7 @@
 %:
 	dh $@ --buildsystem=lua --with lua
 
-override_dh_auto_install:
-	dh_auto_install
+execute_after_dh_auto_install:
 	dh_install scripts/ngcp-dlgcnt-clean /usr/sbin
 	dh_install scripts/ngcp-dlglist-clean /usr/sbin
 	dh_install scripts/ngcp-dlgcnt-check /usr/sbin
