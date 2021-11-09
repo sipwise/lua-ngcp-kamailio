@@ -83,24 +83,12 @@ local NGCPConfig_MT = { __index = NGCPConfig }
         return t
     end
 
-    local function check_connection(c)
-        local cur = c:execute("SELECT 1")
-        local result = false
-        cur:fetch()
-        if cur:numrows() == 1 then
-            result = true
-        end
-        cur:close()
-        return result
-    end
-
     function NGCPConfig:getDBConnection()
         if not self.env then
             self.env = assert (luasql.mysql())
         end
         if self.con then
-            local ok,_ = pcall(check_connection, self.con)
-            if not ok then
+            if not self.con:ping() then
                 self.con = nil
                 KSR.dbg("lost database connection. Reconnecting\n")
             end

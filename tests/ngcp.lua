@@ -139,10 +139,7 @@ TestNGCP = {} --class
         local c = self.ngcp.config
         env:connect(c.db_database, c.db_username, c.db_pass, c.db_host, c.db_port) ;mc :returns(self.con)
         -- connection check
-        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
-        self.cur:fetch()              ;mc :returns({})
-        self.cur:numrows()            ;mc :returns(1)
-        self.cur:close()
+        self.con:ping()  ;mc :returns(true)
         --
         self.con:execute("SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN prof_preferences AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
@@ -157,10 +154,7 @@ TestNGCP = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         -- connection check
-        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
-        self.cur:fetch()              ;mc :returns({})
-        self.cur:numrows()            ;mc :returns(1)
-        self.cur:close()
+        self.con:ping()  ;mc :returns(true)
         --
         self.con:execute("SELECT fp.* FROM provisioning.voip_fax_preferences fp, provisioning.voip_subscribers s WHERE s.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c' AND fp.subscriber_id = s.id")  ;mc :returns(self.cur)
         self.cur:getcolnames()        ;mc :returns(fp_vars:val("fp_keys"))
@@ -236,19 +230,13 @@ TestNGCP = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         -- connection check
-        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
-        self.cur:fetch()              ;mc :returns({})
-        self.cur:numrows()            ;mc :returns(1)
-        self.cur:close()
+        self.con:ping()  ;mc :returns(true)
         --
         self.con:execute("SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN prof_preferences AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns({}) -- this is what I got on real mysql
         self.cur:close()
         -- connection check
-        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
-        self.cur:fetch()              ;mc :returns({})
-        self.cur:numrows()            ;mc :returns(1)
-        self.cur:close()
+        self.con:ping()  ;mc :returns(true)
         --
         self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c' ORDER BY id DESC")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
@@ -260,10 +248,7 @@ TestNGCP = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         -- connection check
-        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
-        self.cur:fetch()              ;mc :returns({})
-        self.cur:numrows()            ;mc :returns(1)
-        self.cur:close()
+        self.con:ping()  ;mc :returns(true)
         --
         self.con:execute("SELECT fp.* FROM provisioning.voip_fax_preferences fp, provisioning.voip_subscribers s WHERE s.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c' AND fp.subscriber_id = s.id")  ;mc :returns(self.cur)
         self.cur:getcolnames()        ;mc :returns(fp_vars:val("fp_keys"))
@@ -318,20 +303,14 @@ TestNGCP = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         -- connection check
-        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
-        self.cur:fetch()              ;mc :returns({})
-        self.cur:numrows()            ;mc :returns(1)
-        self.cur:close()
+        self.con:ping()  ;mc :returns(true)
         --
         self.con:execute("SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN prof_preferences AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(pprof_vars:val("prof_1"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         -- connection check
-        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
-        self.cur:fetch()              ;mc :returns({})
-        self.cur:numrows()            ;mc :returns(1)
-        self.cur:close()
+        self.con:ping()  ;mc :returns(true)
         --
         self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c' ORDER BY id DESC") ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
@@ -342,10 +321,7 @@ TestNGCP = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         -- connection check
-        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
-        self.cur:fetch()              ;mc :returns({})
-        self.cur:numrows()            ;mc :returns(1)
-        self.cur:close()
+        self.con:ping()  ;mc :returns(true)
         --
         self.con:execute("SELECT fp.* FROM provisioning.voip_fax_preferences fp, provisioning.voip_subscribers s WHERE s.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c' AND fp.subscriber_id = s.id")  ;mc :returns(self.cur)
         self.cur:getcolnames()        ;mc :returns(fp_vars:val("fp_keys"))
@@ -394,20 +370,14 @@ TestNGCP = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         -- connection check
-        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
-        self.cur:fetch()              ;mc :returns({})
-        self.cur:numrows()            ;mc :returns(1)
-        self.cur:close()
+        self.con:ping()  ;mc :returns(true)
         --
         self.con:execute("SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN prof_preferences AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(pprof_vars:val("prof_2"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         -- connection check
-        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
-        self.cur:fetch()              ;mc :returns({})
-        self.cur:numrows()            ;mc :returns(1)
-        self.cur:close()
+        self.con:ping()  ;mc :returns(true)
         --
         self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ae736f72-21d1-4ea6-a3ea-4d7f56b3887c' ORDER BY id DESC") ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ae736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
@@ -418,10 +388,7 @@ TestNGCP = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         -- connection check
-        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
-        self.cur:fetch()              ;mc :returns({})
-        self.cur:numrows()            ;mc :returns(1)
-        self.cur:close()
+        self.con:ping()  ;mc :returns(true)
         --
         self.con:execute("SELECT fp.* FROM provisioning.voip_fax_preferences fp, provisioning.voip_subscribers s WHERE s.uuid = 'ae736f72-21d1-4ea6-a3ea-4d7f56b3887c' AND fp.subscriber_id = s.id")  ;mc :returns(self.cur)
         self.cur:getcolnames()        ;mc :returns(fp_vars:val("fp_keys"))
@@ -471,30 +438,21 @@ TestNGCP = {} --class
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         -- connection check
-        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
-        self.cur:fetch()              ;mc :returns({})
-        self.cur:numrows()            ;mc :returns(1)
-        self.cur:close()
+        self.con:ping()  ;mc :returns(true)
         --
         self.con:execute("SELECT prefs.* FROM provisioning.voip_subscribers as usr LEFT JOIN prof_preferences AS prefs ON usr.profile_id = prefs.uuid WHERE usr.uuid = 'ah736f72-21d1-4ea6-a3ea-4d7f56b3887c'")  ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(pprof_vars:val("prof_2"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         -- connection check
-        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
-        self.cur:fetch()              ;mc :returns({})
-        self.cur:numrows()            ;mc :returns(1)
-        self.cur:close()
+        self.con:ping()  ;mc :returns(true)
         --
         self.con:execute("SELECT * FROM usr_preferences WHERE uuid ='ah736f72-21d1-4ea6-a3ea-4d7f56b3887c' ORDER BY id DESC") ;mc :returns(self.cur)
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(up_vars:val("ah736f72_21d1_4ea6_a3ea_4d7f56b3887c"))
         self.cur:fetch(mc.ANYARGS)    ;mc :returns(nil)
         self.cur:close()
         -- connection check
-        self.con:execute("SELECT 1")  ;mc :returns(self.cur)
-        self.cur:fetch()              ;mc :returns({})
-        self.cur:numrows()            ;mc :returns(1)
-        self.cur:close()
+        self.con:ping()  ;mc :returns(true)
         --
         self.con:execute("SELECT fp.* FROM provisioning.voip_fax_preferences fp, provisioning.voip_subscribers s WHERE s.uuid = 'ah736f72-21d1-4ea6-a3ea-4d7f56b3887c' AND fp.subscriber_id = s.id")  ;mc :returns(self.cur)
         self.cur:getcolnames()        ;mc :returns(fp_vars:val("fp_keys"))
