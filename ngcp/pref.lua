@@ -131,14 +131,14 @@ function NGCPPrefs:_load(level, uuid)
 end
 
 function NGCPPrefs:caller_load(uuid)
-    if not uuid then
+    if not uuid or uuid == '' then
         return {}
     end
     return self:_load("caller", uuid)
 end
 
 function NGCPPrefs:callee_load(uuid)
-    if not uuid then
+    if not uuid or uuid == '' then
         return {}
     end
     return self:_load("callee", uuid)
