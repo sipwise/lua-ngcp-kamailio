@@ -96,12 +96,18 @@ TestNGCPPeerPrefs = {} --class
 
     function TestNGCPPeerPrefs:test_caller_load_empty()
         lu.assertEvalToTrue(self.d.config)
+        mc:replay()
         lu.assertEquals(self.d:caller_load(), {})
+        lu.assertEquals(self.d:caller_load(''), {})
+        mc:verify()
     end
 
     function TestNGCPPeerPrefs:test_callee_load_empty()
         lu.assertEvalToTrue(self.d.config)
+        mc:replay()
         lu.assertEquals(self.d:callee_load(), {})
+        lu.assertEquals(self.d:callee_load(''), {})
+        mc:verify()
     end
 
     function TestNGCPPeerPrefs:test_caller_load()
