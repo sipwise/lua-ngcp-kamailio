@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (9.5.3.1+0~mr9.5.3.1) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [0b9d275] TT#149550 do not try to load preferences for an empty uuid
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 13 Dec 2021 19:28:55 +0100
+
 lua-ngcp-kamailio (9.5.3.0+0~mr9.5.3.0) unstable; urgency=medium
 
   * New release.
