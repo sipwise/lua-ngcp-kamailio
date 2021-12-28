@@ -2,3 +2,4 @@
 kamailio
 reports
 *.pyc
+.vscode/*
