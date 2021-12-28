@@ -113,6 +113,14 @@ end
         return utable.contains(res, key);
     end
 
+    function NGCPDlgCounters:is_in_set_regex(callid, key)
+        if not self._test_connection(self.pair) then
+            self.pair = self._connect(self.config.pair);
+        end
+        local res = self.pair:lrange(callid, 0, -1);
+        return utable.contains_regex(res, key);
+    end
+
     function NGCPDlgCounters:set(callid, key)
         if not self._test_connection(self.central) then
             self.central = self._connect(self.config.central);
