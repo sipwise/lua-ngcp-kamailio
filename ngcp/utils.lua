@@ -112,6 +112,17 @@ function ut.contains(t, element)
     return false
 end
 
+function ut.contains_regex(t, element)
+  if t then
+    for _, value in pairs(t) do
+      if string.match(value, element) then
+        return true
+      end
+    end --for
+  end --if
+  return false
+end
+
 -- add if element is not in table
 function ut.add(t, element)
   if not ut.contains(t, element) then
