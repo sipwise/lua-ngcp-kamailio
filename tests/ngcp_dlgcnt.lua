@@ -230,6 +230,32 @@ TestNGCPDlgCnt = {} --class
         lu.assertTrue(res)
     end
 
+    function TestNGCPDlgCnt:test_is_in_set_regex_ok()
+        self.pair:ping() ;mc :returns(true)
+        self.pair:lrange("callid0", 0, -1)  ;mc :returns({"user:whatever", "fake", "jojo"})
+
+        mc:replay()
+        local res = self.dlg:is_in_set_regex("callid0", "^user:")
+        mc:verify()
+
+        lu.assertIs(self.dlg.central, self.central)
+        lu.assertIs(self.dlg.pair, self.pair)
+        lu.assertTrue(res)
+    end
+
+    function TestNGCPDlgCnt:test_is_in_set_regex_fail()
+        self.pair:ping() ;mc :returns(true)
+        self.pair:lrange("callid0", 0, -1)  ;mc :returns({"user:whatever", "fake", "jojo"})
+
+        mc:replay()
+        local res = self.dlg:is_in_set_regex("callid0", "^ser:")
+        mc:verify()
+
+        lu.assertIs(self.dlg.central, self.central)
+        lu.assertIs(self.dlg.pair, self.pair)
+        lu.assertFalse(res)
+    end
+
     function TestNGCPDlgCnt:test_del_key()
         self.pair:ping() ;mc :returns(true)
         self.pair:lrem("callid0", 1, "key1") ;mc :returns(1)

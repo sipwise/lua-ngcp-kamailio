@@ -34,6 +34,9 @@ TestUtils = {}
             cone = self.simple_list,
             ctwo = self.simple_hash
         }
+        self.simple_list_str = {
+            "uno", "dos", "tres", "user:1", "user:2",
+        }
     end
 
     function TestUtils:test_table_deepcopy()
@@ -47,6 +50,14 @@ TestUtils = {}
         lu.assertFalse(utils.table.contains(self.simple_hash, 4))
         lu.assertFalse(utils.table.contains(nil))
         lu.assertError(utils.table.contains, "hola",1)
+    end
+
+    function TestUtils:test_table_contains_regex()
+        lu.assertTrue(utils.table.contains_regex(self.simple_list_str, '^u.+$'))
+        lu.assertFalse(utils.table.contains_regex(self.simple_list_str, '.*q.*'))
+        lu.assertFalse(utils.table.contains_regex(nil))
+        lu.assertTrue(utils.table.contains_regex(self.simple_list_str, '^user:.+$'))
+        lu.assertError(utils.table.contains_regex, "hola",1)
     end
 
     function TestUtils:test_table_add()
