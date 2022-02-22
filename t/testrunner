@@ -13,7 +13,7 @@ if [ -d /results ] ; then
   cd "/code"
 else
   # Running locally in Docker
-  RESULTS="./results"
+  RESULTS="$(pwd)/results"
   mkdir -p "${RESULTS}"
 fi
 

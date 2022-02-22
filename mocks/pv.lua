@@ -55,15 +55,15 @@ local pvMock = {
         t.vars = {}
         t.hdr = hdr
 
-        function t._is_xavp(id)
+        function t._is_xav(id, xtype)
             local patterns = {
-                '%$xavp%(([%w_^%[]+)%)$',
-                '%$xavp%(([%w_^%[]+)%[(%d+)%]%)$',
-                '%$xavp%(([%w_^%[]+)=>([%w_^%[]+)%)$',
-                '%$xavp%(([%w_^%[]+)%[(%d+)%]=>([%w_^%[]+)%)$',
-                '%$xavp%(([%w_^%[]+)=>([%w_^%[]+)%[(%d+)%]%)$',
-                '%$xavp%(([%w_^%[]+)%[(%d+)%]=>([%w_^%[]+)%[(%d+)%]%)$',
-                '%$xavp%(([%w_^%[]+)%[(%d+)%]=>([%w_^%[]+)%[%*%]%)$'
+                '%$'..xtype..'%(([%w_^%[]+)%)$',
+                '%$'..xtype..'%(([%w_^%[]+)%[(%d+)%]%)$',
+                '%$'..xtype..'%(([%w_^%[]+)=>([%w_^%[]+)%)$',
+                '%$'..xtype..'%(([%w_^%[]+)%[(%d+)%]=>([%w_^%[]+)%)$',
+                '%$'..xtype..'%(([%w_^%[]+)=>([%w_^%[]+)%[(%d+)%]%)$',
+                '%$'..xtype..'%(([%w_^%[]+)%[(%d+)%]=>([%w_^%[]+)%[(%d+)%]%)$',
+                '%$'..xtype..'%(([%w_^%[]+)%[(%d+)%]=>([%w_^%[]+)%[%*%]%)$'
             }
             local logger = logging.file('reports/sr_pv_%s.log', '%Y-%m-%d')
             for _,v in pairs(patterns) do
@@ -81,9 +81,38 @@ local pvMock = {
                     end
                     return { id=_id, key=key,
                             indx=indx, kindx=kindx, clean=(v==patterns[7]),
-                            type='xavp' }
+                            type=xtype }
                 end
             end
+        end
+
+        function t._is_xav_grp(result)
+            if not result then
+                return false
+            end
+            if result.type == 'xavp' then
+                return true
+            elseif result.type == 'xavi' then
+                return true
+            end
+            return false
+        end
+
+        function t._is_xavp(id)
+            return t._is_xav(id, 'xavp')
+        end
+
+        function t._is_xavi(id)
+            local result = t._is_xav(id, 'xavi')
+            if result then
+                if result.id then
+                    result.id = string.lower(result.id)
+                end
+                if result.key then
+                    result.key = string.lower(result.key)
+                end
+            end
+            return result
         end
 
         function t._clean_id(id)
@@ -184,6 +213,9 @@ local pvMock = {
                 result = t._is_pv(id)
             end
             if not result then
+                result = t._is_xavi(id)
+            end
+            if not result then
                 error(string.format("not implemented or wrong id:%s", id))
             end
             result.private_id = result.type .. ':' .. result.id
@@ -198,7 +230,7 @@ local pvMock = {
 
             if result.type == 'var' or result.type == 'dlg_var' then
                 return t.vars[result.private_id]
-            elseif result.type == 'xavp' then
+            elseif t._is_xav_grp(result) then
                 if not t.vars[result.private_id] then
                     return
                 end
@@ -265,7 +297,7 @@ local pvMock = {
             local temp
             if result.type == 'var' or result.type == 'dlg_var' then
                 t.vars[result.private_id] = value
-            elseif result.type == 'xavp' then
+            elseif t._is_xav_grp(result) then
                 if not result.indx then
                     result.indx = 0
                 end
@@ -292,7 +324,7 @@ local pvMock = {
             local temp
             if result.type == 'var' or result.type == 'dlg_var' then
                 t.vars[result.private_id] = value
-            elseif result.type == 'xavp' then
+            elseif t._is_xav_grp(result) then
                 if not result.indx then
                     if result.kindx and result.kindx ~= 0 then
                         error(string.format("kindx:%d must be 0", result.kindx))
@@ -354,7 +386,7 @@ local pvMock = {
 
         function t.unset(id)
             local result = t._is(id)
-            if result.type == 'xavp' then
+            if t._is_xav_grp(result) then
                 if t.vars[result.private_id] then
                     if not result.key then
                         if not result.indx then

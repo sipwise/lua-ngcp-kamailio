@@ -81,6 +81,17 @@ TestPVMock = {}
         lu.assertFalse(result.clean)
     end
 
+    function TestPVMock:test_is_xavi_simple()
+        local result = self.pv._is_xavi("$xavi(ID=>KEY)")
+        lu.assertNotNil(result)
+        lu.assertEquals(result.type, 'xavi')
+        lu.assertEquals(result.id, 'id')
+        lu.assertEquals(result.key, 'key')
+        lu.assertIsNil(result.indx)
+        lu.assertIsNil(result.kindx)
+        lu.assertFalse(result.clean)
+    end
+
     function TestPVMock:test_is_xavp_simple()
         local result = self.pv._is_xavp("$xavp(id=>key)")
         lu.assertNotNil(result)
@@ -323,6 +334,35 @@ TestPVMock = {}
         self.pv.sets("$xavp(g[0]=>hithere)", "value2")
         lu.assertEquals(self.pv.get("$xavp(g[0]=>hithere[0])"), "value2")
         lu.assertEquals(self.pv.get("$xavp(g[0]=>hithere[1])"), "value1")
+    end
+
+    function TestPVMock:test_xavi_sets()
+        self.pv.sets("$xavi(G=>HITHERE)", "value")
+        lu.assertEquals(self.pv.get("$xavi(g=>hithere)"), "value")
+        self.pv.sets("$xavi(g=>byeThere)", "value_bye")
+        lu.assertEquals(self.pv.get("$xavi(g=>byethere)"), "value_bye")
+    end
+
+    function TestPVMock:test_xavi_get()
+        self.pv.sets("$xavi(G=>HITHERE)", "value")
+        lu.assertNotNil(self.pv.get, "$xavi(g)")
+    end
+
+    function TestPVMock:test_unset_xavi()
+        self.pv.sets("$xavi(G=>T)", "value")
+        lu.assertEquals(self.pv.get("$xavi(g[0]=>T)"), "value")
+        self.pv.sets("$xavi(g=>t)", "value1")
+        lu.assertEquals(self.pv.get("$xavi(g[0]=>t)"), "value1")
+        lu.assertEquals(self.pv.get("$xavi(G[1]=>t)"), "value")
+        --
+        self.pv.unset("$xavi(g[0]=>T)")
+        lu.assertEquals(self.pv.get("$xavi(g[0]=>t)"), nil)
+        lu.assertEquals(self.pv.get("$xavi(g[1]=>t)"), "value")
+        --
+        self.pv.unset("$xavi(G[1])")
+        lu.assertNil(self.pv.get("$xavp(g[1])"))
+        self.pv.unset("$xavi(G)")
+        lu.assertEquals(self.pv.get("$xavi(G)"), nil)
     end
 
     function TestPVMock:test_avp_get_simple()
