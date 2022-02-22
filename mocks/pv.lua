@@ -55,6 +55,19 @@ local pvMock = {
         t.vars = {}
         t.hdr = hdr
 
+        function t._is_sht(id)
+            local patterns = {
+                '%$sht%(([%w_^%[]+)=>(.*)%)$',
+            }
+            for _,v in pairs(patterns) do
+                for table, key in string.gmatch(id, v) do
+                    return { id=table, key=key,
+                            indx=nil, kindx=nil, clean=false,
+                            type='sht' }
+                end
+            end
+        end
+
         function t._is_xav(id, xtype)
             local patterns = {
                 '%$'..xtype..'%(([%w_^%[]+)%)$',
@@ -216,6 +229,12 @@ local pvMock = {
                 result = t._is_xavi(id)
             end
             if not result then
+                result = t._is_sht(id)
+                if string.match(result.key, '^%$') then
+                    result.key = t.get(result.key)
+                end
+            end
+            if not result then
                 error(string.format("not implemented or wrong id:%s", id))
             end
             result.private_id = result.type .. ':' .. result.id
@@ -274,6 +293,14 @@ local pvMock = {
                 end
             elseif result.type == 'pv' then
                 return t.vars_pv[result.mode][result.id]
+            elseif result.type == 'sht' then
+                local key = result.key
+                if string.match(result.key, '^%$') then
+                    key = t.get(result.key)
+                end
+                if t.vars[result.private_id] and key then
+                    return t.vars[result.private_id][key]
+                end
             end
         end
 
@@ -317,6 +344,9 @@ local pvMock = {
                 t.vars[result.private_id]:push(value)
             elseif result.type == 'pv' and result.mode == 'rw' then
                 t.vars_pv.rw[result.id] = value
+            elseif result.type == 'sht' then
+                t.vars[result.private_id] = {}
+                t.vars[result.private_id][result.key] = value
             end
         end
 
@@ -352,6 +382,8 @@ local pvMock = {
                 t.vars[result.private_id]:push(value)
             elseif result.type == 'pv' and result.mode == 'rw' then
                 t.vars_pv.rw[result.id] = value
+            elseif result.type == 'sht' then
+                t.vars[result.private_id][result.key] = value
             end
         end
 
@@ -416,6 +448,10 @@ local pvMock = {
                 end
             elseif result.type == 'var' or result.type == 'dlg_var' then
                 t.vars[result.private_id] = nil
+            elseif result.type == 'sht' then
+                if t.vars[result.private_id] then
+                    t.vars[result.private_id][result.key] = nil
+                end
             end
             t.log("dbg", string.format("KSR.pv vars:%s", utable.tostring(t.vars)))
         end

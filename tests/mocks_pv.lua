@@ -81,6 +81,18 @@ TestPVMock = {}
         lu.assertFalse(result.clean)
     end
 
+    function TestPVMock:test_is_sht()
+        local result = self.pv._is_sht("$sht(t=>hola)")
+        lu.assertNotNil(result)
+        lu.assertEquals(result.type, 'sht')
+        lu.assertEquals(result.id, 't')
+        lu.assertEquals(result.key, 'hola')
+        lu.assertFalse(result.clean)
+        result = self.pv._is_sht("$sht(t=>$hola)")
+        lu.assertNotNil(result)
+        lu.assertEquals(result.key, '$hola')
+    end
+
     function TestPVMock:test_is_xavi_simple()
         local result = self.pv._is_xavi("$xavi(ID=>KEY)")
         lu.assertNotNil(result)
@@ -551,4 +563,29 @@ TestPVMock = {}
         lu.assertEquals(self.pv.getvw("$avp(hithere)"), "<<null>>")
         self.pv.seti("$avp(hithere)", 0)
         lu.assertEquals(self.pv.getvw("$avp(hithere)"), 0)
+    end
+
+    function TestPVMock:test_sht_seti()
+        self.pv.seti("$sht(t=>uno)", 1)
+        lu.assertEquals(self.pv.get("$sht(t=>uno)"), 1)
+        self.pv.seti("$sht(t=>uno)", 2)
+        lu.assertEquals(self.pv.get("$sht(t=>uno)"), 2)
+        self.pv.seti("$sht(t=>dos)", 2)
+        lu.assertEquals(self.pv.get("$sht(t=>uno)"), 2)
+        lu.assertEquals(self.pv.get("$sht(t=>dos)"), 2)
+        self.pv.sets("$var(t)", "hola")
+        lu.assertEquals(self.pv.get("$var(t)"), "hola")
+        self.pv.seti("$sht(t=>$var(t))", 3)
+        lu.assertEquals(self.pv.get("$sht(t=>$var(t))"), 3)
+    end
+
+    function TestPVMock:test_sht_unset()
+        self.pv.seti("$sht(t=>uno)", 1)
+        lu.assertEquals(self.pv.get("$sht(t=>uno)"), 1)
+        self.pv.unset("$sht(t=>uno)")
+        lu.assertNil(self.pv.get("$sht(t=>uno)"))
+        self.pv.unset("$sht(t=>nono)")
+        lu.assertNil(self.pv.get("$sht(t=>nono)"))
+        self.pv.unset("$sht(nono=>nono)")
+        lu.assertNil(self.pv.get("$sht(nono=>nono)"))
     end
