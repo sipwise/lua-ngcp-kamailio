@@ -1,5 +1,5 @@
 --
--- Copyright 2014-2020 SipWise Team <development@sipwise.com>
+-- Copyright 2014-2022 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -20,13 +20,28 @@
 local NGCPDlgCounters = {
      __class__ = 'NGCPDlgCounters'
 }
-local redis = require 'redis';
+local NGCPRedis = require 'ngcp.redis';
 local utils = require 'ngcp.utils';
 local utable = utils.table;
 
 _ENV = NGCPDlgCounters
 
--- class NGCPDlgCounters
+local defaults = {
+    central = {
+        host = '127.0.0.1',
+        port = 6379,
+        db = 3
+    },
+    pair = {
+        host = '127.0.0.1',
+        port = 6379,
+        db = 4
+    },
+    check_pair_dup = false,
+    allow_negative = false
+}
+
+  -- class NGCPDlgCounters
 local NGCPDlgCounters_MT = { __index = NGCPDlgCounters }
 
 NGCPDlgCounters_MT.__tostring = function (t)
@@ -35,55 +50,27 @@ NGCPDlgCounters_MT.__tostring = function (t)
         utable.tostring(t.pair));
 end
 -- luacheck: globals KSR
-    function NGCPDlgCounters.new()
-        local t = NGCPDlgCounters.init();
-        setmetatable( t, NGCPDlgCounters_MT );
-        return t;
+    function NGCPDlgCounters.new(config)
+        local t = NGCPDlgCounters.init(utils.merge_defaults(config, defaults))
+        setmetatable( t, NGCPDlgCounters_MT )
+        return t
     end
 
-    function NGCPDlgCounters.init()
-        local t = {
-            config = {
-                central = {
-                    host = '127.0.0.1',
-                    port = 6379,
-                    db = "3"
-                },
-                pair = {
-                    host = '127.0.0.1',
-                    port = 6379,
-                    db = "4"
-                },
-                check_pair_dup = false,
-                allow_negative = false
-            },
-            central = {},
-            pair = {}
-        };
-        return t;
-    end
-
-    function NGCPDlgCounters._test_connection(client)
-        if not client then return nil end
-        local ok, _ = pcall(client.ping, client);
-        return ok
-    end
-
-    function NGCPDlgCounters._connect(config)
-        local client = redis.connect(config.host,config.port);
-        client:select(config.db);
-        KSR.dbg(string.format("connected to redis server %s:%d at %s\n",
-            config.host, config.port, config.db));
-        return client;
+    function NGCPDlgCounters.init(config)
+        return {
+            config = config,
+            central = NGCPRedis.new(config.central),
+            pair = NGCPRedis.new(config.pair)
+        }
     end
 
     function NGCPDlgCounters._decr(self, key)
-        local res = self.central:decr(key);
+        local res = self.central.client:decr(key);
         if res == 0 then
-            self.central:del(key);
+            self.central.client:del(key);
             KSR.dbg(string.format("central:del[%s] counter is 0\n", key));
         elseif res < 0 and not self.config.allow_negative then
-            self.central:del(key);
+            self.central.client:del(key);
             KSR.warn(string.format("central:del[%s] counter was %s\n",
                 key, tostring(res)));
         else
@@ -94,10 +81,10 @@ end
     end
 
     function NGCPDlgCounters:exists(callid)
-        if not self._test_connection(self.pair) then
-            self.pair = self._connect(self.config.pair);
+        if not self.pair:test_connection() then
+            self.pair:connect()
         end
-        local res = self.pair:llen(callid)
+        local res = self.pair.client:llen(callid)
         if res > 0 then
             return true
         else
@@ -106,44 +93,44 @@ end
     end
 
     function NGCPDlgCounters:is_in_set(callid, key)
-        if not self._test_connection(self.pair) then
-            self.pair = self._connect(self.config.pair);
+        if not self.pair:test_connection() then
+            self.pair:connect()
         end
-        local res = self.pair:lrange(callid, 0, -1);
+        local res = self.pair.client:lrange(callid, 0, -1);
         return utable.contains(res, key);
     end
 
     function NGCPDlgCounters:is_in_set_regex(callid, key)
-        if not self._test_connection(self.pair) then
-            self.pair = self._connect(self.config.pair);
+        if not self.pair:test_connection() then
+            self.pair:connect()
         end
-        local res = self.pair:lrange(callid, 0, -1);
+        local res = self.pair.client:lrange(callid, 0, -1);
         return utable.contains_regex(res, key);
     end
 
     function NGCPDlgCounters:set(callid, key)
-        if not self._test_connection(self.central) then
-            self.central = self._connect(self.config.central);
+        if not self.central:test_connection() then
+            self.central:connect()
         end
-        local res = self.central:incr(key);
+        local res = self.central.client:incr(key);
         KSR.dbg(string.format("central:incr[%s]=>%s\n", key, tostring(res)));
-        if not self._test_connection(self.pair) then
-            self.pair = self._connect(self.config.pair);
+        if not self.pair:test_connection() then
+            self.pair:connect()
         end
         if self.config.check_pair_dup and self:is_in_set(callid, key) then
             local msg = "pair:check_pair_dup[%s]=>[%s] already there!\n";
             KSR.warn(msg:format(callid, key));
         end
-        local pos = self.pair:lpush(callid, key);
+        local pos = self.pair.client:lpush(callid, key);
         KSR.dbg(string.format("pair:lpush[%s]=>[%s] %s\n",
             callid, key, tostring(pos)));
     end
 
     function NGCPDlgCounters:del_key(callid, key)
-        if not self._test_connection(self.pair) then
-            self.pair = self._connect(self.config.pair);
+        if not self.pair:test_connection() then
+            self.pair:connect()
         end
-        local num = self.pair:lrem(callid, 1, key);
+        local num = self.pair.client:lrem(callid, 1, key);
         if num == 0 then
             local msg = "pair:lrem[%s]=>[%s] no such key found in list, " ..
                 "skipping decrement\n";
@@ -151,35 +138,35 @@ end
             return false;
         end
         KSR.dbg(string.format("pair:lrem[%s]=>[%s] %d\n", callid, key, num));
-        if not self._test_connection(self.central) then
-            self.central = self._connect(self.config.central);
+        if not self.central:test_connection() then
+            self.central:connect()
         end
         self:_decr(key);
     end
 
     function NGCPDlgCounters:del(callid)
-        if not self._test_connection(self.pair) then
-            self.pair = self._connect(self.config.pair);
+        if not self.pair:test_connection() then
+            self.pair:connect()
         end
-        local key = self.pair:lpop(callid);
+        local key = self.pair.client:lpop(callid);
         if not key then
             error(string.format("callid:%s list empty", callid));
         end
-        if not self._test_connection(self.central) then
-            self.central = self._connect(self.config.central);
+        if not self.central:test_connection() then
+            self.central:connect()
         end
         while key do
             self:_decr(key);
             KSR.dbg(string.format("pair:lpop[%s]=>[%s]\n", callid, key));
-            key = self.pair:lpop(callid);
+            key = self.pair.client:lpop(callid);
         end
     end
 
     function NGCPDlgCounters:get(key)
-        if not self._test_connection(self.central) then
-            self.central = self._connect(self.config.central);
+        if not self.central:test_connection() then
+            self.central:connect()
         end
-        local res = self.central:get(key);
+        local res = self.central.client:get(key);
         KSR.dbg(string.format("central:get[%s]=>%s\n", key, tostring(res)));
         return res;
     end

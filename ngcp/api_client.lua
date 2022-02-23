@@ -1,5 +1,5 @@
 --
--- Copyright 2017 SipWise Team <development@sipwise.com>
+-- Copyright 2017-2022 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -27,6 +27,13 @@ local utils = require 'ngcp.utils'
 local utable = utils.table
 _ENV = NGCPAPIClient
 
+local defaults = {
+    ip   = '127.0.0.1',
+    port = 1442,
+    user = 'system',
+    pass = 'password',
+}
+
 -- class NGCPAPIClient
 local NGCPAPIClient_MT = { __index = NGCPAPIClient }
 
@@ -34,24 +41,18 @@ NGCPAPIClient_MT.__tostring = function (t)
     return string.format("config:%s", utable.tostring(t.config))
 end
 
-function NGCPAPIClient.new()
-    local t = NGCPAPIClient.init();
+function NGCPAPIClient.new(config)
+    local t = NGCPAPIClient.init(utils.merge_defaults(config, defaults))
     setmetatable( t, NGCPAPIClient_MT )
-    return t;
+    return t
 end
 
-function NGCPAPIClient.init()
-	local t = {
-        config = {
-            ip   = '127.0.0.1',
-            port = 1442,
-            user = 'system',
-            pass = 'password',
-        },
+function NGCPAPIClient.init(config)
+	return {
+        config = config,
         c = curl.easy_init(),
         j = require 'cjson'
-    };
-    return t;
+    }
 end
 
 function NGCPAPIClient:request(method, request)

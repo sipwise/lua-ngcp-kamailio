@@ -82,6 +82,22 @@ function utils.math.random()
  -- luacheck: ignore math
 math.random = utils.math.random
 
+function utils.merge_defaults(param, defaults)
+  if not defaults then
+    error("nil defaults")
+  elseif param == nil then
+      param = {}
+  end
+  for k, v in pairs(defaults) do
+      if param[k] == nil then
+          param[k] = v
+      elseif type(v) == "table" and type(param[k]) == "table" then
+          param[k] = utils.merge_defaults(param[k], v)
+      end
+  end
+  return param
+end
+
 -- copy a table
 function ut.deepcopy(object)
     local lookup_table = {}

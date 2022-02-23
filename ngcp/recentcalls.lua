@@ -1,5 +1,5 @@
 --
--- Copyright 2015-2020 SipWise Team <development@sipwise.com>
+-- Copyright 2015-2022 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -20,63 +20,50 @@
 local NGCPRecentCalls = {
      __class__ = 'NGCPRecentCalls'
 }
-local redis = require 'redis';
+local NGCPRedis = require 'ngcp.redis';
 local utils = require 'ngcp.utils';
 local utable = utils.table
 _ENV = NGCPRecentCalls
+
+local defaults = {
+    central = {
+        host = '127.0.0.1',
+        port = 6379,
+        db = 7
+    },
+    expire = 7200,
+    out_expire = 86400
+}
 
 -- class NGCPRecentCalls
 local NGCPRecentCalls_MT = { __index = NGCPRecentCalls }
 
 NGCPRecentCalls_MT.__tostring = function (t)
-    return string.format("config:%s central:%s",
-        utable.tostring(t.config), utable.tostring(t.central))
+    return string.format("config:%s redis:%s",
+        utable.tostring(t.config), utable.tostring(t.redis))
 end
 -- luacheck: globals KSR
-    function NGCPRecentCalls.new()
-        local t = NGCPRecentCalls.init();
+    function NGCPRecentCalls.new(config)
+        local t = NGCPRecentCalls.init(utils.merge_defaults(config, defaults))
         setmetatable( t, NGCPRecentCalls_MT )
-        return t;
+        return t
     end
 
-    function NGCPRecentCalls.init()
-        local t = {
-            config = {
-                central = {
-                    host = '127.0.0.1',
-                    port = 6379,
-                    db = "7"
-                },
-                expire = 7200,
-                out_expire = 86400
-            },
-            central = {},
-        };
-        return t;
-    end
-
-    function NGCPRecentCalls._test_connection(client)
-        if not client then return nil end
-        local ok, _ = pcall(client.ping, client)
-        return ok
-    end
-
-    function NGCPRecentCalls._connect(config)
-        local client = redis.connect(config.host,config.port)
-        client:select(config.db)
-        KSR.info(string.format("connected to redis server %s:%d at %s\n",
-            config.host, config.port, config.db))
-        return client
+    function NGCPRecentCalls.init(config)
+        return {
+            config = config,
+            redis = NGCPRedis.new(config.central)
+        }
     end
 
     function NGCPRecentCalls:set_by_key(key,
                                             callid, uuid, start_time,
                                             duration, caller, callee,
                                             source)
-        if not self._test_connection(self.central) then
-            self.central = self._connect(self.config.central)
+        if not self.redis:test_connection() then
+            self.redis:connect()
         end
-        local res = self.central:hmset(key,
+        local res = self.redis.client:hmset(key,
                                         "callid", callid,
                                         "uuid", uuid,
                                         "start_time", start_time,
@@ -85,7 +72,7 @@ end
                                         "callee", callee,
                                         "source", source)
         if res then
-            self.central:expire(key, self.config.expire)
+            self.redis.client:expire(key, self.config.expire)
         end
         local msg = "central:hset[%s]=>[%s] callid: %s uuid: %s " ..
             "start_time: %s duration: %s caller: %s callee: %s source: %s expire: %d\n"
@@ -99,13 +86,13 @@ end
     end
 
     function NGCPRecentCalls:set_element_by_key(key, element, value)
-        if not self._test_connection(self.central) then
-            self.central = self._connect(self.config.central)
+        if not self.redis:test_connection() then
+            self.redis:connect()
         end
 
-        local res = self.central:hmset(key, element, value)
+        local res = self.redis.client:hmset(key, element, value)
         if res then
-            self.central:expire(key, self.config.out_expire)
+            self.redis.client:expire(key, self.config.out_expire)
         end
         KSR.info(string.format("central:hset[%s]=>[%s] %s: %s expire: %d\n",
                             key, tostring(res),
@@ -115,11 +102,11 @@ end
     end
 
     function NGCPRecentCalls:get_element_by_key(key, element)
-        if not self._test_connection(self.central) then
-            self.central = self._connect(self.config.central)
+        if not self.redis:test_connection() then
+            self.redis:connect()
         end
 
-        local res = self.central:hgetall(key)
+        local res = self.redis.client:hgetall(key)
         if res then
             KSR.info(string.format("central:hget[%s]=>[%s]\n",
                                     key, tostring(res[element])))
@@ -131,11 +118,11 @@ end
     end
 
     function NGCPRecentCalls:del_by_key(key)
-        if not self._test_connection(self.central) then
-            self.central = self._connect(self.config.central)
+        if not self.redis:test_connection() then
+            self.redis:connect()
         end
 
-        self.central:del(key)
+        self.redis.client:del(key)
         KSR.info(string.format("central:del[%s] removed\n", key));
 
         return 0

@@ -30,9 +30,8 @@ NGCPPeerPrefs.query = "SELECT * FROM %s WHERE uuid = '%s'"
 -- luacheck: globals KSR
 function NGCPPeerPrefs:new(config)
     local instance = NGCPPeerPrefs:create()
-    self.config = config
     -- creates xavp usr
-    instance:init()
+    instance:init(config)
     return instance
 end
 

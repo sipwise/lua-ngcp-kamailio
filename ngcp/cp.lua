@@ -38,9 +38,8 @@ SELECT location_id FROM provisioning.voip_contract_locations cl JOIN
 -- luacheck: globals KSR
 function NGCPContractPrefs:new(config)
     local instance = NGCPContractPrefs:create()
-    self.config = config
     -- creates xavp usr
-    instance:init()
+    instance:init(config)
     return instance
 end
 

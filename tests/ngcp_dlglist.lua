@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2020 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2022 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -41,8 +41,8 @@ function TestNGCPDlgList:setUp()
     self.dlg = NGCPDlgList.new()
     lu.assertEvalToTrue(self.dlg)
 
-    self.dlg.central = self.central;
-    self.dlg.pair = self.pair
+    self.dlg.central.client = self.central;
+    self.dlg.pair.client = self.pair
 end
 
 function TestNGCPDlgList:test_exists_ok()

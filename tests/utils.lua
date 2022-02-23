@@ -229,3 +229,18 @@ TestUtils = {}
         utils.table.merge(tmp, {1,2,3,5,4})
         lu.assertEquals(tmp, {1,2,3,5,4})
     end
+
+    function TestUtils:test_merge_defaults()
+        lu.assertError(utils.merge_defaults, {})
+        local defaults = { uno = 1, dos = "dos" }
+
+        local res = utils.merge_defaults({uno = "uno", tres = 3}, defaults)
+        lu.assertItemsEquals(res, {uno= "uno", dos = "dos", tres = 3})
+
+        res = utils.merge_defaults({other={ok = true}}, defaults)
+        lu.assertItemsEquals(res, {uno= 1, dos = "dos", other = {ok = true}})
+
+        defaults = {simple = 1, complex = { db = 1, other = 2 }}
+        res = utils.merge_defaults({complex = {other=false}}, defaults)
+        lu.assertItemsEquals(res, {simple= 1, complex = { db = 1, other = false }})
+    end

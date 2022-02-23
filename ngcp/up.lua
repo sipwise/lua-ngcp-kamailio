@@ -30,9 +30,8 @@ NGCPUserPrefs.query = "SELECT * FROM %s WHERE uuid ='%s' ORDER BY id DESC"
 -- luacheck: globals KSR
 function NGCPUserPrefs:new(config)
     local instance = NGCPUserPrefs:create()
-    self.config = config
     -- creates xavp usr
-    instance:init()
+    instance:init(config)
     return instance
 end
 

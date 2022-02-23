@@ -39,43 +39,8 @@ TestNGCPDlgCnt = {} --class
         self.dlg = NGCPDlg.new()
         lu.assertEvalToTrue(self.dlg)
 
-        self.dlg.central = self.central;
-        self.dlg.pair = self.pair
-    end
-
-    function TestNGCPDlgCnt:test_connection_ok()
-        local prev = self.central
-        self.central:ping() ;mc :returns(true)
-
-        mc:replay()
-        local ok = self.dlg._test_connection(self.central)
-        mc:verify()
-
-        lu.assertTrue(ok)
-        lu.assertIs(prev, self.central)
-    end
-
-    function TestNGCPDlgCnt:test_connection_fail()
-        local prev = self.central
-        self.central:ping() ;mc :error("error")
-
-        mc:replay()
-        local res = self.dlg._test_connection(self.central)
-        mc:verify()
-
-        lu.assertFalse(res)
-        lu.assertIs(prev, self.central)
-    end
-
-    function TestNGCPDlgCnt:test_connect_ok()
-        local c = self.dlg.config
-        self.fake_redis.connect(c.pair.host,c.pair.port) ;mc :returns(self.pair)
-        self.pair:select(c.pair.db) ;mc :returns(true)
-
-        mc:replay()
-        local res = self.dlg._connect(c.pair)
-        mc:verify()
-        lu.assertIs(res, self.pair)
+        self.dlg.central.client = self.central;
+        self.dlg.pair.client = self.pair
     end
 
     function TestNGCPDlgCnt:test_set_1()
@@ -120,8 +85,8 @@ TestNGCPDlgCnt = {} --class
         self.dlg:del("callid0")
         mc:verify()
 
-        lu.assertIs(self.dlg.central, self.central)
-        lu.assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central.client, self.central)
+        lu.assertIs(self.dlg.pair.client, self.pair)
     end
 
     function TestNGCPDlgCnt:test_del_zero()
@@ -137,8 +102,8 @@ TestNGCPDlgCnt = {} --class
         self.dlg:del("callid0")
         mc:verify()
 
-        lu.assertIs(self.dlg.central, self.central)
-        lu.assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central.client, self.central)
+        lu.assertIs(self.dlg.pair.client, self.pair)
     end
 
     function TestNGCPDlgCnt:test_del_negative()
@@ -156,8 +121,8 @@ TestNGCPDlgCnt = {} --class
         self.dlg:del("callid0")
         mc:verify()
 
-        lu.assertIs(self.dlg.central, self.central)
-        lu.assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central.client, self.central)
+        lu.assertIs(self.dlg.pair.client, self.pair)
     end
 
     function TestNGCPDlgCnt:test_del_negative_ok()
@@ -174,8 +139,8 @@ TestNGCPDlgCnt = {} --class
         self.dlg:del("callid0")
         mc:verify()
 
-        lu.assertIs(self.dlg.central, self.central)
-        lu.assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central.client, self.central)
+        lu.assertIs(self.dlg.pair.client, self.pair)
     end
 
     function TestNGCPDlgCnt:test_del_multy()
@@ -200,8 +165,8 @@ TestNGCPDlgCnt = {} --class
         self.dlg:del("callid0")
         mc:verify()
 
-        lu.assertIs(self.dlg.central, self.central)
-        lu.assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central.client, self.central)
+        lu.assertIs(self.dlg.pair.client, self.pair)
     end
 
     function TestNGCPDlgCnt:test_is_in_set_fail()
@@ -212,8 +177,8 @@ TestNGCPDlgCnt = {} --class
         local res = self.dlg:is_in_set("callid0", "fake")
         mc:verify()
 
-        lu.assertIs(self.dlg.central, self.central)
-        lu.assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central.client, self.central)
+        lu.assertIs(self.dlg.pair.client, self.pair)
         lu.assertFalse(res)
     end
 
@@ -225,8 +190,8 @@ TestNGCPDlgCnt = {} --class
         local res = self.dlg:is_in_set("callid0", "fake")
         mc:verify()
 
-        lu.assertIs(self.dlg.central, self.central)
-        lu.assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central.client, self.central)
+        lu.assertIs(self.dlg.pair.client, self.pair)
         lu.assertTrue(res)
     end
 
@@ -238,8 +203,8 @@ TestNGCPDlgCnt = {} --class
         local res = self.dlg:is_in_set_regex("callid0", "^user:")
         mc:verify()
 
-        lu.assertIs(self.dlg.central, self.central)
-        lu.assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central.client, self.central)
+        lu.assertIs(self.dlg.pair.client, self.pair)
         lu.assertTrue(res)
     end
 
@@ -251,8 +216,8 @@ TestNGCPDlgCnt = {} --class
         local res = self.dlg:is_in_set_regex("callid0", "^ser:")
         mc:verify()
 
-        lu.assertIs(self.dlg.central, self.central)
-        lu.assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central.client, self.central)
+        lu.assertIs(self.dlg.pair.client, self.pair)
         lu.assertFalse(res)
     end
 
@@ -267,8 +232,8 @@ TestNGCPDlgCnt = {} --class
         self.dlg:del_key("callid0", "key1")
         mc:verify()
 
-        lu.assertIs(self.dlg.central, self.central)
-        lu.assertIs(self.dlg.pair, self.pair)
+        lu.assertIs(self.dlg.central.client, self.central)
+        lu.assertIs(self.dlg.pair.client, self.pair)
     end
 
 -- class TestNGCPDlgCnt

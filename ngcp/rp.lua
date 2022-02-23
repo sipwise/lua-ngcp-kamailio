@@ -34,9 +34,8 @@ NGCPRealPrefs.group = "real_prefs"
 -- luacheck: globals KSR
 function NGCPRealPrefs:new(config)
     local instance = NGCPRealPrefs:create()
-    self.config = config
     -- creates xavp usr
-    instance:init()
+    instance:init(config)
     return instance
 end
 

@@ -32,9 +32,8 @@ NGCPFaxPrefs.query = "SELECT fp.* FROM %s fp, provisioning.voip_subscribers s"..
 -- luacheck: globals KSR
 function NGCPFaxPrefs:new(config)
     local instance = NGCPFaxPrefs:create()
-    self.config = config
     -- creates xavp usr
-    instance:init()
+    instance:init(config)
     return instance
 end
 

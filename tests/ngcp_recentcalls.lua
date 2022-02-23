@@ -1,5 +1,5 @@
 --
--- Copyright 2014-2020 SipWise Team <development@sipwise.com>
+-- Copyright 2014-2022 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -39,32 +39,16 @@ TestNGCPRecentCalls = {} --class
 
         self.rcalls = NGCPRecentCalls.new()
         lu.assertNotNil(self.rcalls)
-
-        self.rcalls.central = self.central;
+        lu.assertNotNil(self.rcalls.redis)
+        lu.assertNotNil(self.rcalls.redis.config)
+        self.rcalls.redis.client = self.central;
     end
 
-    function TestNGCPRecentCalls:test_connection_ok()
-        local prev = self.central
-        self.central:ping() ;mc :returns(true)
-
-        mc:replay()
-        local ok = self.rcalls._test_connection(self.central)
-        mc:verify()
-
-        lu.assertTrue(ok)
-        lu.assertIs(prev, self.central)
-    end
-
-    function TestNGCPRecentCalls:test_connection_fail()
-        local prev = self.central
-        self.central:ping() ;mc :error("error")
-
-        mc:replay()
-        local res = self.rcalls._test_connection(self.central)
-        mc:verify()
-
-        lu.assertFalse(res)
-        lu.assertIs(prev, self.central)
+    function TestNGCPRecentCalls:test_config()
+        local NGCPRecentCalls = require 'ngcp.recentcalls'
+        rcalls = NGCPRecentCalls.new({central = {db = 10}})
+        lu.assertEquals(rcalls.config.central.db, 10)
+        lu.assertNotNil(rcalls.config.central.port)
     end
 
     function TestNGCPRecentCalls:test_set_by_key()
@@ -98,8 +82,38 @@ TestNGCPRecentCalls = {} --class
         mc:verify()
 
         lu.assertTrue(res)
-        lu.assertIs(self.rcalls.central, self.central)
+        lu.assertIs(self.rcalls.redis.client, self.central)
     end
 
+    function TestNGCPRecentCalls:test_set_by_key_ko()
+        local ttl        = 7200
+        local key        = "431110001"
+        local uuid       = "9bcb88b6-541a-43da-8fdc-816f5557ff93"
+        local callid     = "12345-67890"
+        local start_time = "1439911398"
+        local duration   = 11
+        local caller     = "437712345"
+        local callee     = "437754321"
+        local source     = "SIPWISE_1"
+
+        self.central:ping() ;mc :returns(true)
+        self.central:hmset(key,  "callid", callid,
+                                 "uuid", uuid,
+                                 "start_time", start_time,
+                                 "duration", duration,
+                                 "caller", caller,
+                                 "callee", callee,
+                                 "source", source) ;mc :returns(false)
+
+        mc:replay()
+        local res = self.rcalls:set_by_key(key,
+                                            callid, uuid,
+                                            start_time, duration,
+                                            caller, callee,
+                                            source)
+        mc:verify()
+        lu.assertFalse(res)
+        lu.assertIs(self.rcalls.redis.client, self.central)
+    end
 -- class TestNGCPRecentCalls
 --EOF

@@ -36,7 +36,8 @@ function NGCPPrefs.__tostring(self)
     return output
 end
 -- luacheck: globals KSR
-function NGCPPrefs:init()
+function NGCPPrefs:init(config)
+    self.config = config
     for _,v in pairs(self.levels) do
         NGCPXAvp.init(v, self.group)
     end

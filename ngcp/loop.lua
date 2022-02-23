@@ -1,5 +1,5 @@
 --
--- Copyright 2016-2020 SipWise Team <development@sipwise.com>
+-- Copyright 2016-2022 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -20,11 +20,19 @@
 local NGCPLoop = {
      __class__ = 'NGCPLoop'
 }
-local redis = require 'redis';
+local NGCPRedis = require 'ngcp.redis';
 local utils = require 'ngcp.utils';
 local utable = utils.table
 
 _ENV = NGCPLoop
+
+local defaults = {
+    host = '127.0.0.1',
+    port = 6379,
+    db = 3,
+    expire = 5,
+    max = 5
+}
 
 -- class NGCPLoop
 local NGCPLoop_MT = { __index = NGCPLoop }
@@ -34,49 +42,29 @@ NGCPLoop_MT.__tostring = function (t)
         utable.tostring(t.config));
 end
 -- luacheck: globals KSR
-    function NGCPLoop.new()
-        local t = NGCPLoop.init();
-        setmetatable( t, NGCPLoop_MT );
-        return t;
+    function NGCPLoop.new(config)
+        local t = NGCPLoop.init(utils.merge_defaults(config, defaults))
+        setmetatable( t, NGCPLoop_MT )
+        return t
     end
 
-    function NGCPLoop.init()
-        local t = {
-            config = {
-                host = '127.0.0.1',
-                port = 6379,
-                db = "3",
-                expire = 5,
-                max = 5
-            },
-            client = {}
-        };
-        return t;
-    end
-
-    local function _test_connection(client)
-        if not client then return nil end
-        local ok, _ = pcall(client.ping, client);
-        return ok
-    end
-
-    local function _connect(config)
-        local client = redis.connect(config.host,config.port);
-        client:select(config.db);
-        KSR.dbg(string.format("connected to redis server %s:%d at %s\n",
-            config.host, config.port, config.db));
-        return client;
+    function NGCPLoop.init(config)
+        return {
+            config = config,
+            redis = NGCPRedis.new(config)
+        }
     end
 
     function NGCPLoop:add(fu, tu, ru)
-        if not _test_connection(self.client) then
-            self.client = _connect(self.config);
+        if not self.redis:test_connection() then
+            self.redis:connect()
         end
+
         local key = string.format("%s;%s;%s",
             tostring(fu), tostring(tu), tostring(ru));
-        local res = self.client:incr(key);
+        local res = self.redis.client:incr(key);
         if res == 1 then
-            self.client:expire(key, self.config.expire);
+            self.redis.client:expire(key, self.config.expire);
         end
         KSR.dbg(string.format("[%s]=>[%s] expires:%s\n",
             key, tostring(res), tostring(self.config.expires)));

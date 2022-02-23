@@ -31,9 +31,8 @@ NGCPProfilePrefs.query = "SELECT prefs.* FROM provisioning.voip_subscribers "..
 -- luacheck: globals KSR
 function NGCPProfilePrefs:new(config)
     local instance = NGCPProfilePrefs:create()
-    self.config = config
     -- creates xavp usr
-    instance:init()
+    instance:init(config)
     return instance
 end
 

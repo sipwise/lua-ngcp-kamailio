@@ -78,6 +78,12 @@ TestNGCP = {} --class
         lu.assertIsNil(self.ngcp.config.con)
     end
 
+    function TestNGCP:test_custom_config()
+        local ngcp = NGCP:new({db_port=1111})
+        lu.assertEquals(ngcp.config.db_port, 1111)
+        lu.assertEquals(ngcp.config.default.usr.ringtimeout, 180)
+    end
+
     function TestNGCP:test_config_get_defaults_all()
         local defaults = NGCPConfig.get_defaults(self.ngcp.config, 'peer')
         lu.assertItemsEquals(defaults, self.ngcp.config.default.peer)

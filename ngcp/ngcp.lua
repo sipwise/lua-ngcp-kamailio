@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2020 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2022 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -41,14 +41,14 @@ function NGCP:__tostring()
     return output
 end
 
-function NGCP:new()
+function NGCP:new(config)
     local instance = NGCP:create()
-    instance:init()
+    instance:init(config)
     return instance
 end
 
-function NGCP:init()
-    self.config = NGCPConfig:new()
+function NGCP:init(config)
+    self.config = NGCPConfig:new(config)
     self.prefs = {
         dom      = NGCPDomainPrefs:new(self.config),
         prof     = NGCPProfilePrefs:new(self.config),

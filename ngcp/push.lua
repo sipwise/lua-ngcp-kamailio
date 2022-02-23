@@ -1,5 +1,5 @@
 --
--- Copyright 2021 SipWise Team <development@sipwise.com>
+-- Copyright 2022 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -21,11 +21,20 @@
 local NGCPPush = {
      __class__ = 'NGCPPush'
 }
-local redis = require 'redis';
+local NGCPRedis = require 'ngcp.redis';
 local curl = require 'curl'
 local utils = require 'ngcp.utils'
 local utable = utils.table
 local separator = "#"
+
+local defaults = {
+    url   = 'http://127.0.0.1:45059/push',
+    central = {
+        host = '127.0.0.1',
+        port = 6379,
+        db = 3
+    },
+}
 
 -- class NGCPPush
 local NGCPPush_MT = { __index = NGCPPush }
@@ -34,40 +43,18 @@ NGCPPush_MT.__tostring = function (t)
     return string.format("config:%s", utable.tostring(t.config))
 end
 
-function NGCPPush.new()
-    local t = NGCPPush.init();
+function NGCPPush.new(config)
+    local t = NGCPPush.init(utils.merge_defaults(config, defaults));
     setmetatable( t, NGCPPush_MT )
     return t;
 end
 
-function NGCPPush.init()
-    local t = {
-        config = {
-            url   = 'http://127.0.0.1:45059/push',
-            central = {
-                host = '127.0.0.1',
-                port = 6379,
-                db = "3"
-            },
-        },
+function NGCPPush.init(config)
+    return {
+        config = config,
         c = curl.easy_init(),
-        client = {},
-    };
-    return t;
-end
-
-function NGCPPush:_test_connection()
-    if not self.client then return nil end
-    local ok, _ = pcall(self.client.ping, self.client);
-    return ok
-end
-
-function NGCPPush:_connect()
-    local config = self.config.central
-    self.client = redis.connect(config.host, config.port);
-    self.client:select(config.db);
-    KSR.dbg(string.format("connected to redis server %s:%d at %s\n",
-        config.host, config.port, config.db));
+        redis = NGCPRedis.new(config.central)
+    }
 end
 
 function NGCPPush:len(key, node)
@@ -89,22 +76,22 @@ local function value_base(v)
 end
 
 function NGCPPush:add(v)
-    if not self:_test_connection() then
-        self:_connect();
+    if not self.redis:test_connection() then
+        self.redis:connect()
     end
     local val_base = value_base(v)
     local val = v.callid.. separator ..val_base
-    local pos = self.client:lpush(v.key, val)
+    local pos = self.redis.client:lpush(v.key, val)
     KSR.dbg(string.format("lpush[%s]=>[%s] %s\n",
         v.key, val, tostring(pos)));
 
     val = v.key .. separator .. val_base
-    pos = self.client:lpush(v.callid, val)
+    pos = self.redis.client:lpush(v.callid, val)
     KSR.dbg(string.format("lpush[%s]=>[%s] %s\n",
         v.callid, val, tostring(pos)));
     if v.expire then
-        self.client:expire(v.key, v.expire)
-        self.client:expire(v.callid, v.expire)
+        self.redis.client:expire(v.key, v.expire)
+        self.redis.client:expire(v.callid, v.expire)
         KSR.dbg(string.format(
             "set expire %d for keys:[%s, %s]", v.expire, v.key, v.callid));
     end
@@ -123,54 +110,54 @@ local function insert_val(res, v, key_name)
 end
 
 function NGCPPush:get(key)
-    if not self:_test_connection() then
-        self:_connect();
+    if not self.redis:test_connection() then
+        self.redis:connect()
     end
     local res = {}
-    for _,v in pairs(self.client:lrange(key, 0, -1)) do
+    for _,v in pairs(self.redis.client:lrange(key, 0, -1)) do
         insert_val(res, v, "callid")
     end
     return res
 end
 
 function NGCPPush:callid_get(callid)
-    if not self:_test_connection() then
-        self:_connect();
+    if not self.redis:test_connection() then
+        self.redis:connect()
     end
     local res = {}
-    for _,v in pairs(self.client:lrange(callid, 0, -1)) do
+    for _,v in pairs(self.redis.client:lrange(callid, 0, -1)) do
         insert_val(res, v, "key")
     end
     return res
 end
 
 function NGCPPush:del(v)
-    if not self:_test_connection() then
-        self:_connect();
+    if not self.redis:test_connection() then
+        self.redis:connect()
     end
     local val_base = value_base(v)
     local val = v.callid.. separator ..val_base
-    local res = self.client:lrem(v.key, 0, val)
+    local res = self.redis.client:lrem(v.key, 0, val)
     KSR.dbg(string.format("lrem[%s] all [%s] %s\n",
             v.key, val, tostring(res)));
-    if self.client:llen(v.key) == 0 then
+    if self.redis.client:llen(v.key) == 0 then
         self:clear(v.key)
     end
 
     val = v.key .. separator .. val_base
-    res = self.client:lrem(v.callid, 0, val)
+    res = self.redis.client:lrem(v.callid, 0, val)
     KSR.dbg(string.format("lrem[%s] all [%s] %s\n",
             v.callid, val, tostring(res)));
-    if self.client:llen(v.callid) == 0 then
-        self.client:del(v.callid)
+    if self.redis.client:llen(v.callid) == 0 then
+        self.redis.client:del(v.callid)
     end
 end
 
 function NGCPPush:clear(key)
-    if not self:_test_connection() then
-        self:_connect();
+    if not self.redis:test_connection() then
+        self.redis:connect()
     end
-    local res = self.client:del(key)
+    local res = self.redis.client:del(key)
     KSR.dbg(string.format("del[%s] %s\n", key, tostring(res)));
 end
 

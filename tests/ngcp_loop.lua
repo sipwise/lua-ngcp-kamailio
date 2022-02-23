@@ -40,7 +40,7 @@ function TestNGCPLoop:setUp()
     self.loop = NGCPLoop.new()
     lu.assertNotNil(self.loop)
 
-    self.loop.client = self.client;
+    self.loop.redis.client = self.client;
     self.loop.config.max = 5;
     self.loop.config.expire = 1;
 end

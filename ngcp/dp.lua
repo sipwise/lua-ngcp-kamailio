@@ -30,9 +30,8 @@ NGCPDomainPrefs.query = "SELECT * FROM %s WHERE domain ='%s'"
 -- luacheck: globals KSR
 function NGCPDomainPrefs:new(config)
     local instance = NGCPDomainPrefs:create()
-    self.config = config
     -- creates xavp usr
-    instance:init()
+    instance:init(config)
     return instance
 end
 
