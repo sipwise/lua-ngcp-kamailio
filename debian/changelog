@@ -1,3 +1,13 @@
+lua-ngcp-kamailio (10.2.1.2+0~mr10.2.1.2) unstable; urgency=medium
+
+  [ Marco Capetta ]
+  * [f342132] TT#156754 Add the new function NGCPDlgCounters:is_in_set_regex
+
+  [ Victor Seva ]
+  * [986323c] TT#165251 redis: force socket close on ping error
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 01 Mar 2022 13:28:37 +0100
+
 lua-ngcp-kamailio (10.2.1.1+0~mr10.2.1.1) unstable; urgency=medium
 
   * New release.
