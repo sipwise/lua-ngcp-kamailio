@@ -59,6 +59,12 @@ end
 function NGCPPush:_test_connection()
     if not self.client then return nil end
     local ok, _ = pcall(self.client.ping, self.client);
+    if not ok then
+        KSR.info(string.format("close redis server[%d]\n",
+          self.client.network.socket:getfd()))
+        self.client.network.socket:close()
+        self.client = nil
+    end
     return ok
 end
 
