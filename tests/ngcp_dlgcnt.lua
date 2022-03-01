@@ -19,6 +19,7 @@
 --
 local lemock = require('lemock')
 local lu = require('luaunit')
+local utils = require 'ngcp.utils'
 
 local ksrMock = require 'mocks.ksr'
 KSR = ksrMock:new()
@@ -30,7 +31,10 @@ TestNGCPDlgCnt = {} --class
     function TestNGCPDlgCnt:setUp()
         mc = lemock.controller()
         self.fake_redis = mc:mock()
-        self.central = mc:mock()
+        local fake_client = utils.inheritsFrom(mc:mock())
+        self.socket = mc:mock()
+        fake_client.network = { socket = self.socket }
+        self.central = fake_client:create()
         self.pair = mc:mock()
 
         package.loaded.redis = self.fake_redis
@@ -58,6 +62,8 @@ TestNGCPDlgCnt = {} --class
     function TestNGCPDlgCnt:test_connection_fail()
         local prev = self.central
         self.central:ping() ;mc :error("error")
+        self.socket:getfd() ;mc:returns(3)
+        self.socket:close() ;mc:returns(true)
 
         mc:replay()
         local res = self.dlg._test_connection(self.central)
