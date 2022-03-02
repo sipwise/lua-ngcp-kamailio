@@ -57,8 +57,6 @@ end
                 check_pair_dup = false,
                 allow_negative = false
             },
-            central = {},
-            pair = {}
         };
         return t;
     end
