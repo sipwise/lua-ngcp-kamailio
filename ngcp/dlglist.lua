@@ -56,8 +56,6 @@ end
                 },
                 check_pair_dup = false
             },
-            central = {},
-            pair = {}
         };
         return t;
     end
