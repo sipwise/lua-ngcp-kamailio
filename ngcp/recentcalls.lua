@@ -50,7 +50,6 @@ end
                 expire = 7200,
                 out_expire = 86400
             },
-            central = {},
         };
         return t;
     end
