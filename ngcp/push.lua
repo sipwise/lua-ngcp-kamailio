@@ -51,7 +51,6 @@ function NGCPPush.init()
             },
         },
         c = curl.easy_init(),
-        client = {},
     };
     return t;
 end
