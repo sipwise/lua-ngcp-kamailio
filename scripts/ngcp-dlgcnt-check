@@ -31,8 +31,8 @@ if ! ngcp-check-active -q ; then
 fi
 
 # read kamailio.proxy.dlgcnt.pair_redis_db
-REDIS_DB="$(ngcp-dlgcnt-clean -c 2>/dev/null|| echo 4)"
-host="$(ngcp-dlgcnt-clean -C 2>/dev/null|| echo localhost)"
+REDIS_DB="$(ngcp-dlgcnt-clean -c fake 2>/dev/null|| echo 4)"
+host="$(ngcp-dlgcnt-clean -C fake 2>/dev/null|| echo localhost)"
 
 # redis full list
 REDIS_CALLIDS=$(mktemp)

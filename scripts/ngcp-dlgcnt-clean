@@ -1,6 +1,5 @@
 #!/usr/bin/env lua5.1
 --local ut = require 'ngcp.utils'.table
-local NGCPDlg = require 'ngcp.dlgcnt'
 local config = "/etc/kamailio/proxy/dlgcnt.lua.cfg"
 
 local argparse = require "argparse"
@@ -53,15 +52,24 @@ local args = parser:parse()
 
 get_config()
 
-local dlg = NGCPDlg:new()
-
 if args.config_db then
-	print(tostring(dlg_config.pair.db))
+	local val = 4
+	if dlg_config then
+		val = dlg_config.pair.db
+	end
+	print(tostring(val))
 	os.exit(0)
 elseif args.config_host then
-	print(tostring(dlg_config.pair.host))
+	local val = "127.0.0.1"
+	if dlg_config then
+		val = dlg_config.pair.host
+	end
+	print(tostring(val))
 	os.exit(0)
 end
+
+local NGCPDlg = require 'ngcp.dlgcnt'
+local dlg = NGCPDlg:new()
 
 if dlg_config then
 	dlg.config.central.host = dlg_config.central.host
