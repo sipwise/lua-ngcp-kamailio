@@ -24,11 +24,12 @@ local lemock = require ('lemock')
 local hdrMock = require 'mocks.hdr'
 local pvMock = require 'mocks.pv'
 local pvxMock = require 'mocks.pvx'
+local logfile = "reports/ksr_%s.log"
 
 -- class srMock
 local ksrMock = {
     __class__ = 'ksrMock',
-    _logger = log_file("reports/ksr_%s.log", "%Y-%m-%d"),
+    _logger = log_file(logfile, "%Y-%m-%d"),
     _logger_levels = {
         dbg  = logging.DEBUG,
         info = logging.INFO,
@@ -40,6 +41,10 @@ local ksrMock = {
 local ksrMock_MT = { __index = ksrMock, __newindex = lemock.controller():mock() }
     function ksrMock.new()
         local t = {}
+        if os.getenv('RESULTS') then
+            local file = os.getenv('RESULTS').."/"..logfile
+            t._logger = log_file(file, "%Y-%m-%d")
+        end
         t.hdr = hdrMock.new()
         t.pv = pvMock.new(t.hdr)
             function t.log(level, message)
