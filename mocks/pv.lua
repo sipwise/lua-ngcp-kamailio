@@ -55,6 +55,25 @@ local pvMock = {
         t.vars = {}
         t.hdr = hdr
 
+        function t._is_pvheader(id)
+            local patterns = {
+                '%$(x_%l+)%(([%w_-]+)%)$',
+                '%$%((x_%l+)%(([%w_-]+)%)%)$',
+                '%$%((x_%l+)%(([%w_-]+)%)%[%*%]%)$',
+                '%$%((x_%l+)%(([%w_-]+)%)%[(%d+)%]%)$',
+            }
+            for _,v in pairs(patterns) do
+                for _type, key, indx in string.gmatch(id, v) do
+                    if _ == 4 then
+                        indx = tonumber(indx)
+                    end
+                    return { id=string.lower(key),
+                             indx=indx, clean=(v==patterns[3]),
+                             type=_type }
+                end
+            end
+        end
+
         function t._is_sht(id)
             local patterns = {
                 '%$sht%(([%w_^%[]+)=>(.*)%)$',
@@ -230,8 +249,14 @@ local pvMock = {
             end
             if not result then
                 result = t._is_sht(id)
-                if string.match(result.key, '^%$') then
+                if result and string.match(result.key, '^%$') then
                     result.key = t.get(result.key)
+                end
+            end
+            if not result then
+                result = t._is_pvheader(id)
+                if result and string.match(result.id, '^%$') then
+                    result.id = string.lower(t.get(result.id))
                 end
             end
             if not result then
@@ -274,7 +299,7 @@ local pvMock = {
                         end
                     end
                 end
-            elseif result.type == 'avp' then
+            elseif result.type == 'avp' or result.type == 'x_hdr' then
                 if t.vars[result.private_id] then
                     if not result.indx then
                         result.indx = 0
@@ -339,7 +364,7 @@ local pvMock = {
                 temp[result.key] = utils.Stack:new()
                 temp[result.key]:push(value)
                 t.vars[result.private_id]:push(temp)
-            elseif result.type == 'avp' then
+            elseif result.type == 'avp' or result.type == 'x_hdr' then
                 t.vars[result.private_id] = utils.Stack:new()
                 t.vars[result.private_id]:push(value)
             elseif result.type == 'pv' and result.mode == 'rw' then
@@ -378,7 +403,7 @@ local pvMock = {
                     end
                     t.vars[result.private_id][result.indx][result.key]:push(value)
                 end
-            elseif result.type == 'avp' then
+            elseif result.type == 'avp' or result.type == 'x_hdr' then
                 t.vars[result.private_id]:push(value)
             elseif result.type == 'pv' and result.mode == 'rw' then
                 t.vars_pv.rw[result.id] = value
@@ -438,7 +463,7 @@ local pvMock = {
                     -- xavp(g[1]=>k)
                     t.vars[result.private_id][result.indx][result.key] = nil
                 end
-            elseif result.type == 'avp' then
+            elseif result.type == 'avp' or result.type == 'x_hdr' then
                 if result.clean then
                     t.vars[result.private_id] = nil
                     return

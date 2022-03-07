@@ -93,6 +93,39 @@ TestPVMock = {}
         lu.assertEquals(result.key, '$hola')
     end
 
+    function TestPVMock:test_is_pvheader()
+        local result = self.pv._is_pvheader("$x_hdr(From)")
+        lu.assertNotNil(result)
+        lu.assertEquals(result.type, 'x_hdr')
+        lu.assertEquals(result.id, 'from')
+        lu.assertIsNil(result.key)
+        lu.assertIsNil(result.indx)
+        lu.assertIsNil(result.kindx)
+        lu.assertFalse(result.clean)
+    end
+
+    function TestPVMock:test_is_pvheader_indx()
+        local result = self.pv._is_pvheader("$(x_hdr(P-Asserted-Identity)[2])")
+        lu.assertNotNil(result)
+        lu.assertEquals(result.type, 'x_hdr')
+        lu.assertEquals(result.id, 'p-asserted-identity')
+        lu.assertIsNil(result.key)
+        lu.assertEquals(result.indx, 2)
+        lu.assertIsNil(result.kindx)
+        lu.assertFalse(result.clean)
+    end
+
+    function TestPVMock:test_is_pvheader_clean()
+        local result = self.pv._is_pvheader("$(x_hdr(P-Asserted-Identity)[*])")
+        lu.assertNotNil(result)
+        lu.assertEquals(result.type, 'x_hdr')
+        lu.assertEquals(result.id, 'p-asserted-identity')
+        lu.assertIsNil(result.key)
+        lu.assertNil(result.indx)
+        lu.assertIsNil(result.kindx)
+        lu.assertTrue(result.clean)
+    end
+
     function TestPVMock:test_is_xavi_simple()
         local result = self.pv._is_xavi("$xavi(ID=>KEY)")
         lu.assertNotNil(result)
@@ -588,4 +621,17 @@ TestPVMock = {}
         lu.assertNil(self.pv.get("$sht(t=>nono)"))
         self.pv.unset("$sht(nono=>nono)")
         lu.assertNil(self.pv.get("$sht(nono=>nono)"))
+    end
+
+    function TestPVMock:test_x_hdr_sets()
+        local value = "+43567890"
+        self.pv.sets("$x_hdr(P-Asserted-Identity)", value)
+        lu.assertEquals(self.pv.get("$x_hdr(p-asserted-Identity)"), value)
+    end
+
+    function TestPVMock:test_x_hdr_unset()
+        self.pv.sets("$x_hdr(P-Asserted-Identity)", "+43567890")
+        lu.assertNotNil(self.pv.get("$x_hdr(P-Asserted-Identity)"))
+        self.pv.unset("$x_hdr(P-Asserted-Identity)")
+        lu.assertNil(self.pv.get("$x_hdr(P-Asserted-identity)"))
     end
