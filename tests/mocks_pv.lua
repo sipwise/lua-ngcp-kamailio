@@ -635,3 +635,11 @@ TestPVMock = {}
         self.pv.unset("$x_hdr(P-Asserted-Identity)")
         lu.assertNil(self.pv.get("$x_hdr(P-Asserted-identity)"))
     end
+
+    function TestPVMock:test_is_dash()
+        lu.assertNotNil(self.pv._is('$var(P-hola)'))
+        lu.assertNotNil(self.pv._is('$avp(P-hola)'))
+        lu.assertNotNil(self.pv._is('$x_hdr(P-hola)'))
+        lu.assertNotNil(self.pv._is('$sht(hola-hola=>adios-uno)'))
+        lu.assertNotNil(self.pv._is('$xavi(P-hola=>adios)'))
+    end

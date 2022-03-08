@@ -57,10 +57,10 @@ local pvMock = {
 
         function t._is_pvheader(id)
             local patterns = {
-                '%$(x_%l+)%(([%w_-]+)%)$',
-                '%$%((x_%l+)%(([%w_-]+)%)%)$',
-                '%$%((x_%l+)%(([%w_-]+)%)%[%*%]%)$',
-                '%$%((x_%l+)%(([%w_-]+)%)%[(%d+)%]%)$',
+                '%$(x_%l+)%(([%w_%-]+)%)$',
+                '%$%((x_%l+)%(([%w_%-]+)%)%)$',
+                '%$%((x_%l+)%(([%w_%-]+)%)%[%*%]%)$',
+                '%$%((x_%l+)%(([%w_%-]+)%)%[(%d+)%]%)$',
             }
             for _,v in pairs(patterns) do
                 for _type, key, indx in string.gmatch(id, v) do
@@ -76,7 +76,7 @@ local pvMock = {
 
         function t._is_sht(id)
             local patterns = {
-                '%$sht%(([%w_^%[]+)=>(.*)%)$',
+                '%$sht%(([%w_%-^%[]+)=>(.*)%)$',
             }
             for _,v in pairs(patterns) do
                 for table, key in string.gmatch(id, v) do
@@ -89,13 +89,13 @@ local pvMock = {
 
         function t._is_xav(id, xtype)
             local patterns = {
-                '%$'..xtype..'%(([%w_^%[]+)%)$',
-                '%$'..xtype..'%(([%w_^%[]+)%[(%d+)%]%)$',
-                '%$'..xtype..'%(([%w_^%[]+)=>([%w_^%[]+)%)$',
-                '%$'..xtype..'%(([%w_^%[]+)%[(%d+)%]=>([%w_^%[]+)%)$',
-                '%$'..xtype..'%(([%w_^%[]+)=>([%w_^%[]+)%[(%d+)%]%)$',
-                '%$'..xtype..'%(([%w_^%[]+)%[(%d+)%]=>([%w_^%[]+)%[(%d+)%]%)$',
-                '%$'..xtype..'%(([%w_^%[]+)%[(%d+)%]=>([%w_^%[]+)%[%*%]%)$'
+                '%$'..xtype..'%(([%w_%-^%[]+)%)$',
+                '%$'..xtype..'%(([%w_%-^%[]+)%[(%d+)%]%)$',
+                '%$'..xtype..'%(([%w_%-^%[]+)=>([%w_%-^%[]+)%)$',
+                '%$'..xtype..'%(([%w_%-^%[]+)%[(%d+)%]=>([%w_%-^%[]+)%)$',
+                '%$'..xtype..'%(([%w_%-^%[]+)=>([%w_%-^%[]+)%[(%d+)%]%)$',
+                '%$'..xtype..'%(([%w_%-^%[]+)%[(%d+)%]=>([%w_%-^%[]+)%[(%d+)%]%)$',
+                '%$'..xtype..'%(([%w_%-^%[]+)%[(%d+)%]=>([%w_%-^%[]+)%[%*%]%)$'
             }
             local logger = logging.file('reports/sr_pv_%s.log', '%Y-%m-%d')
             for _,v in pairs(patterns) do
@@ -157,10 +157,10 @@ local pvMock = {
         function t._is_avp(id)
             local _id
             local patterns = {
-                '%$avp%(([%w_]+)%)$',
-                '%$%(avp%(([%w_]+)%)%)$',
-                '%$%(avp%(([%w_]+)%)%[%*%]%)$',
-                '%$%(avp%(([%w_]+)%)%[(%d+)%]%)$',
+                '%$avp%(([%w_%-]+)%)$',
+                '%$%(avp%(([%w_%-]+)%)%)$',
+                '%$%(avp%(([%w_%-]+)%)%[%*%]%)$',
+                '%$%(avp%(([%w_%-]+)%)%[(%d+)%]%)$',
             }
             _id = t._clean_id(id)
             for _,v in pairs(patterns) do
@@ -175,8 +175,8 @@ local pvMock = {
 
         function t._is_var(id)
             local patterns = {
-                '%$var%(([%w_]+)%)$',
-                '%$%(var%(([%w_]+)%)%)$',
+                '%$var%(([%w_%-]+)%)$',
+                '%$%(var%(([%w_%-]+)%)%)$',
             }
             for _,v in pairs(patterns) do
                 for key in string.gmatch(id, v) do
@@ -187,8 +187,8 @@ local pvMock = {
 
         function t._is_dlg_var(id)
             local patterns = {
-                '%$dlg_var%(([%w_]+)%)$',
-                '%$%(dlg_var%(([%w_]+)%)%)$',
+                '%$dlg_var%(([%w_%-]+)%)$',
+                '%$%(dlg_var%(([%w_%-]+)%)%)$',
             }
             for _,v in pairs(patterns) do
                 for key in string.gmatch(id, v) do
