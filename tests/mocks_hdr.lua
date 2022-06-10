@@ -24,7 +24,7 @@ local hdrMock = require 'mocks.hdr'
 -- luacheck: ignore TestHDRMock
 TestHDRMock = {}
     function TestHDRMock:setUp()
-        self.hdr = hdrMock.new()
+        self.hdr = hdrMock:new()
     end
 
     function TestHDRMock:tearDown()

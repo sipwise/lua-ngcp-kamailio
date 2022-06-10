@@ -21,7 +21,7 @@ local lu = require('luaunit')
 local NGCPPrefs = require 'ngcp.pref'
 -- luacheck: globals KSR
 local ksrMock = require 'mocks.ksr'
-KSR = ksrMock.new()
+KSR = ksrMock:new()
 
 -- luacheck: ignore TestNGCPPrefs
 TestNGCPPrefs = {} --class

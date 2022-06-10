@@ -25,7 +25,7 @@ local PPFetch = require 'tests_v.pp_vars'
 
 
 local ksrMock = require 'mocks.ksr'
-KSR = ksrMock.new()
+KSR = ksrMock:new()
 
 local mc,env,con
 local pp_vars = PPFetch:new()

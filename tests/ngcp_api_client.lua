@@ -36,7 +36,7 @@ TestNGCPAPIClient = {} --class
 
         local NGCPAPIClient = require 'ngcp.api_client'
 
-        self.client = NGCPAPIClient.new()
+        self.client = NGCPAPIClient:new()
         lu.assertNotNil(self.client)
 
         self.client.c = self.c;

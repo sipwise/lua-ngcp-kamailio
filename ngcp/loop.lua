@@ -42,7 +42,7 @@ NGCPLoop_MT.__tostring = function (t)
         utable.tostring(t.config));
 end
 -- luacheck: globals KSR
-    function NGCPLoop.new(config)
+    function NGCPLoop:new(config)
         local t = NGCPLoop.init(utils.merge_defaults(config, defaults))
         setmetatable( t, NGCPLoop_MT )
         return t
@@ -51,7 +51,7 @@ end
     function NGCPLoop.init(config)
         return {
             config = config,
-            redis = NGCPRedis.new(config)
+            redis = NGCPRedis:new(config)
         }
     end
 

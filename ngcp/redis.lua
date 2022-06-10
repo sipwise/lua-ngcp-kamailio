@@ -36,7 +36,7 @@ NGCPRedis.__tostring = function (t)
     return string.format("config:%s", utable.tostring(t.config))
 end
 
-function NGCPRedis.new(config)
+function NGCPRedis:new(config)
   local t = NGCPRedis:create()
   t.config = utils.merge_defaults(config, defaults)
   return t;

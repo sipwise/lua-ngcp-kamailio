@@ -29,7 +29,7 @@ local utils = require 'ngcp.utils'
 local utable = utils.table
 
 local ksrMock = require 'mocks.ksr'
-KSR = ksrMock.new()
+KSR = ksrMock:new()
 
 local mc,env
 local dp_vars = DPFetch:new()

@@ -385,7 +385,7 @@ local Stack_MT = {
 }
 
 -- Create a Table with stack functions
-function Stack.new()
+function Stack:new()
   local t = { _et = {} }
   setmetatable(t, Stack_MT)
   return t

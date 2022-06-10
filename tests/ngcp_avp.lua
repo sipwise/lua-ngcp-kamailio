@@ -21,7 +21,7 @@ local lu = require('luaunit')
 local ksrMock = require 'mocks.ksr'
 local NGCPAvp = require 'ngcp.avp'
 
-KSR = ksrMock.new()
+KSR = ksrMock:new()
 
 -- luacheck: ignore TestNGCPAvp
 TestNGCPAvp = {} --class
