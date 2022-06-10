@@ -24,7 +24,7 @@ local lemock = require('lemock')
 local DPFetch = require 'tests_v.dp_vars'
 
 local ksrMock = require 'mocks.ksr'
-KSR = ksrMock.new()
+KSR = ksrMock:new()
 
 local mc,env,con
 local dp_vars = DPFetch:new()

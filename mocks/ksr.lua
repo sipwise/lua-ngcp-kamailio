@@ -39,14 +39,14 @@ local ksrMock = {
     }
 }
 local ksrMock_MT = { __index = ksrMock, __newindex = lemock.controller():mock() }
-    function ksrMock.new()
+    function ksrMock:new()
         local t = {}
         if os.getenv('RESULTS') then
             local file = os.getenv('RESULTS').."/"..logfile
             t._logger = log_file(file, "%Y-%m-%d")
         end
-        t.hdr = hdrMock.new()
-        t.pv = pvMock.new(t.hdr)
+        t.hdr = hdrMock:new()
+        t.pv = pvMock:new(t.hdr)
             function t.log(level, message)
                 if not t._logger_levels[level] then
                     error(string.format("level %s unknown", tostring(level)))
@@ -71,7 +71,7 @@ local ksrMock_MT = { __index = ksrMock, __newindex = lemock.controller():mock() 
             function t.crit(message)
                 t._logger:log(logging.FATAL, message)
             end
-        t.pvx = pvxMock.new(t.pv)
+        t.pvx = pvxMock:new(t.pv)
         setmetatable(t, ksrMock_MT)
         return t
     end

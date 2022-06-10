@@ -49,7 +49,7 @@ NGCPDlgList_MT.__tostring = function (t)
         utable.tostring(t.pair));
 end
 -- luacheck: globals KSR
-    function NGCPDlgList.new(config)
+    function NGCPDlgList:new(config)
         local t = NGCPDlgList.init(utils.merge_defaults(config, defaults))
         setmetatable( t, NGCPDlgList_MT )
         return t
@@ -58,8 +58,8 @@ end
     function NGCPDlgList.init(config)
         return {
             config = config,
-            central = NGCPRedis.new(config.central),
-            pair = NGCPRedis.new(config.pair)
+            central = NGCPRedis:new(config.central),
+            pair = NGCPRedis:new(config.pair)
         }
     end
 

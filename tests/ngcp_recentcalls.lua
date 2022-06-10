@@ -37,7 +37,7 @@ TestNGCPRecentCalls = {} --class
         package.loaded.redis = self.fake_redis
         local NGCPRecentCalls = require 'ngcp.recentcalls'
 
-        self.rcalls = NGCPRecentCalls.new()
+        self.rcalls = NGCPRecentCalls:new()
         lu.assertNotNil(self.rcalls)
         lu.assertNotNil(self.rcalls.redis)
         lu.assertNotNil(self.rcalls.redis.config)
@@ -46,7 +46,7 @@ TestNGCPRecentCalls = {} --class
 
     function TestNGCPRecentCalls:test_config()
         local NGCPRecentCalls = require 'ngcp.recentcalls'
-        rcalls = NGCPRecentCalls.new({central = {db = 10}})
+        rcalls = NGCPRecentCalls:new({central = {db = 10}})
         lu.assertEquals(rcalls.config.central.db, 10)
         lu.assertNotNil(rcalls.config.central.port)
     end

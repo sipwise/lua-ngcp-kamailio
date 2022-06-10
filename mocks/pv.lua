@@ -35,7 +35,7 @@ local pvMock = {
         crit = logging.FATAL
     }
 }
-    function pvMock.new(hdr)
+    function pvMock:new(hdr)
         local t = {}
 
         t.__class__ = 'pvMock'

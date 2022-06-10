@@ -32,7 +32,7 @@ local pvxMock = {
         crit = logging.FATAL
     }
 }
-    function pvxMock.new(pv)
+    function pvxMock:new(pv)
         local t = {}
 
         t.__class__ = 'pvxMock'

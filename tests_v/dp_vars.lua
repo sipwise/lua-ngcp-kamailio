@@ -171,7 +171,7 @@ local DPFetch = {
     __class__ = 'DPFetch',
     _i = 1
 }
-    function DPFetch.new()
+    function DPFetch:new()
         local t = {}
         return setmetatable(t, { __index = DPFetch })
     end

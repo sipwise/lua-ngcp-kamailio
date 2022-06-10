@@ -43,7 +43,7 @@ NGCPRecentCalls_MT.__tostring = function (t)
         utable.tostring(t.config), utable.tostring(t.redis))
 end
 -- luacheck: globals KSR
-    function NGCPRecentCalls.new(config)
+    function NGCPRecentCalls:new(config)
         local t = NGCPRecentCalls.init(utils.merge_defaults(config, defaults))
         setmetatable( t, NGCPRecentCalls_MT )
         return t
@@ -52,7 +52,7 @@ end
     function NGCPRecentCalls.init(config)
         return {
             config = config,
-            redis = NGCPRedis.new(config.central)
+            redis = NGCPRedis:new(config.central)
         }
     end
 
