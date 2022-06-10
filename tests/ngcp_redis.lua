@@ -41,7 +41,7 @@ TestNGCPRedis = {} --class
     package.loaded.redis = self.fake_redis
     local NGCPRedis = require 'ngcp.redis'
 
-    self.ngcp_redis = NGCPRedis.new()
+    self.ngcp_redis = NGCPRedis:new()
     lu.assertNotNil(self.ngcp_redis)
     lu.assertNotNil(self.ngcp_redis.config)
     self.ngcp_redis.client = self.client;

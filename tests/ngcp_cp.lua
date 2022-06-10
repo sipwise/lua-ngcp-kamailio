@@ -22,7 +22,7 @@ local lemock = require('lemock')
 local CPFetch = require 'tests_v.cp_vars'
 
 local ksrMock = require 'mocks.ksr'
-KSR = ksrMock.new()
+KSR = ksrMock:new()
 
 local mc,env,con
 local cp_vars = CPFetch:new()

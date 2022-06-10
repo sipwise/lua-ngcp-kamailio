@@ -36,7 +36,7 @@ TestNGCPDlgCnt = {} --class
         package.loaded.redis = self.fake_redis
         local NGCPDlg = require 'ngcp.dlgcnt'
 
-        self.dlg = NGCPDlg.new()
+        self.dlg = NGCPDlg:new()
         lu.assertEvalToTrue(self.dlg)
 
         self.dlg.central.client = self.central;

@@ -37,7 +37,7 @@ function TestNGCPLoop:setUp()
     package.loaded.redis = self.fake_redis
     local NGCPLoop = require 'ngcp.loop'
 
-    self.loop = NGCPLoop.new()
+    self.loop = NGCPLoop:new()
     lu.assertNotNil(self.loop)
 
     self.loop.redis.client = self.client;

@@ -50,7 +50,7 @@ local CPFetch = {
     __class__ = 'CPFetch',
     _i = 1
 }
-    function CPFetch.new()
+    function CPFetch:new()
         local t = {}
         return setmetatable(t, { __index = CPFetch })
     end

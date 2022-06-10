@@ -24,7 +24,7 @@ local ksrMock = require 'mocks.ksr'
 -- luacheck: ignore TestKEMIMock
 TestKEMIMock = {}
     function TestKEMIMock:setUp()
-        self.KSR = ksrMock.new()
+        self.KSR = ksrMock:new()
     end
 
     function TestKEMIMock:test_hdr_get()

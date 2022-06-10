@@ -38,7 +38,7 @@ function TestNGCPDlgList:setUp()
     package.loaded.redis = self.fake_redis
     local NGCPDlgList = require 'ngcp.dlglist'
 
-    self.dlg = NGCPDlgList.new()
+    self.dlg = NGCPDlgList:new()
     lu.assertEvalToTrue(self.dlg)
 
     self.dlg.central.client = self.central;

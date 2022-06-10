@@ -50,7 +50,7 @@ NGCPDlgCounters_MT.__tostring = function (t)
         utable.tostring(t.pair));
 end
 -- luacheck: globals KSR
-    function NGCPDlgCounters.new(config)
+    function NGCPDlgCounters:new(config)
         local t = NGCPDlgCounters.init(utils.merge_defaults(config, defaults))
         setmetatable( t, NGCPDlgCounters_MT )
         return t
@@ -59,8 +59,8 @@ end
     function NGCPDlgCounters.init(config)
         return {
             config = config,
-            central = NGCPRedis.new(config.central),
-            pair = NGCPRedis.new(config.pair)
+            central = NGCPRedis:new(config.central),
+            pair = NGCPRedis:new(config.pair)
         }
     end
 

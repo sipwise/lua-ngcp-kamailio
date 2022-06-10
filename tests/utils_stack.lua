@@ -24,7 +24,7 @@ local Stack = utils.Stack
 -- luacheck: ignore TestStack
 TestStack = {}
     function TestStack:test()
-        local s = Stack.new()
+        local s = Stack:new()
         lu.assertEquals(type(s), 'table')
         lu.assertEquals(s.__class__, 'Stack')
     end

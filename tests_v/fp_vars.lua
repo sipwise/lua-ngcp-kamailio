@@ -51,7 +51,7 @@ local fp_vars = {
 local FPFetch = {
     __class__ = 'FPFetch',
 }
-    function FPFetch.new()
+    function FPFetch:new()
         local t = {}
         return setmetatable(t, { __index = FPFetch })
     end

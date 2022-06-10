@@ -51,7 +51,7 @@ local args = parser:parse()
 
 get_config()
 
-local dlg = NGCPDlgList.new()
+local dlg = NGCPDlgList:new()
 if dlg_config then
 	dlg.config.central.host = dlg_config.central.host
 	dlg.config.central.port = dlg_config.central.port
