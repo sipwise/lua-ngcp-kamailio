@@ -25,8 +25,8 @@ local pvxMock = require 'mocks.pvx'
 -- luacheck: ignore TestPVXMock
 TestPVXMock = {}
     function TestPVXMock:setUp()
-        self.pv = pvMock.new()
-        self.pvx = pvxMock.new(self.pv)
+        self.pv = pvMock:new()
+        self.pvx = pvxMock:new(self.pv)
 
         self.pv.sets("$xavp(test=>uno)", "uno")
         lu.assertEquals(self.pv.get("$xavp(test[0]=>uno)"), "uno")

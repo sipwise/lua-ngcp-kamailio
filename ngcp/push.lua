@@ -43,7 +43,7 @@ NGCPPush_MT.__tostring = function (t)
     return string.format("config:%s", utable.tostring(t.config))
 end
 
-function NGCPPush.new(config)
+function NGCPPush:new(config)
     local t = NGCPPush.init(utils.merge_defaults(config, defaults));
     setmetatable( t, NGCPPush_MT )
     return t;
@@ -53,7 +53,7 @@ function NGCPPush.init(config)
     return {
         config = config,
         c = curl.easy_init(),
-        redis = NGCPRedis.new(config.central)
+        redis = NGCPRedis:new(config.central)
     }
 end
 

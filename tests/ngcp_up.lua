@@ -25,7 +25,7 @@ local UPFetch = require 'tests_v.up_vars'
 local bp_vars = require 'tests_v.bp_vars'
 
 local ksrMock = require 'mocks.ksr'
-KSR = ksrMock.new()
+KSR = ksrMock:new()
 
 local mc,env,con
 local up_vars = UPFetch:new()

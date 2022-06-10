@@ -178,7 +178,7 @@ local PProfFetch = {
     __class__ = 'PProfFetch',
     _i = 1
 }
-    function PProfFetch.new()
+    function PProfFetch:new()
         local t = {}
         return setmetatable(t, { __index = PProfFetch })
     end

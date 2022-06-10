@@ -24,7 +24,7 @@ local NGCPPeerPrefs = require 'ngcp.pp'
 local NGCPRealPrefs = require 'ngcp.rp'
 
 local ksrMock = require 'mocks.ksr'
-KSR = ksrMock.new()
+KSR = ksrMock:new()
 
 -- luacheck: ignore TestNGCPRealPrefs
 TestNGCPRealPrefs = {} --class

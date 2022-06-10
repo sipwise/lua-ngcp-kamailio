@@ -25,8 +25,8 @@ local pvMock = require 'mocks.pv'
 -- luacheck: ignore TestPVMock
 TestPVMock = {}
     function TestPVMock:setUp()
-        local hdr = hdrMock.new()
-        self.pv = pvMock.new(hdr)
+        local hdr = hdrMock:new()
+        self.pv = pvMock:new(hdr)
     end
 
     function TestPVMock:tearDown()

@@ -162,7 +162,7 @@ local UPFetch = {
     __class__ = 'UPFetch',
     _i = 1
 }
-    function UPFetch.new()
+    function UPFetch:new()
         local t = {}
         return setmetatable(t, { __index = UPFetch })
     end

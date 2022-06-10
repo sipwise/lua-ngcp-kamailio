@@ -33,7 +33,7 @@ local hdrMock = {
         crit = logging.FATAL
     }
 }
-    function hdrMock.new()
+    function hdrMock:new()
         local t = {}
 
         t.__class__ = 'hdrMock'

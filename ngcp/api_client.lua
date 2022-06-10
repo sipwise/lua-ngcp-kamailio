@@ -41,7 +41,7 @@ NGCPAPIClient_MT.__tostring = function (t)
     return string.format("config:%s", utable.tostring(t.config))
 end
 
-function NGCPAPIClient.new(config)
+function NGCPAPIClient:new(config)
     local t = NGCPAPIClient.init(utils.merge_defaults(config, defaults))
     setmetatable( t, NGCPAPIClient_MT )
     return t

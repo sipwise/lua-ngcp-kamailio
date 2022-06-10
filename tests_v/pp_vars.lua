@@ -178,7 +178,7 @@ local PPFetch = {
     __class__ = 'PPFetch',
     _i = 1
 }
-    function PPFetch.new()
+    function PPFetch:new()
         local t = {}
         return setmetatable(t, { __index = PPFetch })
     end
