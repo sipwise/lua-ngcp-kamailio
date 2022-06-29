@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (10.5.1.1+0~mr10.5.1.1) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [a49f8a3] TT#165251 use consistently :new()
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 29 Jun 2022 17:26:59 +0200
+
 lua-ngcp-kamailio (10.5.1.0+0~mr10.5.1.0) unstable; urgency=medium
 
   * New release.
