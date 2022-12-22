@@ -14,6 +14,7 @@ Depends:
  lua-argparse,
  lua-cjson,
  lua-curl,
+ lua-redis (>= 2.0.5~git20141117.880dda9-7~),
  lua-sql-mysql (>= 2.4.0),
  lua5.1,
  ngcp-system-tools-ce | ngcp-system-tools,
