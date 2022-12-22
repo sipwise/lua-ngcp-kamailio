@@ -55,13 +55,14 @@ TestNGCPPush = {} --class
           node="node",
           node_uri="node_uri",
           mode="stored",
+          joined=0,
         }
     end
 
     function TestNGCPPush:test_add()
         self.redis:ping() ;mc :returns(true)
-        self.redis:lpush("whatever", "callid_A#0#label#node#node_uri#stored")  ;mc :returns(1)
-        self.redis:lpush("callid_A", "whatever#0#label#node#node_uri#stored")  ;mc :returns(1)
+        self.redis:lpush("whatever", "callid_A#0#label#node#node_uri#stored#0")  ;mc :returns(1)
+        self.redis:lpush("callid_A", "whatever#0#label#node#node_uri#stored#0")  ;mc :returns(1)
 
         mc:replay()
         self.push:add(self.v)
@@ -70,13 +71,13 @@ TestNGCPPush = {} --class
 
     function TestNGCPPush:test_del_ok()
         self.redis:ping() ;mc :returns(true)
-        self.redis:lrem("whatever", 0, "callid_A#0#label#node#node_uri#stored")  ;mc :returns(1)
+        self.redis:lrem("whatever", 0, "callid_A#0#label#node#node_uri#stored#0")  ;mc :returns(1)
         self.redis:llen("whatever") ;mc :returns(0)
 
         self.redis:ping() ;mc :returns(true)
         self.redis:del("whatever")
 
-        self.redis:lrem("callid_A", 0, "whatever#0#label#node#node_uri#stored")  ;mc :returns(1)
+        self.redis:lrem("callid_A", 0, "whatever#0#label#node#node_uri#stored#0")  ;mc :returns(1)
         self.redis:llen("callid_A") ;mc :returns(1)
 
         mc:replay()
@@ -89,13 +90,13 @@ TestNGCPPush = {} --class
         -- Note that non-existing keys are treated like empty lists,
         -- so when key does not exist, the command will always return 0.
         self.redis:ping() ;mc :returns(true)
-        self.redis:lrem("whatever", 0, "callid_A#0#label#node#node_uri#stored")  ;mc :returns(0)
+        self.redis:lrem("whatever", 0, "callid_A#0#label#node#node_uri#stored#0")  ;mc :returns(0)
         self.redis:llen("whatever") ;mc :returns(0)
 
         self.redis:ping() ;mc :returns(true)
         self.redis:del("whatever") ;mc :returns(0)
 
-        self.redis:lrem("callid_A", 0, "whatever#0#label#node#node_uri#stored")  ;mc :returns(0)
+        self.redis:lrem("callid_A", 0, "whatever#0#label#node#node_uri#stored#0")  ;mc :returns(0)
         self.redis:llen("callid_A") ;mc :returns(0)
 
         self.redis:del("callid_A") ;mc :returns(0)
@@ -107,7 +108,7 @@ TestNGCPPush = {} --class
 
     function TestNGCPPush:test_callid_get()
         self.redis:ping() ;mc :returns(true)
-        self.redis:lrange("callid_A", 0, -1)  ;mc :returns({"whatever#0#label#node#node_uri#stored"})
+        self.redis:lrange("callid_A", 0, -1)  ;mc :returns({"whatever#0#label#node#node_uri#stored#0"})
 
         mc:replay()
         local res = self.push:callid_get("callid_A")
@@ -129,7 +130,7 @@ TestNGCPPush = {} --class
 
     function TestNGCPPush:test_get()
         self.redis:ping() ;mc :returns(true)
-        self.redis:lrange("whatever", 0, -1)  ;mc :returns({"callid_A#0#label#node#node_uri#stored"})
+        self.redis:lrange("whatever", 0, -1)  ;mc :returns({"callid_A#0#label#node#node_uri#stored#0"})
 
         mc:replay()
         local res = self.push:callid_get("whatever")
@@ -148,6 +149,39 @@ TestNGCPPush = {} --class
         local res = self.push:callid_get("whatever")
         mc:verify()
         lu.assertEquals(res, {})
+    end
+
+    function TestNGCPPush:test_set_joined()
+        self.redis:ping() ;mc :returns(true)
+        self.redis:lpos("whatever", "callid_A#0#label#node#node_uri#stored#0")  ;mc :returns(1)
+        self.redis:lset("whatever", 1, "callid_A#0#label#node#node_uri#stored#1")  ;mc :returns(1)
+
+        self.redis:lpos("callid_A", "whatever#0#label#node#node_uri#stored#0")  ;mc :returns(2)
+        self.redis:lset("callid_A", 2, "whatever#0#label#node#node_uri#stored#1")  ;mc :returns(1)
+
+        mc:replay()
+        local res = self.push:set(self.v, 'joined', 1)
+        mc:verify()
+        lu.assertNotNil(res)
+        lu.assertEquals(res.joined, 1)
+    end
+
+    function TestNGCPPush:test_set_ko()
+        self.redis:ping() ;mc :returns(true)
+        self.redis:lpos("whatever", "callid_A#0#label#node#node_uri#stored#0")  ;mc :returns(nil)
+
+        mc:replay()
+        lu.assertErrorMsgContains(
+            'not found in key[whatever]', self.push.set, self.push, self.v, 'joined', 1)
+        mc:verify()
+    end
+
+    function TestNGCPPush:test_set_ko_key()
+
+        mc:replay()
+        lu.assertErrorMsgContains(
+            'key[key] not allowed to change', self.push.set, self.push, self.v, 'key', "nono")
+        mc:verify()
     end
 -- class TestNGCPPush
 --EOF

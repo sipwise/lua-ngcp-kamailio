@@ -72,7 +72,8 @@ function NGCPPush:len(key, node)
 end
 
 local function value_base(v)
-    return v.idx .. separator .. v.label .. separator .. v.node .. separator .. v.node_uri .. separator .. v.mode
+    return v.idx .. separator .. v.label .. separator .. v.node .. separator
+        .. v.node_uri .. separator .. v.mode .. separator .. v.joined
 end
 
 function NGCPPush:add(v)
@@ -99,14 +100,46 @@ end
 
 local function split_val(value)
     local t = utils.explode(separator, value);
-    return t[1], t[2], t[3], t[4], t[5], t[6];
+    return t[1], t[2], t[3], t[4], t[5], t[6], tonumber(t[7]);
 end
 
 local function insert_val(res, v, key_name)
-    local key, idx, label, node, node_uri, mode = split_val(v)
-    local val = {idx=idx, label=label, node=node, node_uri=node_uri, mode=mode}
+    local key, idx, label, node, node_uri, mode, joined = split_val(v)
+    local val = {idx=idx, label=label, node=node, node_uri=node_uri, mode=mode, joined=joined}
     val[key_name] = key
     table.insert(res, val)
+end
+
+function NGCPPush:set(v, key_name, value)
+    if key_name == 'key' or key_name == 'callid' then
+        error(string.format("key[%s] not allowed to change", key_name))
+    end
+    if not self.redis:test_connection() then
+        self.redis:connect()
+    end
+    local val_base = value_base(v)
+    local val = v.callid.. separator ..val_base
+    local pos = self.redis.client:lpos(v.key, val)
+    if not pos then
+        error(string.format("old value[%s] not found in key[%s]", val, v.key))
+    end
+    v[key_name] = value
+    local new_val_base = value_base(v)
+    local new_val = v.callid.. separator ..new_val_base
+    self.redis.client:lset(v.key, pos, new_val)
+    KSR.dbg(string.format("lset[%s][%s]=>[%s]\n",
+        v.key, tostring(pos), new_val));
+
+    val = v.key .. separator .. val_base
+    pos = self.redis.client:lpos(v.callid, val)
+    if not pos then
+        error(string.format("old value[%s] not found in callid[%s]", val, v.callid))
+    end
+    new_val = v.key.. separator ..new_val_base
+    self.redis.client:lset(v.callid, pos, new_val)
+    KSR.dbg(string.format("lset[%s]=>[%s] %s\n",
+        v.callid, tostring(pos), new_val));
+    return v
 end
 
 function NGCPPush:get(key)
