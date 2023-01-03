@@ -1,3 +1,11 @@
+lua-ngcp-kamailio (8.5.5.2+0~mr8.5.5.2) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [b48f5f4] TT#165251 redis: force socket close on ping error
+  * [5ef63ef] TT#165251 redis: don't fail on fist check of connection
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 03 Jan 2023 09:52:45 +0100
+
 lua-ngcp-kamailio (8.5.5.1+0~mr8.5.5.1) unstable; urgency=medium
 
   * New release.
