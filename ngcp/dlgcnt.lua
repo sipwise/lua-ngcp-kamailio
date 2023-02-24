@@ -23,6 +23,9 @@ local NGCPDlgCounters = {
 local NGCPRedis = require 'ngcp.redis';
 local utils = require 'ngcp.utils';
 local utable = utils.table;
+local xavp_name = 'lua_dlgcnt_vals';
+local xavp_fmt_init = '$xavp('..xavp_name..'=>%s)'
+local xavp_fmt = '$xavp('..xavp_name..'[0]=>%s)'
 
 _ENV = NGCPDlgCounters
 
@@ -69,13 +72,16 @@ end
         if res == 0 then
             self.central.client:del(key);
             KSR.dbg(string.format("central:del[%s] counter is 0\n", key));
+            KSR.pv.unset(string.format(xavp_fmt, key))
         elseif res < 0 and not self.config.allow_negative then
             self.central.client:del(key);
             KSR.warn(string.format("central:del[%s] counter was %s\n",
                 key, tostring(res)));
+            KSR.pv.unset(string.format(xavp_fmt, key))
         else
             KSR.dbg(string.format("central:decr[%s]=>[%s]\n",
                 key, tostring(res)));
+            KSR.pv.seti(string.format(xavp_fmt, key), res)
         end
         return res;
     end
@@ -114,6 +120,11 @@ end
         end
         local res = self.central.client:incr(key);
         KSR.dbg(string.format("central:incr[%s]=>%s\n", key, tostring(res)));
+        if KSR.pvx.xavp_is_null(xavp_name) > 0 then
+            KSR.pv.seti(string.format(xavp_fmt_init, key), res)
+        else
+            KSR.pv.seti(string.format(xavp_fmt, key), res)
+        end
         if not self.pair:test_connection() then
             self.pair:connect()
         end

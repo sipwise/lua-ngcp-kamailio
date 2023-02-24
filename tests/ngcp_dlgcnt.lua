@@ -22,7 +22,7 @@ local lu = require('luaunit')
 
 local ksrMock = require 'mocks.ksr'
 KSR = ksrMock:new()
-
+local xavp_fmt = '$xavp(lua_dlgcnt_vals[0]=>%s)'
 local mc
 -- luacheck: ignore TestNGCPDlgCnt
 TestNGCPDlgCnt = {} --class
@@ -43,6 +43,10 @@ TestNGCPDlgCnt = {} --class
         self.dlg.pair.client = self.pair
     end
 
+    function TestNGCPDlgCnt:tearDown()
+        KSR.pv.vars = {}
+    end
+
     function TestNGCPDlgCnt:test_set_1()
         self.central:ping() ;mc :returns(true)
         self.central:incr("total")  ;mc :returns(1)
@@ -53,6 +57,8 @@ TestNGCPDlgCnt = {} --class
         mc:replay()
         self.dlg:set("callid0", "total")
         mc:verify()
+
+        lu.assertEquals(KSR.pv.get(string.format(xavp_fmt, "total")), 1)
     end
 
     function TestNGCPDlgCnt:test_set_2()
@@ -71,6 +77,8 @@ TestNGCPDlgCnt = {} --class
         self.dlg:set("callid0", "total")
         self.dlg:set("callid1", "total")
         mc:verify()
+
+        lu.assertEquals(KSR.pv.get(string.format(xavp_fmt, "total")), 2)
     end
 
     function TestNGCPDlgCnt:test_del()
@@ -87,6 +95,7 @@ TestNGCPDlgCnt = {} --class
 
         lu.assertIs(self.dlg.central.client, self.central)
         lu.assertIs(self.dlg.pair.client, self.pair)
+        lu.assertEquals(KSR.pv.get(string.format(xavp_fmt, "total")), 1)
     end
 
     function TestNGCPDlgCnt:test_del_zero()
@@ -104,6 +113,7 @@ TestNGCPDlgCnt = {} --class
 
         lu.assertIs(self.dlg.central.client, self.central)
         lu.assertIs(self.dlg.pair.client, self.pair)
+        lu.assertIsNil(KSR.pv.get(string.format(xavp_fmt, "total")))
     end
 
     function TestNGCPDlgCnt:test_del_negative()
@@ -123,6 +133,7 @@ TestNGCPDlgCnt = {} --class
 
         lu.assertIs(self.dlg.central.client, self.central)
         lu.assertIs(self.dlg.pair.client, self.pair)
+        lu.assertIsNil(KSR.pv.get(string.format(xavp_fmt, "total")))
     end
 
     function TestNGCPDlgCnt:test_del_negative_ok()
@@ -141,6 +152,7 @@ TestNGCPDlgCnt = {} --class
 
         lu.assertIs(self.dlg.central.client, self.central)
         lu.assertIs(self.dlg.pair.client, self.pair)
+        lu.assertEquals(KSR.pv.get(string.format(xavp_fmt, "total")), -1)
     end
 
     function TestNGCPDlgCnt:test_del_multy()
@@ -167,6 +179,7 @@ TestNGCPDlgCnt = {} --class
 
         lu.assertIs(self.dlg.central.client, self.central)
         lu.assertIs(self.dlg.pair.client, self.pair)
+        lu.assertIsNil(KSR.pv.get(string.format(xavp_fmt, "total")))
     end
 
     function TestNGCPDlgCnt:test_is_in_set_fail()
