@@ -37,6 +37,7 @@ local pvMock = {
 }
     function pvMock:new(hdr)
         local t = {}
+        local name_fmt = '%w:_%-'
 
         t.__class__ = 'pvMock'
         -- fake pseudo vars go here
@@ -57,10 +58,10 @@ local pvMock = {
 
         function t._is_pvheader(id)
             local patterns = {
-                '%$(x_%l+)%(([%w_%-]+)%)$',
-                '%$%((x_%l+)%(([%w_%-]+)%)%)$',
-                '%$%((x_%l+)%(([%w_%-]+)%)%[%*%]%)$',
-                '%$%((x_%l+)%(([%w_%-]+)%)%[(%d+)%]%)$',
+                '%$(x_%l+)%((['..name_fmt..']+)%)$',
+                '%$%((x_%l+)%((['..name_fmt..']+)%)%)$',
+                '%$%((x_%l+)%((['..name_fmt..']+)%)%[%*%]%)$',
+                '%$%((x_%l+)%((['..name_fmt..']+)%)%[(%d+)%]%)$',
             }
             for _,v in pairs(patterns) do
                 for _type, key, indx in string.gmatch(id, v) do
@@ -76,7 +77,7 @@ local pvMock = {
 
         function t._is_sht(id)
             local patterns = {
-                '%$sht%(([%w_%-^%[]+)=>(.*)%)$',
+                '%$sht%((['..name_fmt..'^%[]+)=>(.*)%)$',
             }
             for _,v in pairs(patterns) do
                 for table, key in string.gmatch(id, v) do
@@ -89,13 +90,13 @@ local pvMock = {
 
         function t._is_xav(id, xtype)
             local patterns = {
-                '%$'..xtype..'%(([%w_%-^%[]+)%)$',
-                '%$'..xtype..'%(([%w_%-^%[]+)%[(%d+)%]%)$',
-                '%$'..xtype..'%(([%w_%-^%[]+)=>([%w_%-^%[]+)%)$',
-                '%$'..xtype..'%(([%w_%-^%[]+)%[(%d+)%]=>([%w_%-^%[]+)%)$',
-                '%$'..xtype..'%(([%w_%-^%[]+)=>([%w_%-^%[]+)%[(%d+)%]%)$',
-                '%$'..xtype..'%(([%w_%-^%[]+)%[(%d+)%]=>([%w_%-^%[]+)%[(%d+)%]%)$',
-                '%$'..xtype..'%(([%w_%-^%[]+)%[(%d+)%]=>([%w_%-^%[]+)%[%*%]%)$'
+                '%$'..xtype..'%((['..name_fmt..'^%[]+)%)$',
+                '%$'..xtype..'%((['..name_fmt..'^%[]+)%[(%d+)%]%)$',
+                '%$'..xtype..'%((['..name_fmt..'^%[]+)=>(['..name_fmt..'^%[]+)%)$',
+                '%$'..xtype..'%((['..name_fmt..'^%[]+)%[(%d+)%]=>(['..name_fmt..'^%[]+)%)$',
+                '%$'..xtype..'%((['..name_fmt..'^%[]+)=>(['..name_fmt..'^%[]+)%[(%d+)%]%)$',
+                '%$'..xtype..'%((['..name_fmt..'^%[]+)%[(%d+)%]=>(['..name_fmt..'^%[]+)%[(%d+)%]%)$',
+                '%$'..xtype..'%((['..name_fmt..'^%[]+)%[(%d+)%]=>(['..name_fmt..'^%[]+)%[%*%]%)$'
             }
             local logger = logging.file('reports/sr_pv_%s.log', '%Y-%m-%d')
             for _,v in pairs(patterns) do
@@ -157,10 +158,10 @@ local pvMock = {
         function t._is_avp(id)
             local _id
             local patterns = {
-                '%$avp%(([%w_%-]+)%)$',
-                '%$%(avp%(([%w_%-]+)%)%)$',
-                '%$%(avp%(([%w_%-]+)%)%[%*%]%)$',
-                '%$%(avp%(([%w_%-]+)%)%[(%d+)%]%)$',
+                '%$avp%((['..name_fmt..']+)%)$',
+                '%$%(avp%((['..name_fmt..']+)%)%)$',
+                '%$%(avp%((['..name_fmt..']+)%)%[%*%]%)$',
+                '%$%(avp%((['..name_fmt..']+)%)%[(%d+)%]%)$',
             }
             _id = t._clean_id(id)
             for _,v in pairs(patterns) do
@@ -175,8 +176,8 @@ local pvMock = {
 
         function t._is_var(id)
             local patterns = {
-                '%$var%(([%w_%-]+)%)$',
-                '%$%(var%(([%w_%-]+)%)%)$',
+                '%$var%((['..name_fmt..']+)%)$',
+                '%$%(var%((['..name_fmt..']+)%)%)$',
             }
             for _,v in pairs(patterns) do
                 for key in string.gmatch(id, v) do
@@ -187,8 +188,8 @@ local pvMock = {
 
         function t._is_dlg_var(id)
             local patterns = {
-                '%$dlg_var%(([%w_%-]+)%)$',
-                '%$%(dlg_var%(([%w_%-]+)%)%)$',
+                '%$dlg_var%((['..name_fmt..']+)%)$',
+                '%$%(dlg_var%((['..name_fmt..']+)%)%)$',
             }
             for _,v in pairs(patterns) do
                 for key in string.gmatch(id, v) do
