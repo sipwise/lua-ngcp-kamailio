@@ -54,6 +54,14 @@ local pvxMock = {
             end
         end
 
+        function t.xavp_is_null(xavp_name)
+            local private_id = "xavp:" .. xavp_name
+            if not t.pv.vars[private_id] then
+                return 1
+            end
+            return -1
+        end
+
         function t.xavp_get(xavp_name)
             return t._get_xavp(xavp_name, "NULL_NONE")
         end

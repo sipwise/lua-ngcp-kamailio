@@ -49,6 +49,11 @@ TestPVXMock = {}
         self.pv.vars = {}
     end
 
+    function TestPVXMock:test_xavp_is_null()
+        lu.assertEquals(self.pvx.xavp_is_null("test"), -1)
+        lu.assertEquals(self.pvx.xavp_is_null("whatever"), 1)
+    end
+
     function TestPVXMock:test_xavp_get()
         local l = self.pvx.xavp_get("test")
         local m = tostring(self.pv.vars["xavp:test"])
