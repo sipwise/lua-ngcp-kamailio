@@ -1,3 +1,13 @@
+lua-ngcp-kamailio (10.5.5.0+0~mr10.5.5.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [567eab9] MT#56246 tests: add ngcp_push
+
+  [ Daniel Grotti ]
+  * [54749ad] MT#56246 Store additional field 'joined' in redis push db
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 15 Mar 2023 16:08:39 +0100
+
 lua-ngcp-kamailio (10.5.4.0+0~mr10.5.4.0) unstable; urgency=medium
 
   [ Daniel Grotti ]
