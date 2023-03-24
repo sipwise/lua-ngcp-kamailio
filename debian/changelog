@@ -1,3 +1,12 @@
+lua-ngcp-kamailio (11.4.0.0+0~mr11.4.0.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [a1c8026] MT#56753 mocks.pv: pv name can have ':' char
+  * [99f73ed] MT#56753 mocks.pvx: add xavp_is_null
+  * [576c724] MT#56753 dlgcnt: use xavp(lua_dlgcnt_vals[0]=>%) to store counter values
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 24 Mar 2023 13:03:37 +0100
+
 lua-ngcp-kamailio (11.3.0.0+0~mr11.3.0.0) unstable; urgency=medium
 
   [ Victor Seva ]
