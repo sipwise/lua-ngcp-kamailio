@@ -41,6 +41,7 @@ TestNGCPDlgCnt = {} --class
 
         self.dlg.central.client = self.central;
         self.dlg.pair.client = self.pair
+        self.dlg.config.debug = true
     end
 
     function TestNGCPDlgCnt:tearDown()

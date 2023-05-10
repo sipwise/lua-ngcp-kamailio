@@ -40,6 +40,7 @@ local defaults = {
         port = 6379,
         db = 4
     },
+    debug = false,
     check_pair_dup = false,
     allow_negative = false
 }
@@ -72,16 +73,22 @@ end
         if res == 0 then
             self.central.client:del(key);
             KSR.dbg(string.format("central:del[%s] counter is 0\n", key));
-            KSR.pv.unset(string.format(xavp_fmt, key))
+            if self.config.debug then
+                KSR.pv.unset(string.format(xavp_fmt, key))
+            end
         elseif res < 0 and not self.config.allow_negative then
             self.central.client:del(key);
             KSR.warn(string.format("central:del[%s] counter was %s\n",
                 key, tostring(res)));
-            KSR.pv.unset(string.format(xavp_fmt, key))
+            if self.config.debug then
+                KSR.pv.unset(string.format(xavp_fmt, key))
+            end
         else
             KSR.dbg(string.format("central:decr[%s]=>[%s]\n",
                 key, tostring(res)));
-            KSR.pv.seti(string.format(xavp_fmt, key), res)
+            if self.config.debug then
+                KSR.pv.seti(string.format(xavp_fmt, key), res)
+            end
         end
         return res;
     end
@@ -120,10 +127,12 @@ end
         end
         local res = self.central.client:incr(key);
         KSR.dbg(string.format("central:incr[%s]=>%s\n", key, tostring(res)));
-        if KSR.pvx.xavp_is_null(xavp_name) > 0 then
-            KSR.pv.seti(string.format(xavp_fmt_init, key), res)
-        else
-            KSR.pv.seti(string.format(xavp_fmt, key), res)
+        if self.config.debug then
+            if KSR.pvx.xavp_is_null(xavp_name) > 0 then
+                KSR.pv.seti(string.format(xavp_fmt_init, key), res)
+            else
+                KSR.pv.seti(string.format(xavp_fmt, key), res)
+            end
         end
         if not self.pair:test_connection() then
             self.pair:connect()
