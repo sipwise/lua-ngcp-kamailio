@@ -64,6 +64,7 @@ local defaults = {
             account_id = 0,
             ext_subscriber_id = "",
             ext_contract_id = "",
+            reseller_id = 0,
             ringtimeout = 180,
         }
     },

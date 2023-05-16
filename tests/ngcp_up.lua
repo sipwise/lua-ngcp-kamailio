@@ -133,6 +133,7 @@ TestNGCPUserPrefs = {} --class
             "ext_subscriber_id",
             "ringtimeout",
             "account_id",
+            "reseller_id",
             "ext_contract_id",
             "cli",
             "cc",
@@ -166,6 +167,7 @@ TestNGCPUserPrefs = {} --class
             "ext_subscriber_id",
             "ringtimeout",
             "account_id",
+            "reseller_id",
             "ext_contract_id",
             "cli",
             "cc",
@@ -268,6 +270,7 @@ TestNGCPUserPrefs = {} --class
             "ext_subscriber_id",
             "ringtimeout",
             "account_id",
+            "reseller_id",
             "ext_contract_id",
             "emergency_location_format",
             "emergency_location_object"

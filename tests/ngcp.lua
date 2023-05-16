@@ -175,6 +175,7 @@ TestNGCP = {} --class
             "ext_subscriber_id",
             "ringtimeout",
             "account_id",
+            "reseller_id",
             "ext_contract_id",
             "cli",
             "cc",
@@ -278,6 +279,7 @@ TestNGCP = {} --class
             "ext_subscriber_id",
             "ringtimeout",
             "account_id",
+            "reseller_id",
             "ext_contract_id",
             "cli",
             "cc",
@@ -351,6 +353,7 @@ TestNGCP = {} --class
             "ext_subscriber_id",
             "ringtimeout",
             "account_id",
+            "reseller_id",
             "ext_contract_id",
             "cli",
             "cc",
@@ -418,6 +421,7 @@ TestNGCP = {} --class
             "ext_subscriber_id",
             "ringtimeout",
             "account_id",
+            "reseller_id",
             "ext_contract_id",
             "cli",
             "cc",
@@ -482,6 +486,7 @@ TestNGCP = {} --class
             "ext_subscriber_id",
             "ringtimeout",
             "account_id",
+            "reseller_id",
             "ext_contract_id"
         }
 
