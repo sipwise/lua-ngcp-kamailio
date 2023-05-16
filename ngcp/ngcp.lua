@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2022 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2023 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 --
 
 local NGCPXAvp = require 'ngcp.xavp'
+local NGCPResellerPrefs = require 'ngcp.rep'
 local NGCPContractPrefs = require 'ngcp.cp'
 local NGCPProfilePrefs = require 'ngcp.pprof'
 local NGCPPeerPrefs = require 'ngcp.pp'
@@ -56,8 +57,17 @@ function NGCP:init(config)
         peer     = NGCPPeerPrefs:new(self.config),
         real     = NGCPRealPrefs:new(self.config),
         contract = NGCPContractPrefs:new(self.config),
+        reseller = NGCPResellerPrefs:new(self.config),
         fax      = NGCPFaxPrefs:new(self.config),
     }
+end
+
+function NGCP:caller_reseller_load(id)
+    return self.prefs.reseller:caller_load(id)
+end
+
+function NGCP:callee_reseller_load(id)
+    return self.prefs.reseller:callee_load(id)
 end
 
 function NGCP:caller_contract_load(contract, ip)

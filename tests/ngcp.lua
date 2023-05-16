@@ -46,6 +46,25 @@ package.preload['luasql.mysql'] = function ()
     end
 end
 
+local out = [[
+caller_contract_prefs:{dummy={"caller"}}
+callee_contract_prefs:{dummy={"callee"}}
+caller_usr_prefs:{dummy={"caller"}}
+callee_usr_prefs:{dummy={"callee"}}
+caller_peer_prefs:{dummy={"caller"}}
+callee_peer_prefs:{dummy={"callee"}}
+caller_dom_prefs:{dummy={"caller"}}
+callee_dom_prefs:{dummy={"callee"}}
+caller_prof_prefs:{dummy={"caller"}}
+callee_prof_prefs:{dummy={"callee"}}
+caller_fax_prefs:{dummy={"caller"}}
+callee_fax_prefs:{dummy={"callee"}}
+caller_reseller_prefs:{dummy={"caller"}}
+callee_reseller_prefs:{dummy={"callee"}}
+caller_real_prefs:{dummy={"caller"}}
+callee_real_prefs:{dummy={"callee"}}
+]]
+
 local NGCP = require 'ngcp.ngcp'
 local NGCPConfig = require 'ngcp.config'
 local NGCPDomainPrefs = require 'ngcp.dp'
@@ -122,6 +141,9 @@ TestNGCP = {} --class
         lu.assertNotNil(self.ngcp.prefs.fax)
         lu.assertEquals(KSR.pv.get("$xavp(caller_fax_prefs=>dummy)"),"caller")
         lu.assertEquals(KSR.pv.get("$xavp(callee_fax_prefs=>dummy)"),"callee")
+        lu.assertNotNil(self.ngcp.prefs.reseller)
+        lu.assertEquals(KSR.pv.get("$xavp(caller_reseller_prefs=>dummy)"),"caller")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_reseller_prefs=>dummy)"),"callee")
     end
 
     function TestNGCP:test_log_pref()
@@ -659,7 +681,7 @@ TestNGCP = {} --class
     end
 
     function TestNGCP:test_tostring()
-        lu.assertEquals(tostring(self.ngcp), 'caller_contract_prefs:{dummy={"caller"}}\ncallee_contract_prefs:{dummy={"callee"}}\ncaller_peer_prefs:{dummy={"caller"}}\ncallee_peer_prefs:{dummy={"callee"}}\ncaller_dom_prefs:{dummy={"caller"}}\ncallee_dom_prefs:{dummy={"callee"}}\ncaller_prof_prefs:{dummy={"caller"}}\ncallee_prof_prefs:{dummy={"callee"}}\ncaller_fax_prefs:{dummy={"caller"}}\ncallee_fax_prefs:{dummy={"callee"}}\ncaller_usr_prefs:{dummy={"caller"}}\ncallee_usr_prefs:{dummy={"callee"}}\ncaller_real_prefs:{dummy={"caller"}}\ncallee_real_prefs:{dummy={"callee"}}\n')
+        lu.assertEquals(out, tostring(self.ngcp))
     end
 -- class TestNGCP
 --EOF
