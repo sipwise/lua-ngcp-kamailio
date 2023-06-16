@@ -19,6 +19,7 @@
 --
 local utils = require 'ngcp.utils'
 local NGCPPrefs = require 'ngcp.pref'
+local NGCPXAvp = require 'ngcp.xavp'
 
 -- class NGCPPeerPrefs
 local NGCPPeerPrefs = utils.inheritsFrom(NGCPPrefs)
@@ -34,6 +35,16 @@ function NGCPPeerPrefs:new(config)
     -- creates xavp usr
     instance:init()
     return instance
+end
+
+function NGCPPeerPrefs:clean(vtype)
+    NGCPPrefs.clean(self, vtype)
+    if not vtype then
+        NGCPXAvp:new('callee', 'prefs'):clean()
+        NGCPXAvp:new('caller', 'prefs'):clean()
+    else
+        NGCPXAvp:new(vtype, 'prefs'):clean()
+    end
 end
 
 -- class
