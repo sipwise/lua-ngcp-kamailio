@@ -22,7 +22,7 @@ local lemock = require('lemock')
 local utils = require 'ngcp.utils'
 local utable = utils.table
 local PPFetch = require 'tests_v.pp_vars'
-
+local NGCPXAvp = require 'ngcp.xavp'
 
 local ksrMock = require 'mocks.ksr'
 KSR = ksrMock.new()
@@ -232,6 +232,24 @@ TestNGCPPeerPrefs = {} --class
         lu.assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>testid)"),1)
         lu.assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>foo)"),"foo")
         lu.assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
+    end
+
+    function TestNGCPPeerPrefs:test_clean_prefs()
+        local xavp_pref = NGCPXAvp:new('callee', 'prefs')
+        local xavp = NGCPPeerPrefs:xavp('callee')
+        xavp("testid",1)
+        xavp("foo","foo")
+        xavp_pref("two",2)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_prefs=>two)"),2)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>testid)"),1)
+        lu.assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>foo)"),"foo")
+        lu.assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>dummy)"),"caller")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
+        self.d:clean('callee')
+        lu.assertEquals(KSR.pv.get("$xavp(caller_peer_prefs=>dummy)"),"caller")
+        lu.assertEquals(KSR.pv.get("$xavp(callee_peer_prefs=>dummy)"),"callee")
+        lu.assertNil(KSR.pv.get("$xavp(peer)"))
+        lu.assertEquals(KSR.pv.get("$xavp(callee_prefs=>dummy)"), "callee")
     end
 
     function TestNGCPPeerPrefs:test_tostring()
