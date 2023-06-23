@@ -182,6 +182,23 @@ end
         end
     end
 
+    function NGCPDlgCounters:del_pair(callid)
+        if not self.pair:test_connection() then
+            self.pair:connect()
+        end
+        local key = self.pair.client:lpop(callid);
+        if not key then
+            error(string.format("callid:%s list empty", callid));
+        end
+        if not self.central:test_connection() then
+            self.central:connect()
+        end
+        while key do
+            KSR.dbg(string.format("pair:lpop[%s]=>[%s]\n", callid, key));
+            key = self.pair.client:lpop(callid);
+        end
+    end
+
     function NGCPDlgCounters:get(key)
         if not self.central:test_connection() then
             self.central:connect()
