@@ -1,3 +1,15 @@
+lua-ngcp-kamailio (11.4.1.0+0~mr11.4.1.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [b9485a6] MT#57018 dlgcnt: don't use lua_dlgcnt_vals unless debug
+  * [5270a63] MT#33031 config: add reseller_id as default
+  * [64f7a41] MT#33031 support reseller preferences
+
+  [ Daniel Grotti ]
+  * [8cdd637] MT#56961 Clean $xavp(callee_prefs) when cleaning $xavp(callee_peer_prefs)
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 26 Jun 2023 14:10:14 +0200
+
 lua-ngcp-kamailio (11.4.0.0+0~mr11.4.0.0) unstable; urgency=medium
 
   [ Victor Seva ]
