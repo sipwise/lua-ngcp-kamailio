@@ -38,11 +38,11 @@ lu.LuaUnit:setOutputType('${FORMAT}')
 lu.LuaUnit:run()
 EOF
 	else
-		cat<<EOF |lua5.1 - --name "${RES}"
+		cat<<EOF |lua5.1 -
 local lu = require('luaunit')
 require "tests/${1}"
 ---- Control test output:
-lu.LuaUnit:setOutputType('${FORMAT}')
+lu.LuaUnit:setOutputType('${FORMAT}', '${RES}')
 lu.LuaUnit:run()
 EOF
 		if [[ "${FORMAT}" = "JUNIT" ]] ; then
@@ -50,7 +50,6 @@ EOF
 		fi
 	fi
 }
-
 
 if [[ -n "$@" ]]; then
 	for i in "$@"; do
