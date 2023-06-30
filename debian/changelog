@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (11.3.1.4+0~mr11.3.1.4) unstable; urgency=medium
+
+  [ Alessio Garzi ]
+  * [d6f02cb] MT#57706 New function del_pair in NGCPDlgCounters class
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Fri, 30 Jun 2023 09:43:59 +0200
+
 lua-ngcp-kamailio (11.3.1.3+0~mr11.3.1.3) unstable; urgency=medium
 
   [ Daniel Grotti ]
