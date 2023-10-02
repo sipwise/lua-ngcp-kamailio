@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (9.5.9.0+0~mr9.5.9.0) unstable; urgency=medium
+
+  [ Daniel Grotti ]
+  * [bb171d9] MT#56961 Clean $xavp(callee_prefs) when cleaning $xavp(callee_peer_prefs)
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 02 Oct 2023 12:39:03 +0200
+
 lua-ngcp-kamailio (9.5.8.0+0~mr9.5.8.0) unstable; urgency=medium
 
   * New release.
