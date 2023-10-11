@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (11.5.1.2+0~mr11.5.1.2) unstable; urgency=medium
+
+  [ Marco Capetta ]
+  * [7e9b646] MT#58471 add support for lua5.4
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 11 Oct 2023 10:11:32 +0200
+
 lua-ngcp-kamailio (11.5.1.1+0~mr11.5.1.1) unstable; urgency=medium
 
   * New release.
