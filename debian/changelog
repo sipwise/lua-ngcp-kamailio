@@ -1,10 +1,10 @@
-lua-ngcp-kamailio (12.0.3.0+0~mr12.0.3.0) unstable; urgency=medium
+lua-ngcp-kamailio (12.0.0.0+0~mr12.0.0.0) unstable; urgency=medium
 
-  * New release.
+  [ Mykola Malkov ]
+  * [8f553ad] MT#57453 Switch docker image to bookworm
 
- -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 30 Oct 2023 17:04:51 +0100
-
-lua-ngcp-kamailio (12.0.2.0+0~mr12.0.2.0) unstable; urgency=medium
+  [ Alessio Garzi ]
+  * [0699ebc] MT#57706 New function del_pair in NGCPDlgCounters class
 
   [ Guillem Jover ]
   * [c729ddd] MT#58381 Use short name for GPL-3 in debian/copyright
@@ -13,17 +13,7 @@ lua-ngcp-kamailio (12.0.2.0+0~mr12.0.2.0) unstable; urgency=medium
   [ Marco Capetta ]
   * [5184509] MT#58471 add support for lua5.4
 
- -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Sun, 15 Oct 2023 08:23:26 +0200
-
-lua-ngcp-kamailio (12.0.1.0+0~mr12.0.1.0) unstable; urgency=medium
-
-  [ Mykola Malkov ]
-  * [8f553ad] MT#57453 Switch docker image to bookworm
-
-  [ Alessio Garzi ]
-  * [0699ebc] MT#57706 New function del_pair in NGCPDlgCounters class
-
- -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Wed, 30 Aug 2023 18:04:00 +0200
+ -- Mykola Malkov <mmalkov@sipwise.com>  Tue, 07 Nov 2023 16:16:47 +0200
 
 lua-ngcp-kamailio (11.5.0.0+0~mr11.5.0.0) unstable; urgency=medium
 
