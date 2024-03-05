@@ -1,5 +1,5 @@
 --
--- Copyright 2014-2022 SipWise Team <development@sipwise.com>
+-- Copyright 2014-2024 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 local NGCPDlgCounters = {
      __class__ = 'NGCPDlgCounters'
 }
+-- luacheck: globals KSR
+local KSR = KSR
 local NGCPRedis = require 'ngcp.redis';
 local utils = require 'ngcp.utils';
 local utable = utils.table;
@@ -40,6 +42,7 @@ local defaults = {
         port = 6379,
         db = 4
     },
+    logfile = false,
     debug = false,
     check_pair_dup = false,
     allow_negative = false
@@ -53,19 +56,26 @@ NGCPDlgCounters_MT.__tostring = function (t)
         utable.tostring(t.config), utable.tostring(t.central),
         utable.tostring(t.pair));
 end
--- luacheck: globals KSR
+
     function NGCPDlgCounters:new(config)
         local t = NGCPDlgCounters.init(utils.merge_defaults(config, defaults))
-        setmetatable( t, NGCPDlgCounters_MT )
-        return t
+        return setmetatable( t, NGCPDlgCounters_MT )
     end
 
     function NGCPDlgCounters.init(config)
-        return {
+        local t = {
             config = config,
             central = NGCPRedis:new(config.central),
             pair = NGCPRedis:new(config.pair)
         }
+        if config.logfile then
+            t.KSR = utils.KSR_log(KSR, config.logfile)
+            if t.KSR and t.KSR._logger then
+                KSR = t.KSR
+                KSR.dbg(string.format("logfile %s will be in used", config.logfile))
+            end
+        end
+        return t
     end
 
     function NGCPDlgCounters._decr(self, key)

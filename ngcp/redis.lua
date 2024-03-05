@@ -1,5 +1,5 @@
 --
--- Copyright 2022 SipWise Team <development@sipwise.com>
+-- Copyright 2022-2024 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,11 +17,12 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
--- luacheck: globals KSR
 local utils = require 'ngcp.utils'
 local redis = require 'redis';
 local utable = utils.table
 local NGCPRedis = utils.inheritsFrom()
+-- luacheck: globals KSR
+local KSR = KSR
 
 _ENV = NGCPRedis
 
