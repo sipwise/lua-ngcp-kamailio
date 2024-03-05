@@ -1,5 +1,5 @@
 --
--- Copyright 2013-2020 SipWise Team <development@sipwise.com>
+-- Copyright 2013-2024 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -17,8 +17,9 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
+local logging = require ('logging')
+local log_file = require ('logging.file')
 -- Lua utils
-
 local utils = {}
 utils.table = {}
 utils.string = {}
@@ -466,4 +467,52 @@ end
 --EOF
 
 utils.Stack = Stack
+
+function utils.KSR_log(KSR, logfile)
+  -- KSR has already the metatable
+  if KSR._logger then
+    KSR._logger = log_file(logfile, "%Y-%m-%d")
+    return KSR
+  end
+  local ksr_MT = { __index = KSR }
+  local t = {
+    _log = KSR.log,
+    _logger = log_file(logfile, "%Y-%m-%d"),
+    _logger_levels = {
+        dbg  = logging.DEBUG,
+        info = logging.INFO,
+        warn = logging.WARN,
+        err  = logging.ERROR,
+        crit = logging.FATAL
+    }
+  }
+  function t.log(level, message)
+      if not t._logger_levels[level] then
+          error(string.format("level %s unknown", tostring(level)))
+      end
+      -- same message on both
+      t._logger:log(t._logger_levels[level], message)
+      t._log(level, message)
+  end
+  function t.dbg(message)
+      t._logger:log(logging.DEBUG, message)
+  end
+  function t.err(message)
+      t._logger:log(logging.ERROR, message)
+  end
+  function t.info(message)
+      t._logger:log(logging.INFO, message)
+  end
+  function t.notice(message)
+      t._logger:log(logging.INFO, message)
+  end
+  function t.warn(message)
+      t._logger:log(logging.WARN, message)
+  end
+  function t.crit(message)
+      t._logger:log(logging.FATAL, message)
+  end
+  return setmetatable(t, ksr_MT)
+end
+
 return utils
