@@ -250,5 +250,18 @@ TestNGCPDlgCnt = {} --class
         lu.assertIs(self.dlg.pair.client, self.pair)
     end
 
+    function TestNGCPDlgCnt:test_logfile()
+        local KSR_old = KSR
+        local config = {
+            logfile = '/dev/null'
+        }
+        local NGCPDlg = require 'ngcp.dlgcnt'
+        dlg = NGCPDlg:new(config)
+        -- no changes in global
+        lu.assertIs(KSR, KSR_old)
+        lu.assertEvalToTrue(dlg.KSR)
+        lu.assertEvalToTrue(dlg.KSR._logger)
+    end
+
 -- class TestNGCPDlgCnt
 --EOF
