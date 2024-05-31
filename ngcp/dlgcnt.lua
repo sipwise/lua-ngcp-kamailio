@@ -78,11 +78,11 @@ end
         return t
     end
 
-    function NGCPDlgCounters._decr(self, key)
+    function NGCPDlgCounters._decr(self, key, callid)
         local res = self.central.client:decr(key);
         if res == 0 then
             self.central.client:del(key);
-            KSR.dbg(string.format("central:del[%s] counter is 0\n", key));
+            KSR.dbg(string.format("central:del[%s] counter is 0 - %s\n", key, callid));
             if self.config.debug then
                 KSR.pv.unset(string.format(xavp_fmt, key))
             end
@@ -94,8 +94,8 @@ end
                 KSR.pv.unset(string.format(xavp_fmt, key))
             end
         else
-            KSR.dbg(string.format("central:decr[%s]=>[%s]\n",
-                key, tostring(res)));
+            KSR.dbg(string.format("central:decr[%s]=>[%s] - %s\n",
+                key, tostring(res), callid));
             if self.config.debug then
                 KSR.pv.seti(string.format(xavp_fmt, key), res)
             end
@@ -136,7 +136,7 @@ end
             self.central:connect()
         end
         local res = self.central.client:incr(key);
-        KSR.dbg(string.format("central:incr[%s]=>%s\n", key, tostring(res)));
+        KSR.dbg(string.format("central:incr[%s]=>%s - %s\n", key, tostring(res), callid));
         if self.config.debug then
             if KSR.pvx.xavp_is_null(xavp_name) > 0 then
                 KSR.pv.seti(string.format(xavp_fmt_init, key), res)
@@ -152,8 +152,8 @@ end
             KSR.warn(msg:format(callid, key));
         end
         local pos = self.pair.client:lpush(callid, key);
-        KSR.dbg(string.format("pair:lpush[%s]=>[%s] %s\n",
-            callid, key, tostring(pos)));
+        KSR.dbg(string.format("pair:lpush[%s]=>[%s] %s - %s\n",
+            callid, key, tostring(pos), callid));
     end
 
     function NGCPDlgCounters:del_key(callid, key)
@@ -163,15 +163,15 @@ end
         local num = self.pair.client:lrem(callid, 1, key);
         if num == 0 then
             local msg = "pair:lrem[%s]=>[%s] no such key found in list, " ..
-                "skipping decrement\n";
-            KSR.dbg(msg:format(callid, key));
+                "skipping decrement - %s\n";
+            KSR.dbg(msg:format(callid, key), callid);
             return false;
         end
-        KSR.dbg(string.format("pair:lrem[%s]=>[%s] %d\n", callid, key, num));
+        KSR.dbg(string.format("pair:lrem[%s]=>[%s] %d - %s\n", callid, key, num, callid));
         if not self.central:test_connection() then
             self.central:connect()
         end
-        self:_decr(key);
+        self:_decr(key, callid);
     end
 
     function NGCPDlgCounters:del(callid)
@@ -186,8 +186,8 @@ end
             self.central:connect()
         end
         while key do
-            self:_decr(key);
-            KSR.dbg(string.format("pair:lpop[%s]=>[%s]\n", callid, key));
+            self:_decr(key, callid);
+            KSR.dbg(string.format("pair:lpop[%s]=>[%s] - %s\n", callid, key, callid));
             key = self.pair.client:lpop(callid);
         end
     end
@@ -204,7 +204,7 @@ end
             self.central:connect()
         end
         while key do
-            KSR.dbg(string.format("pair:lpop[%s]=>[%s]\n", callid, key));
+            KSR.dbg(string.format("pair:lpop[%s]=>[%s] - %s\n", callid, key, callid));
             key = self.pair.client:lpop(callid);
         end
     end
@@ -214,7 +214,7 @@ end
             self.central:connect()
         end
         local res = self.central.client:get(key);
-        KSR.dbg(string.format("central:get[%s]=>%s\n", key, tostring(res)));
+        KSR.dbg(string.format("central:get[%s]=>%s - %s\n", key, tostring(res), key));
         return res;
     end
 -- class
