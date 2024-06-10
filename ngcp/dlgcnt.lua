@@ -164,7 +164,7 @@ end
         if num == 0 then
             local msg = "pair:lrem[%s]=>[%s] no such key found in list, " ..
                 "skipping decrement - %s\n";
-            KSR.dbg(msg:format(callid, key), callid);
+            KSR.dbg(msg:format(callid, key, callid));
             return false;
         end
         KSR.dbg(string.format("pair:lrem[%s]=>[%s] %d - %s\n", callid, key, num, callid));
