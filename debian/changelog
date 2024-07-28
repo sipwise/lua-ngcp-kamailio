@@ -1,3 +1,14 @@
+lua-ngcp-kamailio (12.5.1.0+0~mr12.5.1.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [6e2d9f4] MT#59550 utils.KSR_log
+
+  [ Alessio Garzi ]
+  * [4b75474] MT#59435 Print callid in log messages in lua counters
+  * [49d176b] MT#59435 Fix wrong comma on previous commit 4b75474414032c9e5610502ea336e8706f55fc53
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Sun, 28 Jul 2024 12:02:20 +0200
+
 lua-ngcp-kamailio (12.5.0.0+0~mr12.5.0.0) unstable; urgency=medium
 
   * New release.
