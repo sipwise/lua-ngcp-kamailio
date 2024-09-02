@@ -36,7 +36,7 @@ host="$(ngcp-dlgcnt-clean -C fake 2>/dev/null|| echo localhost)"
 
 # redis full list
 REDIS_CALLIDS=$(mktemp)
-ngcp-redis-helper -h "$host" -n "$REDIS_DB" dump | grep -E -v "^$" > "$REDIS_CALLIDS" || true
+ngcp-redis-helper -h "$host" -n "$REDIS_DB" dumps | grep -E -v "^$" > "$REDIS_CALLIDS" || true
 
 # kamailio full dialogs (no ngcp-kamcmd because in fails in case of large output)
 KAMAILIO_DIALOGS=$(mktemp)
@@ -47,6 +47,9 @@ REDIS_CALLIDS_FILTER=$(mktemp)
 grep -E -v '^list:' "$REDIS_CALLIDS" > "$REDIS_CALLIDS_FILTER" || true
 
 while read -r i ; do
+  if [[ "$i" == '[' || "$i" == ']' || "$i" == "Database is empty" ]]; then
+		continue
+	fi
   if ! grep -q -- "$i" "$KAMAILIO_DIALOGS"
   then
     printf "CallID:[%s] unknown\n" "$i"
