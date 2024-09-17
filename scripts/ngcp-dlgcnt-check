@@ -50,13 +50,15 @@ while read -r i ; do
   if [[ "$i" == '[' || "$i" == ']' || "$i" == "Database is empty" ]]; then
 		continue
 	fi
-  if ! grep -q -- "$i" "$KAMAILIO_DIALOGS"
+  # remove from the existing string any comma or quote that could come from a json formatting
+  id=$(echo "$i" | tr -d ',\"')
+  if ! grep -q -- "$id" "$KAMAILIO_DIALOGS"
   then
-    printf "CallID:[%s] unknown\n" "$i"
+    printf "CallID:[%s] unknown\n" "$id"
     if $REMOVE ; then
-      ngcp-dlgcnt-clean "--" "$i" || true
-      if grep -q "list:$i" "$REDIS_CALLIDS" ; then
-        ngcp-dlglist-clean "--" "$i" || true
+      ngcp-dlgcnt-clean "--" "$id" || true
+      if grep -q "list:$id" "$REDIS_CALLIDS" ; then
+        ngcp-dlglist-clean "--" "$id" || true
       fi
     fi
   fi
