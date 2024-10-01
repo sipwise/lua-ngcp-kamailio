@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (13.0.1.0+0~mr13.0.1.0) unstable; urgency=medium
+
+  [ Marco Capetta ]
+  * [d573fe8] MT#60830 Adapt ngcp-dlgcnt-check script to use json output
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 01 Oct 2024 09:59:28 +0200
+
 lua-ngcp-kamailio (13.0.0.0+0~mr13.0.0.0) unstable; urgency=medium
 
   [ Victor Seva ]
