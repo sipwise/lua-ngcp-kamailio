@@ -17,8 +17,6 @@
 -- On Debian systems, the complete text of the GNU General
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
-local logging = require ('logging')
-local log_file = require ('logging.file')
 -- Lua utils
 local utils = {}
 utils.table = {}
@@ -469,6 +467,8 @@ end
 utils.Stack = Stack
 
 function utils.KSR_log(KSR, logfile)
+  local logging = require ('logging')
+  local log_file = require ('logging.file')
   -- KSR has already the metatable
   if KSR._logger then
     KSR._logger = log_file(logfile, "%Y-%m-%d")
