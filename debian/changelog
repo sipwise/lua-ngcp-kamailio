@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (13.0.1.2+0~mr13.0.1.2) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [8b79e15] MT#61437 utils: don't require logging globally
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 03 Dec 2024 08:56:14 +0100
+
 lua-ngcp-kamailio (13.0.1.1+0~mr13.0.1.1) unstable; urgency=medium
 
   * New release.
