@@ -1,3 +1,13 @@
+lua-ngcp-kamailio (13.2.0.0+0~mr13.2.0.0) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [7ca0637] MT#61437 utils: don't require logging globally
+
+  [ Marco Capetta ]
+  * [2a55b4b] MT#60830 ngcp-dlgcnt-clean fix parsing on json input text
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 09 Dec 2024 11:26:25 +0100
+
 lua-ngcp-kamailio (13.1.0.0+0~mr13.1.0.0) unstable; urgency=medium
 
   [ Marco Capetta ]
