@@ -44,7 +44,7 @@ ngcp-kamctl proxy fifo dlg.list | awk '/"call-id":/ { print $NF}' > "$KAMAILIO_D
 
 # 'lists:' belongs to dlglist
 REDIS_CALLIDS_FILTER=$(mktemp)
-grep -E -v '^list:' "$REDIS_CALLIDS" > "$REDIS_CALLIDS_FILTER" || true
+grep -E -v '^\s+"list:' "$REDIS_CALLIDS" > "$REDIS_CALLIDS_FILTER" || true
 
 while read -r i ; do
   if [[ "$i" == '[' || "$i" == ']' || "$i" == "Database is empty" ]]; then
