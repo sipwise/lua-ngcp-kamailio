@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (13.2.1.2+0~mr13.2.1.2) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [d0fbf72] MT#62615 ngcp-dlgcnt-check: fix filtering dlglist values from results
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 22 Apr 2025 15:52:02 +0200
+
 lua-ngcp-kamailio (13.2.1.1+0~mr13.2.1.1) unstable; urgency=medium
 
   * New release.
