@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (12.3.1.2+0~mr12.3.1.2) unstable; urgency=medium
+
+  [ Victor Seva ]
+  * [30ee8b3] MT#59550 utils.KSR_log
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 08 May 2025 16:16:14 +0200
+
 lua-ngcp-kamailio (12.3.1.1+0~mr12.3.1.1) unstable; urgency=medium
 
   * New release.
