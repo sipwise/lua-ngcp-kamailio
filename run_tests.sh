@@ -51,7 +51,7 @@ EOF
 	fi
 }
 
-if [[ -n "$@" ]]; then
+if [[ $# -gt 0 ]]; then
 	for i in "$@"; do
 		if [ ! -f "$i" ]; then
 			echo "No $i found"
