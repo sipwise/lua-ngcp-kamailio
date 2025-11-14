@@ -217,6 +217,15 @@ end
         KSR.dbg(string.format("central:get[%s]=>%s - %s\n", key, tostring(res), key));
         return res;
     end
+
+    function NGCPDlgCounters:list(key)
+        if not self.pair:test_connection() then
+            self.pair:connect()
+        end
+        local res = self.central.client:lrange(key, 0, -1);
+        KSR.dbg(string.format("central:list[%s]=>%s\n", key, utable.tostring(res)));
+        return utable.tostring(res);
+    end
 -- class
 
 return NGCPDlgCounters
