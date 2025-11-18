@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (13.5.1.2+0~mr13.5.1.2) unstable; urgency=medium
+
+  [ Marco Capetta ]
+  * [103cd83] MT#63930 Add NGCPDlgCounters:list function
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Tue, 18 Nov 2025 16:30:28 +0100
+
 lua-ngcp-kamailio (13.5.1.1+0~mr13.5.1.1) unstable; urgency=medium
 
   * New release.
