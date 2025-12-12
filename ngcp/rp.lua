@@ -63,6 +63,14 @@ function NGCPRealPrefs:callee_peer_load(keys)
     return self:_peer_load("callee", keys)
 end
 
+function NGCPRealPrefs:caller_peer_load_group(keys)
+    return self:_peer_load("caller", keys)
+end
+
+function NGCPRealPrefs:callee_peer_load_group(keys)
+    return self:_peer_load("callee", keys)
+end
+
 function NGCPRealPrefs:caller_usr_load(keys)
     return self:_usr_load("caller", keys)
 end
