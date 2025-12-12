@@ -98,6 +98,18 @@ function NGCP:callee_peer_load(peer)
     return keys
 end
 
+function NGCP:caller_peer_load_group(peer, group_name)
+    local keys = self.prefs.peer:caller_load_group(peer, group_name)
+    self.prefs.real:caller_peer_load_group(keys)
+    return keys
+end
+
+function NGCP:callee_peer_load_group(peer, group_name)
+    local keys = self.prefs.peer:callee_load_group(peer, group_name)
+    self.prefs.real:callee_peer_load_group(keys)
+    return keys
+end
+
 function NGCP:caller_usr_load(uuid, domain)
     local keys = {
         domain = self.prefs.dom:caller_load(domain),
