@@ -1,11 +1,11 @@
-# DOCKER_NAME=lua-ngcp-kamailio-bookworm
-FROM docker.mgm.sipwise.com/sipwise-bookworm:latest
+# DOCKER_NAME=lua-ngcp-kamailio-trixie
+FROM docker.mgm.sipwise.com/sipwise-trixie:latest
 
 # Important! Update this no-op ENV variable when this Dockerfile
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT 2023-06-26
+ENV REFRESHED_AT 2025-12-30
 
 # files that get-code generates
 COPY t/sources.list.d/builddeps.list /etc/apt/sources.list.d/
@@ -28,15 +28,15 @@ WORKDIR /code/
 #
 # you need to put the proper NGCP sources at t/sources.list.d/builddeps.list
 # for instance, trunk:
-# echo "deb https://deb.sipwise.com/autobuild/ release-trunk-bookworm main" > t/sources.list.d/builddeps.list
+# echo "deb https://deb.sipwise.com/autobuild/ release-trunk-trixie main" > t/sources.list.d/builddeps.list
 #
-# % docker build --tag="lua-ngcp-kamailio-bookworm" -f t/Dockerfile .
-# % docker run --rm -i -t -v $(pwd):/code:rw lua-ngcp-kamailio-bookworm:latest bash
+# % docker build --tag="lua-ngcp-kamailio-trixie" -f t/Dockerfile .
+# % docker run --rm -i -t -v $(pwd):/code:rw lua-ngcp-kamailio-trixie:latest bash
 #
 # Use the existing docker image:
-# % docker pull docker.mgm.sipwise.com/lua-ngcp-kamailio-bookworm
+# % docker pull docker.mgm.sipwise.com/lua-ngcp-kamailio-trixie
 # NOTE: run the following command from root folder of git repository:
-# % docker run --rm -i -t -v $(pwd):/code:rw docker.mgm.sipwise.com/lua-ngcp-kamailio-bookworm:latest bash
+# % docker run --rm -i -t -v $(pwd):/code:rw docker.mgm.sipwise.com/lua-ngcp-kamailio-trixie:latest bash
 #
 # Inside docker (the command is in history, just press UP button):
 #   ./t/testrunner
