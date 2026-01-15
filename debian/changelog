@@ -1,3 +1,10 @@
+lua-ngcp-kamailio (14.0.1.2+0~mr14.0.1.2) unstable; urgency=medium
+
+  [ Donat Zenichev ]
+  * [32282dc] MT#63923 Add support for loading based on prefs group
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Thu, 15 Jan 2026 15:47:06 +0100
+
 lua-ngcp-kamailio (14.0.1.1+0~mr14.0.1.1) unstable; urgency=medium
 
   * New release.
