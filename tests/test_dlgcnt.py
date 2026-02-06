@@ -77,7 +77,9 @@ fi"""
 
 class Test(unittest.TestCase):
     def checkNotCmd(self):
-        self.assertFalse(os.path.exists(FAKE_CMD_LIST), "%s found" % FAKE_CMD_LIST)
+        self.assertFalse(
+            os.path.exists(FAKE_CMD_LIST), "%s found" % FAKE_CMD_LIST
+        )
 
     def checkCmd(self, f, f2):
         self.assertTrue(os.path.exists(f), "%s not found" % f)
@@ -92,7 +94,9 @@ class TestDlgCnt(Test):
         if not os.path.exists(FAKE_BIN):
             os.makedirs(FAKE_BIN)
         setnode(True)
-        create_prog(os.path.join(FAKE_BIN, "ngcp-dlgcnt-clean"), FAKE_DLG_CLEAN)
+        create_prog(
+            os.path.join(FAKE_BIN, "ngcp-dlgcnt-clean"), FAKE_DLG_CLEAN
+        )
         create_prog(
             os.path.join(FAKE_BIN, "ngcp-dlglist-clean"),
             'echo "ngcp-dlglist-clean $*">> %s' % FAKE_CMD_LIST,
@@ -123,11 +127,13 @@ class TestDlgCnt(Test):
 
     def test_noredisconf(self):
         create_prog(
-            os.path.join(FAKE_BIN, "ngcp-dlgcnt-clean"), 'echo "error" >&2; false'
+            os.path.join(FAKE_BIN, "ngcp-dlgcnt-clean"),
+            'echo "error" >&2; false',
         )
         create_prog(os.path.join(FAKE_BIN, "ngcp-kamctl"), "true")
         create_prog(
-            os.path.join(FAKE_BIN, "ngcp-redis-helper"), "%s; true" % FAKE_REDIS_HELPER
+            os.path.join(FAKE_BIN, "ngcp-redis-helper"),
+            "%s; true" % FAKE_REDIS_HELPER,
         )
         res = executeAndReturnOutput(self.command)
         self.assertEqual(res[0], 0, res[1])
@@ -136,7 +142,8 @@ class TestDlgCnt(Test):
     def test_redisconf(self):
         create_prog(os.path.join(FAKE_BIN, "ngcp-kamctl"), "true")
         create_prog(
-            os.path.join(FAKE_BIN, "ngcp-redis-helper"), "%s; true" % FAKE_REDIS_HELPER
+            os.path.join(FAKE_BIN, "ngcp-redis-helper"),
+            "%s; true" % FAKE_REDIS_HELPER,
         )
         res = executeAndReturnOutput(self.command)
         self.assertEqual(res[0], 0, res[1])
@@ -158,10 +165,13 @@ class TestDlgCnt(Test):
 
     def test_okredis(self):
         FAKE_DLG = os.path.join(FIXTURES, "okredis.dlg")
-        create_prog(os.path.join(FAKE_BIN, "ngcp-kamctl"), "cat %s" % (FAKE_DLG))
+        create_prog(
+            os.path.join(FAKE_BIN, "ngcp-kamctl"), "cat %s" % (FAKE_DLG)
+        )
         FAKE_REDIS = os.path.join(FIXTURES, "okredis.redis")
         create_prog(
-            os.path.join(FAKE_BIN, "ngcp-redis-helper"), "cat %s" % (FAKE_REDIS)
+            os.path.join(FAKE_BIN, "ngcp-redis-helper"),
+            "cat %s" % (FAKE_REDIS),
         )
         res = executeAndReturnOutput(self.command)
         self.assertEqual(res[0], 0, res[2])
@@ -169,10 +179,13 @@ class TestDlgCnt(Test):
 
     def test_koredis(self):
         FAKE_DLG = os.path.join(FIXTURES, "koredis.dlg")
-        create_prog(os.path.join(FAKE_BIN, "ngcp-kamctl"), "cat %s" % (FAKE_DLG))
+        create_prog(
+            os.path.join(FAKE_BIN, "ngcp-kamctl"), "cat %s" % (FAKE_DLG)
+        )
         FAKE_REDIS = os.path.join(FIXTURES, "koredis.redis")
         create_prog(
-            os.path.join(FAKE_BIN, "ngcp-redis-helper"), "cat %s" % (FAKE_REDIS)
+            os.path.join(FAKE_BIN, "ngcp-redis-helper"),
+            "cat %s" % (FAKE_REDIS),
         )
         res = executeAndReturnOutput(self.command)
         self.assertEqual(res[0], 0, res[2])
@@ -180,13 +193,17 @@ class TestDlgCnt(Test):
 
     def test_kodlgclean(self):
         FAKE_DLG = os.path.join(FIXTURES, "koredis.dlg")
-        create_prog(os.path.join(FAKE_BIN, "ngcp-kamctl"), "cat %s" % (FAKE_DLG))
+        create_prog(
+            os.path.join(FAKE_BIN, "ngcp-kamctl"), "cat %s" % (FAKE_DLG)
+        )
         FAKE_REDIS = os.path.join(FIXTURES, "koredis.redis")
         create_prog(
-            os.path.join(FAKE_BIN, "ngcp-redis-helper"), "cat %s" % (FAKE_REDIS)
+            os.path.join(FAKE_BIN, "ngcp-redis-helper"),
+            "cat %s" % (FAKE_REDIS),
         )
         create_prog(
-            os.path.join(FAKE_BIN, "ngcp-dlgcnt-clean"), "%s; false" % FAKE_DLG_CLEAN
+            os.path.join(FAKE_BIN, "ngcp-dlgcnt-clean"),
+            "%s; false" % FAKE_DLG_CLEAN,
         )
         res = executeAndReturnOutput(self.command)
         self.assertEqual(res[0], 0, res[2])
@@ -194,10 +211,13 @@ class TestDlgCnt(Test):
 
     def test_kolistclean(self):
         FAKE_DLG = os.path.join(FIXTURES, "koredis.dlg")
-        create_prog(os.path.join(FAKE_BIN, "ngcp-kamctl"), "cat %s" % (FAKE_DLG))
+        create_prog(
+            os.path.join(FAKE_BIN, "ngcp-kamctl"), "cat %s" % (FAKE_DLG)
+        )
         FAKE_REDIS = os.path.join(FIXTURES, "koredis.redis")
         create_prog(
-            os.path.join(FAKE_BIN, "ngcp-redis-helper"), "cat %s" % (FAKE_REDIS)
+            os.path.join(FAKE_BIN, "ngcp-redis-helper"),
+            "cat %s" % (FAKE_REDIS),
         )
         create_prog(
             os.path.join(FAKE_BIN, "ngcp-dlglist-clean"),
