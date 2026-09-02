@@ -127,6 +127,12 @@ function NGCP:caller_usr_load(uuid, domain)
     return unique_keys
 end
 
+function NGCP:caller_load_group(uuid, group_name)
+    local keys = self.prefs.usr:caller_load_group(uuid, group_name)
+    self.prefs.real:caller_usr_load_group(keys)
+    return keys
+end
+
 function NGCP:callee_usr_load(uuid, domain)
     local keys = {
         domain = self.prefs.dom:callee_load(domain),
@@ -141,6 +147,12 @@ function NGCP:callee_usr_load(uuid, domain)
     self.prefs.real:callee_usr_load(unique_keys)
 
     return unique_keys
+end
+
+function NGCP:callee_load_group(uuid, group_name)
+    local keys = self.prefs.usr:callee_load_group(uuid, group_name)
+    self.prefs.real:callee_usr_load_group(keys)
+    return keys
 end
 
 function NGCP:log_pref(level, vtype)
