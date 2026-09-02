@@ -127,10 +127,27 @@ function NGCP:caller_usr_load(uuid, domain)
     return unique_keys
 end
 
-function NGCP:caller_load_group(uuid, group_name)
-    local keys = self.prefs.usr:caller_load_group(uuid, group_name)
-    self.prefs.real:caller_usr_load_group(keys)
-    return keys
+function NGCP:caller_usr_load_group(uuid, domain, group_name)
+    if not group_name then
+        group_name = domain
+        domain = nil
+    end
+    local group_id = self.prefs.usr:get_pref_group_id(group_name)
+    if not group_id then
+        return {}
+    end
+
+    local keys = {
+        domain = self.prefs.dom:load_group("caller", domain, group_id),
+        prof   = self.prefs.prof:load_group("caller", uuid, group_id),
+        user   = self.prefs.usr:load_group("caller", uuid, group_id),
+    }
+    local unique_keys = utable.deepcopy(keys.domain)
+    utable.merge(unique_keys, keys.prof)
+    utable.merge(unique_keys, keys.user)
+
+    self.prefs.real:caller_usr_load_group(unique_keys)
+    return unique_keys
 end
 
 function NGCP:callee_usr_load(uuid, domain)
@@ -149,10 +166,27 @@ function NGCP:callee_usr_load(uuid, domain)
     return unique_keys
 end
 
-function NGCP:callee_load_group(uuid, group_name)
-    local keys = self.prefs.usr:callee_load_group(uuid, group_name)
-    self.prefs.real:callee_usr_load_group(keys)
-    return keys
+function NGCP:callee_usr_load_group(uuid, domain, group_name)
+    if not group_name then
+        group_name = domain
+        domain = nil
+    end
+    local group_id = self.prefs.usr:get_pref_group_id(group_name)
+    if not group_id then
+        return {}
+    end
+
+    local keys = {
+        domain = self.prefs.dom:load_group("callee", domain, group_id),
+        prof   = self.prefs.prof:load_group("callee", uuid, group_id),
+        user   = self.prefs.usr:load_group("callee", uuid, group_id),
+    }
+    local unique_keys = utable.deepcopy(keys.domain)
+    utable.merge(unique_keys, keys.prof)
+    utable.merge(unique_keys, keys.user)
+
+    self.prefs.real:callee_usr_load_group(unique_keys)
+    return unique_keys
 end
 
 function NGCP:log_pref(level, vtype)
