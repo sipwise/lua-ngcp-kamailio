@@ -26,6 +26,18 @@ local NGCPPrefs = utils.inheritsFrom()
 NGCPPrefs.__class__ = 'NGCPPrefs'
 NGCPPrefs.levels = {"caller", "callee"}
 NGCPPrefs.query_blob = "SELECT * FROM provisioning.voip_%s_blob WHERE id = %s"
+NGCPPrefs.select_id_query =
+    "SELECT id FROM provisioning.voip_preference_groups WHERE name = '%s'"
+NGCPPrefs.group_query = [[
+SELECT prefs.*
+  FROM %s AS prefs
+  JOIN provisioning.voip_preferences AS vp
+    ON vp.attribute = prefs.attribute
+  JOIN provisioning.voip_preference_groups AS vpg
+    ON vpg.id = vp.voip_preference_groups_id
+  WHERE prefs.uuid = '%s' AND vpg.id = %s
+  ORDER BY prefs.id DESC
+]]
 
 function NGCPPrefs.__tostring(self)
     local output, msg = '', "%s_%s:%s\n"
@@ -129,6 +141,58 @@ function NGCPPrefs:_load(level, uuid)
     local cur = assert (con:execute(query))
 
     return self:_set_xavp(level, cur, query)
+end
+
+function NGCPPrefs:get_pref_group_id(name)
+    local con = assert(self.config:getDBConnection())
+    local query = self.select_id_query:format(name)
+    local cur = assert(con:execute(query))
+    local row = cur:fetch({}, "a")
+    cur:close()
+
+    if row and row.id then
+        return tonumber(row.id)
+    end
+
+    KSR.err(string.format("[NGCP] preference group '%s' not found\n", name))
+    return nil
+end
+
+function NGCPPrefs:load_group(level, uuid, group_id)
+    if not uuid or uuid == '' then
+        return {}
+    end
+    if not self.group_query then
+        error(string.format("no group query for prefs:%s", self.group))
+    end
+
+    local con = assert(self.config:getDBConnection())
+    local query = self.group_query:format(self.db_table, uuid, group_id)
+    local cur = assert(con:execute(query))
+
+    return self:_set_xavp(level, cur, query)
+end
+
+function NGCPPrefs:caller_load_group(uuid, name)
+    local group_id = self:get_pref_group_id(name)
+    if not group_id then
+        KSR.err(string.format("[NGCP] Cannot load group '%s', skipping\n",
+            name))
+        return {}
+    end
+
+    return self:load_group("caller", uuid, group_id)
+end
+
+function NGCPPrefs:callee_load_group(uuid, name)
+    local group_id = self:get_pref_group_id(name)
+    if not group_id then
+        KSR.err(string.format("[NGCP] Cannot load group '%s', skipping\n",
+            name))
+        return {}
+    end
+
+    return self:load_group("callee", uuid, group_id)
 end
 
 function NGCPPrefs:caller_load(uuid)
