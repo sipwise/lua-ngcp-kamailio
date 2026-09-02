@@ -28,6 +28,17 @@ NGCPProfilePrefs.db_table = "prof_preferences"
 NGCPProfilePrefs.query = "SELECT prefs.* FROM provisioning.voip_subscribers "..
     "as usr LEFT JOIN %s AS prefs ON usr.profile_id = prefs.uuid "..
     "WHERE usr.uuid = '%s'"
+NGCPProfilePrefs.group_query = [[
+SELECT prefs.*
+  FROM provisioning.voip_subscribers AS usr
+  LEFT JOIN %s AS prefs
+    ON usr.profile_id = prefs.uuid
+  JOIN provisioning.voip_preferences AS vp
+    ON vp.attribute = prefs.attribute
+  JOIN provisioning.voip_preference_groups AS vpg
+    ON vpg.id = vp.voip_preference_groups_id
+  WHERE usr.uuid = '%s' AND vpg.id = %s
+]]
 -- luacheck: globals KSR
 function NGCPProfilePrefs:new(config)
     local instance = NGCPProfilePrefs:create()

@@ -27,6 +27,15 @@ NGCPDomainPrefs.__class__ = 'NGCPDomainPrefs'
 NGCPDomainPrefs.group = "dom_prefs"
 NGCPDomainPrefs.db_table = "dom_preferences"
 NGCPDomainPrefs.query = "SELECT * FROM %s WHERE domain ='%s'"
+NGCPDomainPrefs.group_query = [[
+SELECT prefs.*
+  FROM %s AS prefs
+  JOIN provisioning.voip_preferences AS vp
+    ON vp.attribute = prefs.attribute
+  JOIN provisioning.voip_preference_groups AS vpg
+    ON vpg.id = vp.voip_preference_groups_id
+  WHERE prefs.domain = '%s' AND vpg.id = %s
+]]
 -- luacheck: globals KSR
 function NGCPDomainPrefs:new(config)
     local instance = NGCPDomainPrefs:create()
