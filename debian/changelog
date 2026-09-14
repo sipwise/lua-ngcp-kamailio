@@ -1,3 +1,11 @@
+lua-ngcp-kamailio (26.2.1.2+0~mr26.2.1.2) unstable; urgency=medium
+
+  [ Donat Zenichev ]
+  * [1d3c443] MT#65662 Add support for loading based on prefs group (subscribers)
+  * [255d249] MT#65662 Support domain/profile/subscriber level inheritance (group load)
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 14 Sep 2026 14:10:54 +0200
+
 lua-ngcp-kamailio (26.2.1.1+0~mr26.2.1.1) unstable; urgency=medium
 
   * New release.
