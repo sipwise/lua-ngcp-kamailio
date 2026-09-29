@@ -1,5 +1,5 @@
 --
--- Copyright 2014-2020 SipWise Team <development@sipwise.com>
+-- Copyright 2014-2026 SipWise Team <development@sipwise.com>
 --
 -- This program is free software: you can redistribute it and/or modify
 -- it under the terms of the GNU General Public License as published by
@@ -19,70 +19,82 @@
 --
 
 local lu = require('luaunit')
-local lemock = require('lemock')
+local ltn12 = require('ltn12')
+local mime = require('mime')
 local ksrMock = require 'mocks.ksr'
 
 KSR = ksrMock:new()
-
-local mc
 
 -- luacheck: ignore TestNGCPAPIClient
 TestNGCPAPIClient = {} --class
 
     function TestNGCPAPIClient:setUp()
-        mc = lemock.controller()
-        self.c = mc:mock()
-        self.j = mc:mock()
-
         local NGCPAPIClient = require 'ngcp.api_client'
 
         self.client = NGCPAPIClient:new()
         lu.assertNotNil(self.client)
 
-        self.client.c = self.c;
-        self.client.j = self.j;
-
+        local this = self
+        self.response = '{"uuid":"1234"}'
+        self.requests = {}
+        -- stands in for ssl.https
+        self.client.c = {
+            request = function(reqt)
+                table.insert(this.requests, reqt)
+                ltn12.pump.all(ltn12.source.string(this.response), reqt.sink)
+                return 1, 200, {}, 'HTTP/1.1 200 OK'
+            end
+        }
     end
 
     function TestNGCPAPIClient:test_api_request()
-        local method  = 'GET'
-        local request = 'domains'
+        local res = self.client:request('GET', 'domains')
 
-        local result = {}
-        local ipport = self.client.config.ip .. ':' .. self.client.config.port
-        local userpass = self.client.config.user .. ':' .. self.client.config.pass
+        lu.assertEquals(#self.requests, 1)
+        local reqt = self.requests[1]
+        lu.assertEquals(reqt.url, 'https://127.0.0.1:1442/api/domains')
+        lu.assertEquals(reqt.method, 'GET')
+        lu.assertEquals(reqt.verify, 'none')
+        lu.assertEquals(reqt.redirect, false)
+        lu.assertEquals(reqt.headers, {
+            ['content-type'] = 'application/json',
+            ['prefer'] = 'return=internal',
+            ['ngcp-useragent'] = 'NGCP::API::Client',
+            ['authorization'] = 'Basic ' .. (mime.b64('system:password')),
+        })
+        lu.assertEquals(res, {uuid = '1234'})
+    end
 
-        local headers = {
-            'Content-Type: application/json',
-            'Prefer: return=internal',
-            'NGCP-UserAgent: NGCP::API::Client'
+    function TestNGCPAPIClient:test_api_request_no_content()
+        self.response = ''
+
+        local res = self.client:request('DELETE', 'managersecretary/1234')
+
+        lu.assertEquals(self.requests[1].method, 'DELETE')
+        lu.assertEquals(self.requests[1].url,
+            'https://127.0.0.1:1442/api/managersecretary/1234')
+        lu.assertEquals(res, "{}")
+    end
+
+    function TestNGCPAPIClient:test_api_request_credentials()
+        self.client = require('ngcp.api_client'):new({
+            ip = '192.168.1.1', port = 443, user = 'me', pass = 'pa%73s'
+        })
+        local this = self
+        self.client.c = {
+            request = function(reqt)
+                table.insert(this.requests, reqt)
+                return 1, 200, {}, 'HTTP/1.1 200 OK'
+            end
         }
 
-        self.c:setopt(curl.OPT_VERBOSE, 0) ;mc :returns(true)
+        self.client:request('PUT', 'managersecretary/1234')
 
-        self.c:setopt(curl.OPT_SSL_VERIFYHOST, 0) ;mc :returns(true)
-        self.c:setopt(curl.OPT_SSL_VERIFYPEER, 0) ;mc :returns(true)
-
-        self.c:setopt(curl.OPT_URL, 'https://' .. ipport .. '/api/' .. request) ;mc :returns(true)
-        self.c:setopt(curl.OPT_HTTPAUTH, curl.AUTH_BASIC) ;mc :returns(true)
-        self.c:setopt(curl.OPT_USERPWD, userpass) ;mc :returns(true)
-        self.c:setopt(curl.OPT_WRITEFUNCTION, mc.ANYARGS)
-
-        self.c:setopt(curl.OPT_CUSTOMREQUEST, method) ;mc :returns(true)
-        self.c:setopt(curl.OPT_HTTPHEADER, mc.ANYARGS) ;mc :returns(true)
-
-        local res, msg = self.c:perform() ;mc :returns(0)
-
-        if curl.close then
-           self.c:close() ;mc :returns(true)
-        end
-
-        mc:replay()
-        local res = self.client:request(method, request)
-        mc:verify()
-
-        lu.assertNotNil(res)
-        lu.assertIs(self.client.c, self.c)
+        local reqt = self.requests[1]
+        lu.assertEquals(reqt.url, 'https://192.168.1.1:443/api/managersecretary/1234')
+        -- the percent sign has to survive untouched
+        lu.assertEquals(reqt.headers['authorization'],
+            'Basic ' .. (mime.b64('me:pa%73s')))
     end
 
 -- class TestNGCAPIClient

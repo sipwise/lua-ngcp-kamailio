@@ -22,10 +22,15 @@ local NGCPPush = {
      __class__ = 'NGCPPush'
 }
 local NGCPRedis = require 'ngcp.redis';
-local curl = require 'curl'
+local http = require 'socket.http'
+local https = require 'ssl.https'
+local ltn12 = require 'ltn12'
+local url = require 'socket.url'
 local utils = require 'ngcp.utils'
 local utable = utils.table
 local separator = "#"
+-- the push request runs in the SIP worker, keep it short (former OPT_TIMEOUT)
+local request_timeout = 2
 
 local defaults = {
     url   = 'http://127.0.0.1:45059/push',
@@ -49,10 +54,25 @@ function NGCPPush:new(config)
     return t;
 end
 
+local function is_address(host)
+    -- dotted quad, or anything with a colon in it for an IPv6 literal
+    return host:match('^%d+%.%d+%.%d+%.%d+$') ~= nil
+        or host:find(':', 1, true) ~= nil
+end
+
 function NGCPPush.init(config)
+    -- a malformed url is left to fail at request time, as it did before
+    local parsed = url.parse(config.url)
+    local host = parsed and parsed.host
+    if host and not is_address(host) then
+        -- name resolution happens before there is a socket to time out on
+        KSR.warn(string.format(
+            "push url [%s] uses a host name: resolving it is not covered by " ..
+            "the request timeout and can block this process\n", config.url))
+    end
     return {
         config = config,
-        c = curl.easy_init(),
+        c = http,
         redis = NGCPRedis:new(config.central)
     }
 end
@@ -194,63 +214,54 @@ function NGCPPush:clear(key)
     KSR.dbg(string.format("del[%s] %s\n", key, tostring(res)));
 end
 
---function helper for result
---taken from luasocket page (MIT-License)
-local function build_w_cb(t)
-    return function(s,len)
-        table.insert(t, s)
-    return len,nil
-    end
-end
-
---function helper for headers
---taken from luasocket page (MIT-License)
-local function h_build_w_cb(t)
-    return function(s,len)
-        --stores the received data in the table t
-        --prepare header data
-        local name, value = s:match("(.-): (.+)")
-        if name and value then
-            t.headers[name] = value:gsub("[\n\r]", "")
-        else
-            local code, codemessage = string.match(s, "^HTTP/.* (%d+) (.+)$")
-            if code and codemessage then
-                t.code = tonumber(code)
-                t.codemessage = codemessage:gsub("[\n\r]", "")
-            end
-        end
-        return len,nil
-    end
-end
-
 local function postfields(data)
-    local str = ""
+    local fields = {}
     for k, v in pairs(data) do
-        str = str .. string.format("%s=%s&", k, curl.escape(v))
+        table.insert(fields, string.format("%s=%s",
+            url.escape(tostring(k)), url.escape(tostring(v))))
     end
-    return str:sub(1, -1)
+    return table.concat(fields, "&")
+end
+
+local function status_message(status)
+    local message = string.match(tostring(status), "^HTTP/%S+ %d+ (.+)$") or ""
+    return (message:gsub("[\n\r]", ""))
 end
 
 function NGCPPush:request(postdata)
     local ret = {headers={}}
     local response_body = {}
+    local body = postfields(postdata)
     local headers = {
-        'Content-Type: application/x-www-form-urlencoded',
+        ['content-type'] = 'application/x-www-form-urlencoded',
+        -- without it socket.http would fall back to a chunked request body
+        ['content-length'] = #body,
     }
-    self.c:setopt(curl.OPT_VERBOSE, 0)
 
-    self.c:setopt(curl.OPT_SSL_VERIFYHOST, 0)
-    self.c:setopt(curl.OPT_SSL_VERIFYPEER, 0)
-    self.c:setopt(curl.OPT_HTTPHEADER, headers)
-    self.c:setopt(curl.OPT_URL, self.config.url)
-    self.c:setopt(curl.OPT_TIMEOUT, 2)
-    self.c:setopt(curl.OPT_HEADERFUNCTION, h_build_w_cb(ret))
-    self.c:setopt(curl.OPT_WRITEFUNCTION, build_w_cb(response_body))
-    self.c:setopt(curl.OPT_POSTFIELDS, postfields(postdata))
-    self.c:perform()
+    -- both apply their own module wide timeout: socket.http on the socket it
+    -- creates, ssl.https on the one it takes over for https urls. It caps a
+    -- single socket operation, not the request as a whole as CURLOPT_TIMEOUT
+    -- used to, so a peer answering slowly in several steps can outlast it
+    local http_timeout, https_timeout = self.c.TIMEOUT, https.TIMEOUT
+    self.c.TIMEOUT, https.TIMEOUT = request_timeout, request_timeout
+    local _, code, res_headers, status = self.c.request({
+        url = self.config.url,
+        method = 'POST',
+        headers = headers,
+        source = ltn12.source.string(body),
+        sink = ltn12.sink.table(response_body),
+        redirect = false,
+    })
+    self.c.TIMEOUT, https.TIMEOUT = http_timeout, https_timeout
 
-    if curl.close then
-       self.c:close()
+    if type(code) == 'number' then
+        ret.code = code
+        ret.codemessage = status_message(status)
+        ret.headers = res_headers or {}
+    else
+        -- no response at all: timeout, connection refused, ...
+        KSR.warn(string.format("push request to [%s] failed: %s\n",
+            self.config.url, tostring(code)))
     end
     ret.body = table.concat(response_body)
     return ret

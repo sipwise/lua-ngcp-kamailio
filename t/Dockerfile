@@ -5,14 +5,15 @@ FROM docker.mgm.sipwise.com/sipwise-trixie:latest
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT=2026-01-30
+ENV REFRESHED_AT=2026-09-29
 
 # files that get-code generates
 COPY t/sources.list.d/builddeps.list /etc/apt/sources.list.d/
 COPY t/sources.list.d/preferences /etc/apt/preferences.d/
 
 RUN apt-get update && apt-get install --assume-yes \
-	lua5.1 lua-unit lua-cjson lua-curl lua-lemock lua-logging \
+	lua5.1 lua-unit lua-cjson lua-lemock lua-logging \
+	lua-sec lua-socket \
 	lua-argparse lua-check \
 	python3-pytest
 

@@ -22,7 +22,9 @@ local NGCPAPIClient = {
      __class__ = 'NGCPAPIClient'
 }
 
-local curl = require 'curl'
+local https = require 'ssl.https'
+local ltn12 = require 'ltn12'
+local mime = require 'mime'
 local utils = require 'ngcp.utils'
 local utable = utils.table
 _ENV = NGCPAPIClient
@@ -50,7 +52,7 @@ end
 function NGCPAPIClient.init(config)
 	return {
         config = config,
-        c = curl.easy_init(),
+        c = https,
         j = require 'cjson'
     }
 end
@@ -61,40 +63,30 @@ function NGCPAPIClient:request(method, request)
     local userpass = self.config.user .. ':' .. self.config.pass
 
     local headers = {
-        'Content-Type: application/json',
-        'Prefer: return=internal',
-        'NGCP-UserAgent: NGCP::API::Client'
+        ['content-type'] = 'application/json',
+        ['prefer'] = 'return=internal',
+        ['ngcp-useragent'] = 'NGCP::API::Client',
+        -- built here on purpose: socket.http unescapes the password it is
+        -- given, which mangles credentials containing a percent sign
+        ['authorization'] = 'Basic ' .. (mime.b64(userpass)),
     }
 
-    self.c:setopt(curl.OPT_VERBOSE, 0)
-
-    self.c:setopt(curl.OPT_SSL_VERIFYHOST, 0)
-    self.c:setopt(curl.OPT_SSL_VERIFYPEER, 0)
-
-    self.c:setopt(curl.OPT_URL, 'https://' .. ipport .. '/api/' .. request)
-    self.c:setopt(curl.OPT_HTTPAUTH, curl.AUTH_BASIC)
-    self.c:setopt(curl.OPT_USERPWD, userpass)
-    self.c:setopt(curl.OPT_WRITEFUNCTION,
-        function(param,buf)
-            table.insert(result, param)
-            return buf
-        end
-    )
-
-    self.c:setopt(curl.OPT_CUSTOMREQUEST, method)
-    self.c:setopt(curl.OPT_HTTPHEADER, headers)
-
-    self.c:perform()
-
-    if curl.close then
-       self.c:close()
-    end
+    self.c.request({
+        url = 'https://' .. ipport .. '/api/' .. request,
+        method = method,
+        headers = headers,
+        sink = ltn12.sink.table(result),
+        -- the API is reached over an internal interface with a self signed
+        -- certificate, as with the former CURLOPT_SSL_VERIFY*
+        verify = 'none',
+        redirect = false,
+    })
 
     local res_data = table.concat(result)
     if (res_data == nil or res_data == '') then
         return "{}"
     end
-    return self.j.decode(table.concat(result))
+    return self.j.decode(res_data)
 end
 
 return NGCPAPIClient

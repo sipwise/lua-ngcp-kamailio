@@ -18,28 +18,41 @@
 -- Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
 --
 local lemock = require('lemock')
+local ltn12 = require('ltn12')
 local lu = require('luaunit')
-local utils = require 'ngcp.utils'
 
 local ksrMock = require 'mocks.ksr'
 KSR = ksrMock:new()
 
 local mc
+
+local function capture_warnings(fn)
+    -- luacheck: globals KSR
+    local warnings = {}
+    local warn = KSR.warn
+    KSR.warn = function(msg) table.insert(warnings, msg) end
+    local ok, err = pcall(fn)
+    KSR.warn = warn
+    lu.assertEvalToTrue(ok, tostring(err))
+    return warnings
+end
+
+local function drain(source)
+    local t = {}
+    -- sink.table returns the sink and the table, keep just the sink
+    local sink = ltn12.sink.table(t)
+    ltn12.pump.all(source, sink)
+    return table.concat(t)
+end
 -- luacheck: ignore TestNGCPPush
 TestNGCPPush = {} --class
 
     function TestNGCPPush:setUp()
         mc = lemock.controller()
         self.fake_redis = mc:mock()
-        self.fake_curl = utils.inheritsFrom(mc:mock())
-        self.fake_curl.easy_init = function()
-            return self.curl
-        end
         self.redis = mc:mock()
-        self.curl = mc:mock()
 
         package.loaded.redis = self.fake_redis
-        package.loaded.curl = self.fake_curl
         local NGCPPush = require 'ngcp.push'
 
         self.push = NGCPPush:new()
@@ -182,6 +195,92 @@ TestNGCPPush = {} --class
         lu.assertErrorMsgContains(
             'key[key] not allowed to change', self.push.set, self.push, self.v, 'key', "nono")
         mc:verify()
+    end
+
+    function TestNGCPPush:test_new_warns_on_host_name()
+        local NGCPPush = require 'ngcp.push'
+        local warnings = capture_warnings(function()
+            NGCPPush:new({url = 'http://pushd.example.org:45059/push'})
+        end)
+        lu.assertEquals(#warnings, 1)
+        lu.assertStrContains(warnings[1], 'uses a host name')
+        lu.assertStrContains(warnings[1], 'pushd.example.org')
+        -- the instance from setUp did not warn on its address based url
+        lu.assertNotNil(self.push)
+    end
+
+    function TestNGCPPush:test_new_quiet_on_address()
+        local NGCPPush = require 'ngcp.push'
+        local warnings = capture_warnings(function()
+            NGCPPush:new()
+            NGCPPush:new({url = 'http://[::1]:45059/push'})
+        end)
+        lu.assertEquals(warnings, {})
+        -- the default the kamailio template relies on is an address too
+        lu.assertEquals(self.push.config.url, 'http://127.0.0.1:45059/push')
+    end
+
+    -- stands in for socket.http
+    function TestNGCPPush:fake_http(result)
+        local this = self
+        return {
+            TIMEOUT = 60,
+            request = function(reqt)
+                this.reqt = reqt
+                this.reqbody = drain(reqt.source)
+                this.used_timeout = this.push.c.TIMEOUT
+                this.used_https_timeout = require('ssl.https').TIMEOUT
+                if not result.code then
+                    return nil, result.err
+                end
+                ltn12.pump.all(ltn12.source.string(result.body), reqt.sink)
+                return 1, result.code, result.headers, result.status
+            end,
+        }
+    end
+
+    function TestNGCPPush:test_request()
+        self.push.c = self:fake_http({
+            code = 200,
+            status = 'HTTP/1.1 200 OK',
+            headers = {['content-type'] = 'text/plain'},
+            body = 'ok',
+        })
+
+        local res = self.push:request({push_id = "call-id@1.2.3.4"})
+
+        lu.assertEquals(self.reqt.url, 'http://127.0.0.1:45059/push')
+        lu.assertEquals(self.reqt.method, 'POST')
+        lu.assertEquals(self.reqt.redirect, false)
+        lu.assertEquals(self.reqbody, 'push_id=call%2did%401%2e2%2e3%2e4')
+        lu.assertEquals(self.reqt.headers, {
+            ['content-type'] = 'application/x-www-form-urlencoded',
+            ['content-length'] = #self.reqbody,
+        })
+        -- our timeout during the request, the module defaults afterwards,
+        -- for ssl.https too since socket.http hands https urls over to it
+        lu.assertEquals(self.used_timeout, 2)
+        lu.assertEquals(self.used_https_timeout, 2)
+        lu.assertEquals(self.push.c.TIMEOUT, 60)
+        lu.assertEquals(require('ssl.https').TIMEOUT, 60)
+
+        lu.assertEquals(res.code, 200)
+        lu.assertEquals(res.codemessage, 'OK')
+        lu.assertEquals(res.headers, {['content-type'] = 'text/plain'})
+        lu.assertEquals(res.body, 'ok')
+    end
+
+    function TestNGCPPush:test_request_no_response()
+        self.push.c = self:fake_http({err = 'timeout'})
+
+        local res = self.push:request({push_id = "1234"})
+
+        -- the caller tells a failed request apart by the missing code
+        lu.assertNil(res.code)
+        lu.assertNil(res.codemessage)
+        lu.assertEquals(res.headers, {})
+        lu.assertEquals(res.body, '')
+        lu.assertEquals(self.push.c.TIMEOUT, 60)
     end
 -- class TestNGCPPush
 --EOF

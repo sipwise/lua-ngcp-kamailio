@@ -12,9 +12,10 @@ Architecture: any
 Depends:
  lua-argparse,
  lua-cjson,
- lua-curl,
  lua-logging,
  lua-redis (>= 2.0.5~git20141117.880dda9-7~),
+ lua-sec,
+ lua-socket,
  lua-sql-mysql (>= 2.4.0),
  lua5.1,
  ngcp-system-tools-ce | ngcp-system-tools,
@@ -31,9 +32,10 @@ Package: lua-ngcp-kamailio-dev
 Architecture: any
 Depends:
  lua-cjson,
- lua-curl,
  lua-lemock,
  lua-logging,
+ lua-sec,
+ lua-socket,
  lua-sql-mysql (>= 2.4.0),
  lua-unit,
  ${misc:Depends},
