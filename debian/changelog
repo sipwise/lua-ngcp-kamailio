@@ -1,3 +1,14 @@
+lua-ngcp-kamailio (27.0.0.0+0~mr27.0.0.0) unstable; urgency=medium
+
+  [ Donat Zenichev ]
+  * [cf94e2c] MT#65662 Add support for loading based on prefs group (subscribers)
+  * [6401434] MT#65662 Support domain/profile/subscriber level inheritance (group load)
+
+  [ Bit-Savva Mikhail ]
+  * [49ec391] MT#66116 Replace lua-curl with lua-socket and lua-sec
+
+ -- Sipwise Jenkins Builder <jenkins@sipwise.com>  Mon, 05 Oct 2026 12:34:25 +0200
+
 lua-ngcp-kamailio (26.3.0.0+0~mr26.3.0.0) unstable; urgency=medium
 
   * New release.
